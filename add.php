@@ -30,9 +30,9 @@ include './include/auth_redirect.php';
          //подтягиваем состояние БД с сервера
          let globalState = <?php include './action/get_add_state.php' ?>
          //создаем состояние операции, которое будем накапливать
-         globalState.incomeTable = {
-            
-         }
+         globalState.incomeTable = new Map();
+         //.set(key, val)  .delete(key) .has(key)
+         //.keys() .values() .entries()
       </script>
 
       <div id="main-wrapper">
@@ -46,7 +46,7 @@ include './include/auth_redirect.php';
                      <div class="row" style="margin-bottom: 0;">
 
                         <div class="input-field col s12">
-                           <input autocomplete="off" placeholder="Введите номер документа" id="first_name" type="text" class="validate">
+                           <input autocomplete="off" placeholder="Введите номер документа" id="first_name" type="text" class="">
                            <label for="first_name">Номер документа</label>
                         </div>
 
@@ -59,13 +59,13 @@ include './include/auth_redirect.php';
 
                         <div class="col s6">
                            <div class="input-field col s12 autocomplete-field">
-                              <input autocomplete="off" id="partner-select" type="text" class="validate">
+                              <input autocomplete="off" data-autocomplete-object="partners" id="partner-select" type="text" class="">
                               <label for="partner-select">Контрагент</label>
                            </div>
                         </div>
 
                         <div class="col s12" style="margin: 40px 0px;">
-                           <table>
+                           <table id="income-table" class="highlight">
                               <thead>
                                  <tr>
                                     <th>№</th>
@@ -86,7 +86,7 @@ include './include/auth_redirect.php';
                            <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0 modal-trigger" style="width: 100%; margin-top: 5px;" href="#add-modal">добавить позицию</a>
                         </div>
 
-                        <a class="waves-effect waves-light btn-large" style="width: 100%">Создать приход</a>
+                        <a id="create-record" class="waves-effect waves-light btn-large" style="width: 100%">Создать приход</a>
                      </div>
 
                   </div>
@@ -105,16 +105,17 @@ include './include/auth_redirect.php';
       <div class="modal-content">
          <h4>Добавление товара</h4>
          <p>Выберите номенклатуру из списка ниже и заполните информацию о товаре</p>
-         
+
          <div class="row">
             <div class="col s12">
+            <h5>Основные поля</h5>
                <div class="input-field col s12">
-                  <input autocomplete="off" placeholder="Нажмите для выбора или поиска номенклатуры" id="goods-select" type="text" class="validate">
+                  <input autocomplete="off" data-autocomplete-object="goods" placeholder="Нажмите для выбора или поиска номенклатуры" id="goods-select" type="text" class="">
                   <label for="goods-select">Номенклатура</label>
                </div>
 
                <div class="input-field col s12">
-                  <input autocomplete="off" placeholder="Введите количество товара" id="goods-count" type="text" class="validate">
+                  <input autocomplete="off" placeholder="Введите количество товара" id="goods-count" type="text" class="">
                   <label for="goods-count">Количество</label>
                </div>
 
@@ -128,13 +129,29 @@ include './include/auth_redirect.php';
                   <label for="valid-until" class="active">Годен до</label>
                </div>
 
-               //по номенклатурному onAutocomplete() - ЕСЛИ globalState.goods[pickedValue].extendedMilkFields == 1 ? renderExtendedFields() : deleteExtendedFields();
+               <div id="extended-fields" style="display: none;">
+                  <h5>Дополнительные поля</h5>
+                  <div class="input-field col s4">
+                     <input id="ext-fat" placeholder="Введите процент жирности" type="text">
+                     <label for="ext-fat" class="active">Жирность</label>
+                  </div>
+
+                  <div class="input-field col s4">
+                     <input id="ext-solidity" placeholder="Введите плотность" type="text">
+                     <label for="ext-solidity" class="active">Плотность</label>
+                  </div>
+
+                  <div class="input-field col s4">
+                     <input id="ext-acidity" placeholder="Введите кислотность" type="text">
+                     <label for="ext-acidity" class="active">Кислотность</label>
+                  </div>
+               </div>
 
             </div>
          </div>
       </div>
       <div class="modal-footer">
-         <a href="#!" class="modal-close waves-effect waves-green btn blue">Добавить</a>
+         <a href="#!" id="add-product-button" class="modal-close waves-effect waves-green btn blue">Добавить</a>
          <a href="#!" class="modal-close waves-effect waves-green btn grey">Отмена</a>
       </div>
    </div>
@@ -163,13 +180,19 @@ include './include/auth_redirect.php';
          var instances = M.Autocomplete.init(goodsSelect, {
             data: globalState.goods,
             minLength: 0,
+            onAutocomplete: function(elem) {
+               if (globalState.goods[elem].extended_milk_fields) document.getElementById('extended-fields').style.display = 'block';
+               else document.getElementById('extended-fields').style.display = 'none';
+            }
          });
       });
 
       //modal init===================
       document.addEventListener('DOMContentLoaded', function() {
          var elems = document.querySelector('#add-modal');
-         var instances = M.Modal.init(elems, {});
+         var instances = M.Modal.init(elems, {
+            onOpenStart: clearAddModal
+         });
       });
 
       //datepicker init===========
