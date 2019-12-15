@@ -32,38 +32,38 @@ include './include/auth_redirect.php';
 
 
                <div id="prihod" class="content-block">
-                  <h2 style="margin: 0">Список номенклатур</h2>
+                  <h2 style="margin: 0">История прихода</h2>
                   <hr>
-                  <p>Представление таблицы «<b>product_list</b>». Содержит список всех используемых номенклатур с общими свойствами, характерными для каждой конкретной номенклатуры. </p>
+                  <p>Представление таблицы «<b>operation_add</b>». Содержит список всех поступивших позиций, привязанных к операции прихода. </p>
                   <table>
                      <thead>
                         <tr>
-                           <th>ID</th>
-                           <th>Наименование</th>
-                           <th>Ед.изм</th>
-                           <th>Объем</th>
-                           <th>GTIN</th>
-                           <th>Вид номенклатуры</th>
-                           <th>Срок годности (суток)</th>
-                           <th>Доп.поля (молоко)</th>
+                           <th>Номер документа</th>
+                           <th>Номенклатура</th>
+                           <th>Количество</th>
+                           <th>Дата производства</th>
+                           <th>Годен до</th>
+                           <th>Жирность (доп)</th>
+                           <th>Плотность (доп)</th>
+                           <th>Кислотность (доп)</th>
                         </tr>
                      </thead>
 
                      <tbody>
 
                         <?php
-                        foreach ($mysqli->query('SELECT product_list.product_id, product_list.title, units.unit, product_list.capacity, product_list.gtin, product_types.type, product_list.valid_days, product_list.extended_milk_fields    
-                        FROM product_list, units, product_types
-                        WHERE product_list.unit_code = units.unit_id AND product_list.product_type = product_types.type_id') as $row) {
+                        foreach ($mysqli->query('SELECT operation_history.document_number, operation_add.product_name, operation_add.count, operation_add.create_date, operation_add.expire_date, operation_add.milk_fat, operation_add.milk_solidity, operation_add.milk_acidity 
+                        FROM operation_add, operation_history 
+                        WHERE operation_add.operation_id = operation_history.operation_id') as $row) {
                            echo "<tr>
-                           <td>$row[product_id]</td>
-                           <td>$row[title]</td>
-                           <td>$row[unit]</td>
-                           <td>$row[capacity]</td>
-                           <td>$row[gtin]</td>
-                           <td>$row[type]</td>
-                           <td>$row[valid_days]</td>
-                           <td>$row[extended_milk_fields]</td>
+                           <td>$row[document_number]</td>
+                           <td>$row[product_name]</td>
+                           <td>$row[count]</td>
+                           <td>$row[create_date]</td>
+                           <td>$row[expire_date]</td>
+                           <td>$row[milk_fat]</td>
+                           <td>$row[milk_solidity]</td>
+                           <td>$row[milk_acidity]</td>
                            </tr>";
                         }
                         ?>

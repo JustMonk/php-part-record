@@ -26,7 +26,7 @@ function incomeTableRender() {
          <td>${entry[1].name}</td>
          <td>${entry[1].count}</td>
          <td>${entry[1].createDate}</td>
-         <td>${globalState.goods[entry[1].name].valid_days}</td>
+         <td>${globalState.goods[entry[1].name].expire_date}</td>
          <td><a class="delete-row-button"><i class="material-icons">delete_forever</i></a></td>
       </tr>`;
       tableBody.append(tr);
@@ -49,14 +49,13 @@ document.addEventListener('click', (e) => {
    if (e.target.id == 'add-product-button') {
       if (!modalValidation()) return;
 
-      let id = Math.floor(Math.random() * Math.floor(9999));
-      while (globalState.incomeTable.has(id)) {
-         id = Math.floor(Math.random() * Math.floor(9999));
-      }
+      let id = globalState.goods[document.getElementById('goods-select').value].registry_id;
 
+      //проверяет есть ли ID, чтобы сохранить изменения по этому ключу
       if (e.target.hasAttribute('data-id')) id = +e.target.getAttribute('data-id');
 
       globalState.incomeTable.set(id, {
+         registry_id: id,
          name: document.getElementById('goods-select').value,
          count: document.getElementById('goods-count').value,
          createDate: document.getElementById('goods-create-date').value,
@@ -84,7 +83,7 @@ document.addEventListener('click', (e) => {
       clearAddModal();
 
       modal.el.querySelector('#modal-title').innerText = 'Добавление товара';
-      modal.el.querySelector('#modal-desc').innerText = 'Выберите номенклатуру из списка ниже и заполните информацию о товаре';
+      modal.el.querySelector('#modal-desc').innerText = 'Выберите номенклатуру из списка ниже и введите количество';
       let footer = modal.el.querySelector('.modal-footer');
       footer.innerHTML = `
       <a href="#!" id="add-product-button" class="waves-effect waves-green btn blue">Добавить</a>
@@ -98,19 +97,22 @@ document.addEventListener('click', (e) => {
    if (e.target.closest('tr') && e.target.closest('tr').getAttribute('data-action') == 'product-edit') {
       let rowId = +e.target.closest('tr').getAttribute('data-id');
       let modal = M.Modal.getInstance(document.getElementById('add-modal'));
+      let goodsObj = globalState.goods[globalState.incomeTable.get(rowId).name];
       clearAddModal();
 
       //общие поля
       modal.el.querySelector('#goods-select').value = globalState.incomeTable.get(rowId).name;
       modal.el.querySelector('#goods-count').value = globalState.incomeTable.get(rowId).count;
+      modal.el.querySelector('#goods-unit').value = goodsObj.unit;
+      modal.el.querySelector('#goods-avaliable-count').value = goodsObj.count;
       modal.el.querySelector('#goods-create-date').value = globalState.incomeTable.get(rowId).createDate;
-      modal.el.querySelector('#valid-until').value = globalState.goods[globalState.incomeTable.get(rowId).name].valid_days;
+      modal.el.querySelector('#goods-expire-date').value = goodsObj.expire_date;
       //дополнительные поля для сырого молока
-      modal.el.querySelector('#ext-fat').value = globalState.incomeTable.get(rowId).extFat;
-      modal.el.querySelector('#ext-solidity').value = globalState.incomeTable.get(rowId).extSolidity;
-      modal.el.querySelector('#ext-acidity').value = globalState.incomeTable.get(rowId).extAcidity;
+      modal.el.querySelector('#ext-fat').value = goodsObj.milk_fat;
+      modal.el.querySelector('#ext-solidity').value = goodsObj.milk_solidity;
+      modal.el.querySelector('#ext-acidity').value = goodsObj.milk_acidity;
       //показать доп. поля, если редактируем сырое молоко
-      if (globalState.goods[globalState.incomeTable.get(rowId).name].extended_milk_fields) modal.el.querySelector('#extended-fields').style.display = 'block';
+      if (goodsObj.milk_fat != 0 || goodsObj.milk_solidity != 0 || goodsObj.milk_acidity != 0) modal.el.querySelector('#extended-fields').style.display = 'block';
 
       modal.el.querySelector('#modal-title').innerText = 'Редактирование товара';
       modal.el.querySelector('#modal-desc').innerText = 'Внесите необходимые изменения и нажмите сохранить';
@@ -124,7 +126,7 @@ document.addEventListener('click', (e) => {
       M.updateTextFields();
    }
 
-   //заглушка под добавление
+   //отправка формы
    if (e.target.id == 'create-record') {
       if (!formValidation()) return;
 
@@ -132,18 +134,15 @@ document.addEventListener('click', (e) => {
          docNum: document.getElementById('doc-number').value,
          operationDate: new Date(document.getElementById('operation-date').value).toISOString().split('T')[0],
          partner: document.getElementById('partner-select').value,
-         productList: [...globalState.incomeTable.values()].map(val => {
-            let changedObj = val;
-            changedObj.createDate = new Date(changedObj.createDate).toISOString().split('T')[0];
-            return changedObj;
-         })
+         productList: [...globalState.incomeTable.values()]
       }
 
       console.log(JSON.stringify(data));
 
-      fetch('action/add_operation_confirm.php', { method: 'POST', cache: 'no-cache', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(result => {
+      fetch('action/sell_operation_confirm.php', { method: 'POST', cache: 'no-cache', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(result => {
          console.log(result);
          return result.json();
+         //return result.text();
       }).then(json => {
          console.log(json);
          showMessage(json);
@@ -163,29 +162,6 @@ function modalValidation() {
    if (modal.el.querySelector('#goods-count').value.length < 1) {
       isValid = false;
       modal.el.querySelector('#goods-count').className = 'validate invalid';
-   }
-
-   if (modal.el.querySelector('#goods-create-date').value.length < 1) {
-      isValid = false;
-      modal.el.querySelector('#goods-create-date').className = 'validate invalid';
-   }
-
-   //проверка на доп.поля (если требуется)
-   if (globalState.goods[modal.el.querySelector('#goods-select').value].extended_milk_fields) {
-      if (modal.el.querySelector('#ext-fat').value.length < 1) {
-         isValid = false;
-         modal.el.querySelector('#ext-fat').className = 'validate invalid';
-      }
-
-      if (modal.el.querySelector('#ext-solidity').value.length < 1) {
-         isValid = false;
-         modal.el.querySelector('#ext-solidity').className = 'validate invalid';
-      }
-
-      if (modal.el.querySelector('#ext-acidity').value.length < 1) {
-         isValid = false;
-         modal.el.querySelector('#ext-acidity').className = 'validate invalid';
-      }
    }
 
    return isValid;

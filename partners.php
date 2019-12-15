@@ -51,7 +51,7 @@ include './include/auth_redirect.php';
                         <?php
                         foreach ($mysqli->query('SELECT * FROM partners') as $row) {
                            echo "<tr>
-                           <td>$row[ID]</td>
+                           <td>$row[partner_id]</td>
                            <td>$row[name]</td>
                            <td>$row[inn]</td>
                            <td>$row[kpp]</td>

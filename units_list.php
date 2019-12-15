@@ -49,7 +49,7 @@ include './include/auth_redirect.php';
                         <?php
                         foreach ($mysqli->query('SELECT * FROM units') as $row) {
                            echo "<tr>
-                           <td>$row[ID]</td>
+                           <td>$row[unit_id]</td>
                            <td>$row[unit]</td>
                            <td>$row[full_title]</td>
                            </tr>";

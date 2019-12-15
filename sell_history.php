@@ -32,29 +32,38 @@ include './include/auth_redirect.php';
 
 
                <div id="prihod" class="content-block">
-                  <h2 style="margin: 0">Тестирование первичных ключей</h2>
+                  <h2 style="margin: 0">История продаж</h2>
                   <hr>
-                  <p>Тестирование первичных ключей в SELECT (перекрестный запрос)</p>
+                  <p>Представление таблицы «<b>operation_sell</b>». Содержит список всех проданных позиций, привязанных к операции продажи. </p>
                   <table>
                      <thead>
                         <tr>
-                           <th>ID</th>
-                           <th>Тип операции</th>
                            <th>Номер документа</th>
-                           <th>Дата операции</th>
+                           <th>Номенклатура</th>
+                           <th>Количество</th>
+                           <th>Дата производства</th>
+                           <th>Годен до</th>
+                           <th>Жирность (доп)</th>
+                           <th>Плотность (доп)</th>
+                           <th>Кислотность (доп)</th>
                         </tr>
                      </thead>
 
                      <tbody>
 
                         <?php
-                        //foreach ($mysqli->query('SELECT ID, (SELECT operation_name FROM operation_types WHERE ID=operation_history.operation_type) as operation_type, document_number FROM operation_history') as $row) {
-                        foreach ($mysqli->query('SELECT * FROM operation_history INNER JOIN operation_types ON operation_history.operation_type = operation_types.id ') as $row) {
+                        foreach ($mysqli->query('SELECT operation_history.document_number, operation_sell.product_name, operation_sell.count, operation_sell.create_date, operation_sell.expire_date, operation_sell.milk_fat, operation_sell.milk_solidity, operation_sell.milk_acidity 
+                        FROM operation_sell, operation_history 
+                        WHERE operation_sell.operation_id = operation_history.operation_id') as $row) {
                            echo "<tr>
-                           <td>$row[operation_id]</td>
-                           <td>$row[operation_name]</td>
                            <td>$row[document_number]</td>
-                           <td>$row[operation_date]</td>
+                           <td>$row[product_name]</td>
+                           <td>$row[count]</td>
+                           <td>$row[create_date]</td>
+                           <td>$row[expire_date]</td>
+                           <td>$row[milk_fat]</td>
+                           <td>$row[milk_solidity]</td>
+                           <td>$row[milk_acidity]</td>
                            </tr>";
                         }
                         ?>

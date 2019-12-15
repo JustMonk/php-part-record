@@ -38,7 +38,7 @@ include './include/auth_redirect.php';
                   <table>
                      <thead>
                         <tr>
-                           <th>ID</th>
+                           <th>ID в реестре</th>
                            <th>Наименование</th>
                            <th>Количество</th>
                            <th>Ед.изм.</th>
@@ -52,29 +52,23 @@ include './include/auth_redirect.php';
 
                      <tbody>
 
-                        <tr>
-                           <td>12</td>
-                           <td>Йогурт КЛУБНИКА</td>
-                           <td>25</td>
-                           <td>шт</td>
-                           <td>16.11.2019</td>
-                           <td>31.11.2019</td>
-                           <td></td>
-                           <td></td>
-                           <td></td>
-                        </tr>
-
-                        <tr>
-                           <td>48</td>
-                           <td>Молоко 3.2%</td>
-                           <td>12</td>
-                           <td>л</td>
-                           <td>16.11.2019</td>
-                           <td>25.11.2019</td>
-                           <td>3.2</td>
-                           <td>2</td>
-                           <td>1.1</td>
-                        </tr>
+                        <?php
+                        foreach ($mysqli->query('SELECT product_registry.registry_id, product_list.title , product_registry.count, units.unit, product_registry.create_date, product_registry.expire_date, product_registry.milk_fat, product_registry.milk_solidity, product_registry.milk_acidity
+                        FROM product_registry, product_list, units 
+                        WHERE product_registry.product_id = product_list.product_id AND product_list.unit_code = units.unit_id') as $row) {
+                           echo "<tr>
+                           <td>$row[registry_id]</td>
+                           <td>$row[title]</td>
+                           <td>$row[count]</td>
+                           <td>$row[unit]</td>
+                           <td>$row[create_date]</td>
+                           <td>$row[expire_date]</td>
+                           <td>$row[milk_fat]</td>
+                           <td>$row[milk_solidity]</td>
+                           <td>$row[milk_acidity]</td>
+                           </tr>";
+                        }
+                        ?>
 
                      </tbody>
                   </table>

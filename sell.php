@@ -29,7 +29,7 @@ include './include/auth_redirect.php';
 
       <script>
          //подтягиваем состояние БД с сервера
-         let globalState = <?php include './action/get_add_state.php' ?>
+         let globalState = <?php include './action/get_sell_state.php' ?>
          //создаем состояние операции, которое будем накапливать
          globalState.incomeTable = new Map();
          //.set(key, val) .get(key)  .delete(key) .has(key)
@@ -42,7 +42,7 @@ include './include/auth_redirect.php';
             <div class="card-panel white">
 
                <div id="prihod" class="content-block">
-                  <h2 style="margin: 0">Приход</h2>
+                  <h2 style="margin: 0">Продажа</h2>
                   <hr>
                   <div id="test1" class="col s12" style="padding: 20px">
 
@@ -58,7 +58,7 @@ include './include/auth_redirect.php';
                         <div class="col s6 flex-col">
                            <div class="input-field">
                               <input id="operation-date" type="text" class="datepicker">
-                              <label for="operation-date" class="">Дата поступления</label>
+                              <label for="operation-date" class="">Дата продажи</label>
                            </div>
                         </div>
                      </div>
@@ -82,7 +82,7 @@ include './include/auth_redirect.php';
                                     <th>Номенклатура</th>
                                     <th>Количество</th>
                                     <th>Дата изготовления</th>
-                                    <th>Срок годности</th>
+                                    <th>Годен до</th>
                                     <th></th>
                                  </tr>
                               </thead>
@@ -100,7 +100,7 @@ include './include/auth_redirect.php';
 
                   </div>
                   <div class="divider" style="margin: 10px 0px;"></div>
-                  <a id="create-record" class="waves-effect waves-light btn-large" style="width: 100%">Создать приход</a>
+                  <a id="create-record" class="waves-effect waves-light btn-large" style="width: 100%">Создать продажу</a>
                </div>
             </div>
 
@@ -132,30 +132,40 @@ include './include/auth_redirect.php';
 
 
             <div class="row">
-               <div class="col s12 flex-col">
+               <div class="col s8 flex-col">
                   <div class="input-field">
                      <input autocomplete="off" placeholder="Введите количество товара" id="goods-count" type="text" class="">
                      <label for="goods-count">Количество</label>
                   </div>
                   <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
                </div>
+               <div class="col s2 flex-col">
+                  <div class="input-field">
+                     <input disabled autocomplete="off" placeholder="%ед.изм%" id="goods-unit" type="text" class="">
+                     <label for="goods-unit">Ед.изм</label>
+                  </div>
+               </div>
+               <div class="col s2 flex-col">
+                  <div class="input-field">
+                     <input disabled autocomplete="off" placeholder="%доступно%" id="goods-avaliable-count" type="text" class="">
+                     <label for="goods-avaliable-count">Доступно</label>
+                  </div>
+               </div>
             </div>
 
             <div class="row">
                <div class="col s6 flex-col">
                   <div class="input-field">
-                     <input id="goods-create-date" type="text" class="datepicker">
+                     <input disabled id="goods-create-date" placeholder="%дата.изг%" type="text" class="datepicker">
                      <label for="goods-create-date" class="active">Дата изготовления</label>
                   </div>
-                  <i class="material-icons help-icon" data-tooltip="Введите дату изготовления">help_outline</i>
                </div>
 
                <div class="col s6 flex-col">
                   <div class="input-field">
-                     <input disabled id="valid-until" placeholder="Сначала выберите номенклатуру" type="text">
-                     <label for="valid-until" class="active">Срок годности</label>
+                     <input disabled id="goods-expire-date" placeholder="%годен_до%" type="text">
+                     <label for="goods-expire-date" class="active">Годен до</label>
                   </div>
-                  <i class="material-icons help-icon" data-tooltip="Срок годности вычисляется автоматически">help_outline</i>
                </div>
             </div>
          </div>
@@ -164,17 +174,17 @@ include './include/auth_redirect.php';
             <h5>Дополнительные поля</h5>
             <div class="row">
                <div class="input-field col s4">
-                  <input id="ext-fat" placeholder="Введите процент жирности" type="text">
+                  <input id="ext-fat" disabled placeholder="Жирность" type="text">
                   <label for="ext-fat" class="active">Жирность</label>
                </div>
 
                <div class="input-field col s4">
-                  <input id="ext-solidity" placeholder="Введите плотность" type="text">
+                  <input id="ext-solidity" disabled placeholder="Плотность" type="text">
                   <label for="ext-solidity" class="active">Плотность</label>
                </div>
 
                <div class="input-field col s4">
-                  <input id="ext-acidity" placeholder="Введите кислотность" type="text">
+                  <input id="ext-acidity" disabled placeholder="Кислотность" type="text">
                   <label for="ext-acidity" class="active">Кислотность</label>
                </div>
             </div>
@@ -191,7 +201,7 @@ include './include/auth_redirect.php';
    <script src="./assets/materialize/js/materialize.min.js"></script>
    <script src="./js/script.js"></script>
    <script src="./js/logout.js"></script>
-   <script src="./js/add_goods.js"></script>
+   <script src="./js/sell_goods.js"></script>
 
    <script>
       //autocomplete init=============
@@ -213,9 +223,18 @@ include './include/auth_redirect.php';
             data: globalState.goods,
             minLength: 0,
             onAutocomplete: function(elem) {
-               if (globalState.goods[elem].extended_milk_fields) document.getElementById('extended-fields').style.display = 'block';
-               else document.getElementById('extended-fields').style.display = 'none';
-               document.querySelector('#valid-until').value = globalState.goods[elem].valid_days;
+               document.querySelector('#goods-unit').value = globalState.goods[elem].unit;
+               document.querySelector('#goods-avaliable-count').value = globalState.goods[elem].count;
+               document.querySelector('#goods-create-date').value = globalState.goods[elem].create_date;
+               document.querySelector('#goods-expire-date').value = globalState.goods[elem].expire_date;
+               if (globalState.goods[elem].milk_fat == 0 && globalState.goods[elem].milk_solidity == 0 && globalState.goods[elem].milk_acidity == 0) {
+                  document.querySelector('#extended-fields').style.display = 'none';
+               } else {
+                  document.querySelector('#extended-fields').style.display = 'block';
+                  document.querySelector('#ext-fat').value = globalState.goods[elem].milk_fat;
+                  document.querySelector('#ext-solidity').value = globalState.goods[elem].milk_solidity;
+                  document.querySelector('#ext-acidity').value = globalState.goods[elem].milk_acidity;
+               }
             }
          });
       });

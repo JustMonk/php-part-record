@@ -34,19 +34,35 @@ include './include/auth_redirect.php';
                <div id="prihod" class="content-block">
                   <h2 style="margin: 0">История операций</h2>
                   <hr>
-                  <p>Представление таблицы «<b>%operation_history%</b>». Содержит список всех поступлений. </p>
+                  <p>Представление таблицы «<b>operation_history</b>». Содержит список всех операций (приход/продажа/производство). </p>
                   <table>
                      <thead>
                         <tr>
-                           <th>ID</th>
-                           <th>%%</th>
-                           <th>%%</th>
+                           <th>ID операции</th>
+                           <th>Тип операции</th>
+                           <th>Номер документа</th>
+                           <th>Дата операции</th>
+                           <th>Контрагент</th>
+                           <th>Дата записи в базу</th>
                         </tr>
                      </thead>
 
                      <tbody>
 
-
+                        <?php
+                        foreach ($mysqli->query('SELECT operation_history.operation_id, operation_types.operation_name, operation_history.document_number, operation_history.operation_date, partners.name, operation_history.timestamp 
+                        FROM operation_history, operation_types, partners 
+                        WHERE operation_history.operation_type = operation_types.operation_type_id AND operation_history.partner_code = partners.partner_id') as $row) {
+                           echo "<tr>
+                           <td>$row[operation_id]</td>
+                           <td>$row[operation_name]</td>
+                           <td>$row[document_number]</td>
+                           <td>$row[operation_date]</td>
+                           <td>$row[name]</td>
+                           <td>$row[timestamp]</td>
+                           </tr>";
+                        }
+                        ?>
 
                      </tbody>
                   </table>
