@@ -13,8 +13,8 @@
       <li><a class="nav-button" href="index.php"><i class="fas fa-home"></i>Главная</a></li>
       <li><p style="padding: 0px 30px; margin-top: 20px; margin-bottom: 10px; font-weight: bold;">Операции:</p></li>
       <li><a class="nav-button" href="add.php"><i class="fas fa-plus fa-fw"></i>Приход</a></li>
-      <li><a class="nav-button" href="sell.php"><i class="fas fa-dollar-sign fa-fw"></i>Продажа<span class="new badge" data-badge-caption="beta"></span></a></li>
-      <!--<li><a class="nav-button" href="add.php"><i class="fas fa-industry fa-fw"></i>Производство<span class="new badge red lighten-2" data-badge-caption="TODO"></span></a></li>-->
+      <li><a class="nav-button" href="sell.php"><i class="fas fa-dollar-sign fa-fw"></i>Продажа</a></li>
+      <li><a class="nav-button" href="make.php"><i class="fas fa-industry fa-fw"></i>Производство<span class="new badge red lighten-2" data-badge-caption="TODO"></a></li>
       <li><p style="padding: 0px 30px; margin-top: 20px; margin-bottom: 10px; font-weight: bold;">Разработка:</p></li>
       <li><a class="nav-button" href="operation_history.php"><i class="fas fa-code"></i>История операций<span class="new badge blue-grey lighten-2" data-badge-caption="prod"></span></a></li>
       <li><a class="nav-button" href="add_history.php"><i class="fas fa-code"></i>Приходы<span class="new badge blue-grey lighten-2" data-badge-caption="prod"></span></a></li>
