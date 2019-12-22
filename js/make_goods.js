@@ -1,7 +1,7 @@
 console.log(globalState);
 
 
-function incomeTableRender() {
+function doubleTableRender() {
    //таблица сырья
    let num = 1;
    let tableBody = document.getElementById('material-table').tBodies[0];
@@ -10,12 +10,14 @@ function incomeTableRender() {
       let tr = document.createElement('tr');
       tr.setAttribute('data-id', entry[0]);
       tr.setAttribute('data-action', 'product-edit');
+      tr.setAttribute('data-type', 'material');
       tr.innerHTML = `<tr>
          <td>${num}</td>
          <td>${entry[1].name}</td>
          <td>${entry[1].count}</td>
+         <td>${entry[1].unit}</td>
          <td>${entry[1].createDate}</td>
-         <td>${globalState.goods[entry[1].name].expire_date}</td>
+         <td>${entry[1].expireDate}</td>
          <td><a class="delete-row-button"><i class="material-icons">delete_forever</i></a></td>
       </tr>`;
       tableBody.append(tr);
@@ -30,12 +32,14 @@ function incomeTableRender() {
       let tr = document.createElement('tr');
       tr.setAttribute('data-id', entry[0]);
       tr.setAttribute('data-action', 'product-edit');
+      tr.setAttribute('data-type', 'product');
       tr.innerHTML = `<tr>
          <td>${num}</td>
          <td>${entry[1].name}</td>
          <td>${entry[1].count}</td>
+         <td>${entry[1].unit}</td>
          <td>${entry[1].createDate}</td>
-         <td>${globalState.goods[entry[1].name].expire_date}</td>
+         <td>${entry[1].expireDate}</td>
          <td><a class="delete-row-button"><i class="material-icons">delete_forever</i></a></td>
       </tr>`;
       tableBody.append(tr);
@@ -59,59 +63,155 @@ document.addEventListener('click', (e) => {
 
    let modal = M.Modal.getInstance(document.getElementById('add-modal'));
 
-   //обработчик добавления новой позиции
+   //обработчик добавления нового сырья
+   if (e.target.id == 'add-material-button') {
+      if (!modalValidation()) return;
+
+      //проверяет есть ли ID, чтобы сохранить изменения по этому ключу
+      /*let id = Math.floor(Math.random() * Math.floor(9999));
+      while (globalState.materialTable.has(id)) {
+         id = Math.floor(Math.random() * Math.floor(9999));
+      }
+      if (e.target.hasAttribute('data-id')) id = +e.target.getAttribute('data-id');*/
+      let id = document.getElementById('goods-select').value;
+      if (e.target.hasAttribute('data-id')) {
+         console.log('delete prev id');
+         let prevId = e.target.getAttribute('data-id');
+         //предотвращение потери данных и дублирования при редактировании
+         if (globalState.materialTable.has(prevId)) globalState.materialTable.delete(prevId);
+      }
+
+      //в зависимости от того, что выбрано в поле номенклатуры (в момент нажатия на кнопку) - устанавливаем "справочный" регистр
+      let targetRegistry = globalState.materials.hasOwnProperty(document.getElementById('goods-select').value) ? globalState.materials : globalState.halfway;
+      
+      globalState.materialTable.set(id, {
+         registry_id: targetRegistry[document.getElementById('goods-select').value].registry_id,
+         string_key: document.getElementById('goods-select').value,
+         name: targetRegistry[document.getElementById('goods-select').value].name,
+         count: document.getElementById('goods-count').value,
+         unit: targetRegistry[document.getElementById('goods-select').value].unit,
+         createDate: targetRegistry[document.getElementById('goods-select').value].create_date,
+         expireDate: targetRegistry[document.getElementById('goods-select').value].expire_date
+      });
+
+      console.log('добавлена строка в material-map');
+      doubleTableRender();
+      modal.close();
+
+      //let id = globalState.goods[document.getElementById('goods-select').value].registry_id;
+   }
+
+   //обработчик добавления нового продукта производства
    if (e.target.id == 'add-product-button') {
       if (!modalValidation()) return;
 
-      let id = globalState.goods[document.getElementById('goods-select').value].registry_id;
-
       //проверяет есть ли ID, чтобы сохранить изменения по этому ключу
+      let id = Math.floor(Math.random() * Math.floor(9999));
+      while (globalState.makeTable.has(id)) {
+         id = Math.floor(Math.random() * Math.floor(9999));
+      }
       if (e.target.hasAttribute('data-id')) id = +e.target.getAttribute('data-id');
 
-      globalState.incomeTable.set(id, {
-         registry_id: id,
+      let targetRegistry = globalState.halfwayList.hasOwnProperty(document.getElementById('goods-select').value) ? globalState.halfwayList : globalState.finishedList;
+
+      globalState.makeTable.set(id, {
+         product_id: targetRegistry[document.getElementById('goods-select').value].id,
          name: document.getElementById('goods-select').value,
          count: document.getElementById('goods-count').value,
+         unit: targetRegistry[document.getElementById('goods-select').value].unit,
          createDate: document.getElementById('goods-create-date').value,
-         extFat: document.getElementById('ext-fat').value,
-         extSolidity: document.getElementById('ext-solidity').value,
-         extAcidity: document.getElementById('ext-acidity').value
+         expireDate: document.getElementById('goods-expire-date').value
       });
-      console.log('добавлена строка в map');
-      incomeTableRender();
+
+      console.log('добавлена строка в product-map');
+      doubleTableRender();
       modal.close();
+
+      //let id = globalState.goods[document.getElementById('goods-select').value].registry_id;
    }
 
    //удаление ячейки из состояния и таблицы
    if (e.target.closest('a') && e.target.closest('a').classList.contains('delete-row-button')) {
       console.log('вошли в deleterow');
       let row = e.target.closest('tr');
-      globalState.incomeTable.delete(+row.getAttribute('data-id'));
-      incomeTableRender();
+
+      if (globalState.materialTable.has(row.getAttribute('data-id'))) {
+         globalState.materialTable.delete(row.getAttribute('data-id'));
+      } else {
+         globalState.makeTable.delete(+row.getAttribute('data-id'));
+      }
+
+      doubleTableRender();
       return;
    }
 
    //модальное окно для добавления нового сырья
    if (e.target.id == 'add-new-material') {
       let modal = M.Modal.getInstance(document.getElementById('add-modal'));
+      let autocompleteData;
       clearAddModal();
+
+      //зависит от того, что производим
+      let typeSelect = document.querySelector('#production_type');
+      let goodsSelect = document.querySelector('#goods-select');
+      if (typeSelect.value == 'halfway') {
+         autocompleteData = globalState.materials;
+      } else {
+         autocompleteData = globalState.halfway;
+      }
+
+      let instances = M.Autocomplete.init(goodsSelect, {
+         data: autocompleteData,
+         minLength: 0,
+         onAutocomplete: function (elem) {
+            document.querySelector('#goods-unit').value = autocompleteData[elem].unit;
+            document.querySelector('#goods-avaliable-count').value = autocompleteData[elem].count;
+            document.querySelector('#goods-create-date').value = autocompleteData[elem].create_date;
+            document.querySelector('#goods-expire-date').value = autocompleteData[elem].expire_date;
+         }
+      });
 
       modal.el.querySelector('#modal-title').innerHTML = '<i class="fas fa-cubes"></i> Добавление сырья';
       modal.el.querySelector('#modal-desc').innerText = 'Выберите номенлатуру из списка, которая будет использована в качестве сырья.';
       let footer = modal.el.querySelector('.modal-footer');
       footer.innerHTML = `
-      <a href="#!" id="add-product-button" class="waves-effect waves-green btn blue">Добавить</a>
+      <a href="#!" id="add-material-button" class="waves-effect waves-green btn blue">Добавить</a>
       <a href="#!" class="modal-close waves-effect waves-green btn grey">Отмена</a>
       `;
 
       modal.open();
    }
 
-
-   //модальное окно для добавления новой позиции
+   //модальное окно для добавления нового продукта производства
    if (e.target.id == 'add-new-product') {
       let modal = M.Modal.getInstance(document.getElementById('add-modal'));
+      let autocompleteData;
       clearAddModal();
+
+      //зависит от того, что производим
+      let typeSelect = document.querySelector('#production_type');
+      let goodsSelect = document.querySelector('#goods-select');
+      if (typeSelect.value == 'halfway') {
+         autocompleteData = globalState.halfwayList;
+      } else {
+         autocompleteData = globalState.finishedList;
+      }
+
+      let instances = M.Autocomplete.init(goodsSelect, {
+         data: autocompleteData,
+         minLength: 0,
+         onAutocomplete: function (elem) {
+            document.querySelector('#goods-unit').value = autocompleteData[elem].unit;
+            document.querySelector('#goods-avaliable-count').value = '-';
+
+            let nowDate = new Date();
+            document.querySelector('#goods-create-date').value = nowDate.toISOString().split('T')[0];
+
+            let expireDate = new Date();
+            expireDate.setDate(nowDate.getDate() + +autocompleteData[elem].valid_days);
+            document.querySelector('#goods-expire-date').value = expireDate.toISOString().split('T')[0];
+         }
+      });
 
       modal.el.querySelector('#modal-title').innerHTML = '<i class="fas fa-cheese"></i> Добавление товара';
       modal.el.querySelector('#modal-desc').innerText = 'Выберите номеклатуру, которую производите.';
@@ -123,36 +223,120 @@ document.addEventListener('click', (e) => {
 
       modal.open();
    }
-   
+
 
    //модальное окно для редактирования существующей позиции
    if (e.target.closest('tr') && e.target.closest('tr').getAttribute('data-action') == 'product-edit') {
       let rowId = +e.target.closest('tr').getAttribute('data-id');
       let modal = M.Modal.getInstance(document.getElementById('add-modal'));
-      let goodsObj = globalState.goods[globalState.incomeTable.get(rowId).name];
+      let footer = modal.el.querySelector('.modal-footer');
+      //объект из которого тянем данные для автозаполнения, присваивается в условии
+      let goodsObj;// = globalState.goods[globalState.incomeTable.get(rowId).name];
       clearAddModal();
 
-      //общие поля
-      modal.el.querySelector('#goods-select').value = globalState.incomeTable.get(rowId).name;
-      modal.el.querySelector('#goods-count').value = globalState.incomeTable.get(rowId).count;
-      modal.el.querySelector('#goods-unit').value = goodsObj.unit;
-      modal.el.querySelector('#goods-avaliable-count').value = goodsObj.count;
-      modal.el.querySelector('#goods-create-date').value = globalState.incomeTable.get(rowId).createDate;
-      modal.el.querySelector('#goods-expire-date').value = goodsObj.expire_date;
-      //дополнительные поля для сырого молока
-      modal.el.querySelector('#ext-fat').value = goodsObj.milk_fat;
-      modal.el.querySelector('#ext-solidity').value = goodsObj.milk_solidity;
-      modal.el.querySelector('#ext-acidity').value = goodsObj.milk_acidity;
-      //показать доп. поля, если редактируем сырое молоко
-      if (goodsObj.milk_fat != 0 || goodsObj.milk_solidity != 0 || goodsObj.milk_acidity != 0) modal.el.querySelector('#extended-fields').style.display = 'block';
+      let typeSelect = document.querySelector('#production_type');
+      let goodsSelect = document.querySelector('#goods-select');
+      if (e.target.closest('tr').getAttribute('data-type') == 'material') {
+         rowId = e.target.closest('tr').getAttribute('data-id');
+         //2 way for material select re-init
+         if (typeSelect.value == 'halfway') {
+            goodsObj = globalState.materials[rowId];
+            let instances = M.Autocomplete.init(goodsSelect, {
+               data: globalState.materials,
+               minLength: 0,
+               onAutocomplete: function (elem) {
+                  document.querySelector('#goods-unit').value = globalState.materials[elem].unit;
+                  document.querySelector('#goods-avaliable-count').value = globalState.materials[elem].count;
+                  document.querySelector('#goods-create-date').value = globalState.materials[elem].create_date;
+                  document.querySelector('#goods-expire-date').value = globalState.materials[elem].expire_date;
+               }
+            });
+         } else {
+            goodsObj = globalState.halfway[rowId];
+            let instances = M.Autocomplete.init(goodsSelect, {
+               data: globalState.halfway,
+               minLength: 0,
+               onAutocomplete: function (elem) {
+                  document.querySelector('#goods-unit').value = globalState.halfway[elem].unit;
+                  document.querySelector('#goods-avaliable-count').value = globalState.halfway[elem].count;
+                  document.querySelector('#goods-create-date').value = globalState.halfway[elem].create_date;
+                  document.querySelector('#goods-expire-date').value = globalState.halfway[elem].expire_date;
+               }
+            });
+         }
+         //общие поля
+         modal.el.querySelector('#goods-select').value = rowId;
+         console.log(rowId);
+         modal.el.querySelector('#goods-count').value = globalState.materialTable.get(rowId).count;
+         modal.el.querySelector('#goods-unit').value = goodsObj.unit;
+         modal.el.querySelector('#goods-avaliable-count').value = goodsObj.count;
+         modal.el.querySelector('#goods-create-date').value = goodsObj.create_date;
+         modal.el.querySelector('#goods-expire-date').value = goodsObj.expire_date;
+
+         footer.innerHTML = `
+         <a href="#!" id="add-material-button" data-id="${rowId}" class="waves-effect waves-green btn blue">Сохранить</a>
+         <a href="#!" class="modal-close waves-effect waves-green btn grey">Отмена</a>
+         `;
+      } else {
+         //2 way for product
+         if (typeSelect.value == 'halfway') {
+            goodsObj = globalState.makeTable.get(rowId);
+            let instances = M.Autocomplete.init(goodsSelect, {
+               data: globalState.halfwayList,
+               minLength: 0,
+               onAutocomplete: function (elem) {
+                  document.querySelector('#goods-unit').value = globalState.halfwayList[elem].unit;
+                  document.querySelector('#goods-avaliable-count').value = '-';
+      
+                  let nowDate = new Date();
+                  document.querySelector('#goods-create-date').value = nowDate.toISOString().split('T')[0];
+      
+                  let expireDate = new Date();
+                  expireDate.setDate(nowDate.getDate() + +globalState.halfwayList[elem].valid_days);
+                  document.querySelector('#goods-expire-date').value = expireDate.toISOString().split('T')[0];
+               }
+            });
+         } else {
+            goodsObj = globalState.makeTable.get(rowId);
+            let instances = M.Autocomplete.init(goodsSelect, {
+               data: globalState.finishedList,
+               minLength: 0,
+               onAutocomplete: function (elem) {
+                  document.querySelector('#goods-unit').value = globalState.finishedList[elem].unit;
+                  document.querySelector('#goods-avaliable-count').value = '-';
+      
+                  let nowDate = new Date();
+                  document.querySelector('#goods-create-date').value = nowDate.toISOString().split('T')[0];
+      
+                  let expireDate = new Date();
+                  expireDate.setDate(nowDate.getDate() + +globalState.finishedList[elem].valid_days);
+                  document.querySelector('#goods-expire-date').value = expireDate.toISOString().split('T')[0];
+               }
+            });
+         }
+         //общие поля
+         modal.el.querySelector('#goods-select').value = goodsObj.name;
+         modal.el.querySelector('#goods-count').value = goodsObj.count;
+         modal.el.querySelector('#goods-unit').value = goodsObj.unit;
+         modal.el.querySelector('#goods-avaliable-count').value = '-';
+         modal.el.querySelector('#goods-create-date').value = goodsObj.createDate;
+         modal.el.querySelector('#goods-expire-date').value = goodsObj.expireDate;
+
+         footer.innerHTML = `
+         <a href="#!" id="add-product-button" data-id="${rowId}" class="waves-effect waves-green btn blue">Сохранить</a>
+         <a href="#!" class="modal-close waves-effect waves-green btn grey">Отмена</a>
+         `;
+      }
+
+
 
       modal.el.querySelector('#modal-title').innerText = 'Редактирование товара';
       modal.el.querySelector('#modal-desc').innerText = 'Внесите необходимые изменения и нажмите сохранить';
-      let footer = modal.el.querySelector('.modal-footer');
-      footer.innerHTML = `
+      //let footer = modal.el.querySelector('.modal-footer');
+      /*footer.innerHTML = `
       <a href="#!" id="add-product-button" data-id="${rowId}" class="waves-effect waves-green btn blue">Сохранить</a>
       <a href="#!" class="modal-close waves-effect waves-green btn grey">Отмена</a>
-      `;
+      `;*/
 
       modal.open();
       M.updateTextFields();
@@ -165,13 +349,13 @@ document.addEventListener('click', (e) => {
       let data = {
          docNum: document.getElementById('doc-number').value,
          operationDate: new Date(document.getElementById('operation-date').value).toISOString().split('T')[0],
-         partner: document.getElementById('partner-select').value,
-         productList: [...globalState.incomeTable.values()]
+         materialList: [...globalState.materialTable.values()],
+         productList: [...globalState.makeTable.values()]
       }
 
       console.log(JSON.stringify(data));
 
-      fetch('action/sell_operation_confirm.php', { method: 'POST', cache: 'no-cache', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(result => {
+      fetch('action/make_operation_confirm.php', { method: 'POST', cache: 'no-cache', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(result => {
          console.log(result);
          return result.json();
          //return result.text();
@@ -212,15 +396,18 @@ function formValidation() {
       document.getElementById('operation-date').className = 'validate invalid';
    }
 
-   if (document.getElementById('partner-select').value.length < 1) {
+   //не пустая таблица сырья (состояние)
+   if (!globalState.materialTable.size) {
       isValid = false;
-      document.getElementById('partner-select').className = 'validate invalid';
+      M.toast({ html: 'Необходимо добавить сырье' });
+   } else if (!isValid) {
+      M.toast({ html: 'Заполните обязательные поля' });
    }
 
-   //не пустая таблица (состояние)
-   if (!globalState.incomeTable.size) {
+   //не пустая таблица продукции (состояние)
+   if (!globalState.makeTable.size) {
       isValid = false;
-      M.toast({ html: 'Необходимо добавить хотя бы один товар' });
+      M.toast({ html: 'Необходимо добавить хотя бы один производимый товар' });
    } else if (!isValid) {
       M.toast({ html: 'Заполните обязательные поля' });
    }
@@ -231,7 +418,6 @@ function formValidation() {
 //ощищает модальную форму добавления и скрывает доп.поля
 function clearAddModal() {
    let modalWrapper = document.getElementById('add-modal');
-   document.getElementById('extended-fields').style.display = 'none';
    modalWrapper.querySelectorAll('input').forEach(val => {
       val.value = '';
       val.className = '';
@@ -282,4 +468,12 @@ document.addEventListener('focusout', (e) => {
       M.updateTextFields();
       clearAddModal();
    }
+});
+
+//очищаем состояние и таблицы при смене типа продукции
+document.addEventListener('change', (e) => {
+   if (e.target.id != 'production_type') return;
+    globalState.materialTable.clear();
+    globalState.makeTable.clear();
+    doubleTableRender();
 });

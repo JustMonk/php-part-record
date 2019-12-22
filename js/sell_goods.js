@@ -49,19 +49,21 @@ document.addEventListener('click', (e) => {
    if (e.target.id == 'add-product-button') {
       if (!modalValidation()) return;
 
-      let id = globalState.goods[document.getElementById('goods-select').value].registry_id;
-
+      let id;
       //проверяет есть ли ID, чтобы сохранить изменения по этому ключу
-      if (e.target.hasAttribute('data-id')) id = +e.target.getAttribute('data-id');
+      if (e.target.hasAttribute('data-id')) {
+         id = e.target.getAttribute('data-id');
+         //предотвращение потери данных и дублирования при редактировании
+         if (globalState.incomeTable.has(id)) globalState.incomeTable.delete(id);
+      }
+      //let id = globalState.goods[document.getElementById('goods-select').value].registry_id;
+      id = document.getElementById('goods-select').value;
 
       globalState.incomeTable.set(id, {
-         registry_id: id,
+         registry_id: globalState.goods[id].registry_id,
          name: document.getElementById('goods-select').value,
          count: document.getElementById('goods-count').value,
          createDate: document.getElementById('goods-create-date').value,
-         extFat: document.getElementById('ext-fat').value,
-         extSolidity: document.getElementById('ext-solidity').value,
-         extAcidity: document.getElementById('ext-acidity').value
       });
       console.log('добавлена строка в map');
       incomeTableRender();
@@ -95,7 +97,7 @@ document.addEventListener('click', (e) => {
 
    //модальное окно для редактирования существующей позиции
    if (e.target.closest('tr') && e.target.closest('tr').getAttribute('data-action') == 'product-edit') {
-      let rowId = +e.target.closest('tr').getAttribute('data-id');
+      let rowId = e.target.closest('tr').getAttribute('data-id');
       let modal = M.Modal.getInstance(document.getElementById('add-modal'));
       let goodsObj = globalState.goods[globalState.incomeTable.get(rowId).name];
       clearAddModal();
@@ -107,12 +109,6 @@ document.addEventListener('click', (e) => {
       modal.el.querySelector('#goods-avaliable-count').value = goodsObj.count;
       modal.el.querySelector('#goods-create-date').value = globalState.incomeTable.get(rowId).createDate;
       modal.el.querySelector('#goods-expire-date').value = goodsObj.expire_date;
-      //дополнительные поля для сырого молока
-      modal.el.querySelector('#ext-fat').value = goodsObj.milk_fat;
-      modal.el.querySelector('#ext-solidity').value = goodsObj.milk_solidity;
-      modal.el.querySelector('#ext-acidity').value = goodsObj.milk_acidity;
-      //показать доп. поля, если редактируем сырое молоко
-      if (goodsObj.milk_fat != 0 || goodsObj.milk_solidity != 0 || goodsObj.milk_acidity != 0) modal.el.querySelector('#extended-fields').style.display = 'block';
 
       modal.el.querySelector('#modal-title').innerText = 'Редактирование товара';
       modal.el.querySelector('#modal-desc').innerText = 'Внесите необходимые изменения и нажмите сохранить';
@@ -199,7 +195,6 @@ function formValidation() {
 //ощищает модальную форму добавления и скрывает доп.поля
 function clearAddModal() {
    let modalWrapper = document.getElementById('add-modal');
-   document.getElementById('extended-fields').style.display = 'none';
    modalWrapper.querySelectorAll('input').forEach(val => {
       val.value = '';
       val.className = '';

@@ -42,7 +42,7 @@ include './include/auth_redirect.php';
             <div class="card-panel white">
 
                <div id="prihod" class="content-block">
-                  <h2 style="margin: 0">Продажа</h2>
+                  <h2 style="margin: 0" class="operation-title"><i class="fas fa-dollar-sign fa-fw operation-icon"></i> Продажа</h2>
                   <hr>
                   <div id="test1" class="col s12" style="padding: 20px">
 
@@ -169,28 +169,6 @@ include './include/auth_redirect.php';
                </div>
             </div>
          </div>
-
-         <div id="extended-fields" style="display: none;">
-            <h5>Дополнительные поля</h5>
-            <div class="row">
-               <div class="input-field col s4">
-                  <input id="ext-fat" disabled placeholder="Жирность" type="text">
-                  <label for="ext-fat" class="active">Жирность</label>
-               </div>
-
-               <div class="input-field col s4">
-                  <input id="ext-solidity" disabled placeholder="Плотность" type="text">
-                  <label for="ext-solidity" class="active">Плотность</label>
-               </div>
-
-               <div class="input-field col s4">
-                  <input id="ext-acidity" disabled placeholder="Кислотность" type="text">
-                  <label for="ext-acidity" class="active">Кислотность</label>
-               </div>
-            </div>
-         </div>
-
-
 
       </div>
       <div class="modal-footer">

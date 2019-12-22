@@ -42,7 +42,7 @@ include './include/auth_redirect.php';
             <div class="card-panel white">
 
                <div id="prihod" class="content-block">
-                  <h2 style="margin: 0">Приход</h2>
+                  <h2 style="margin: 0" class="operation-title"><i class="fas fa-plus fa-fw operation-icon"></i> Приход</h2>
                   <hr>
                   <div id="test1" class="col s12" style="padding: 20px">
 

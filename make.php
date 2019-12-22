@@ -43,7 +43,7 @@ include './include/auth_redirect.php';
             <div class="card-panel white">
 
                <div id="prihod" class="content-block">
-                  <h2 style="margin: 0">Производство</h2>
+                  <h2 style="margin: 0" class="operation-title"><i class="fas fa-industry fa-fw operation-icon"></i>Производство</h2>
                   <hr>
                   <div id="test1" class="col s12" style="padding: 20px">
 
@@ -67,10 +67,9 @@ include './include/auth_redirect.php';
                      <div class="row" style="margin-bottom: 0;">
                         <div class="col s12 flex-col">
                            <div class="input-field autocomplete-field">
-                              <select>
-                                 <option value="" disabled selected>Выберите тип продукции</option>
-                                 <option value="1">Полуфабрикат</option>
-                                 <option value="2">Готовая продукция</option>
+                              <select id="production_type">
+                                 <option value="halfway" selected>Полуфабрикат</option>
+                                 <option value="finished">Готовая продукция</option>
                               </select>
                               <label>Тип производимой продукции</label>
                            </div>
@@ -88,7 +87,9 @@ include './include/auth_redirect.php';
                                     <th>№</th>
                                     <th>Номенклатура</th>
                                     <th>Количество</th>
+                                    <th>Ед.изм</th>
                                     <th>Дата изготовления</th>
+                                    <th>Годен до</th>
                                     <th></th>
                                  </tr>
                               </thead>
@@ -115,6 +116,7 @@ include './include/auth_redirect.php';
                                     <th>№</th>
                                     <th>Номенклатура</th>
                                     <th>Количество</th>
+                                    <th>Ед.изм</th>
                                     <th>Дата изготовления</th>
                                     <th>Годен до</th>
                                     <th></th>
@@ -204,28 +206,6 @@ include './include/auth_redirect.php';
             </div>
          </div>
 
-         <div id="extended-fields" style="display: none;">
-            <h5>Дополнительные поля</h5>
-            <div class="row">
-               <div class="input-field col s4">
-                  <input id="ext-fat" disabled placeholder="Жирность" type="text">
-                  <label for="ext-fat" class="active">Жирность</label>
-               </div>
-
-               <div class="input-field col s4">
-                  <input id="ext-solidity" disabled placeholder="Плотность" type="text">
-                  <label for="ext-solidity" class="active">Плотность</label>
-               </div>
-
-               <div class="input-field col s4">
-                  <input id="ext-acidity" disabled placeholder="Кислотность" type="text">
-                  <label for="ext-acidity" class="active">Кислотность</label>
-               </div>
-            </div>
-         </div>
-
-
-
       </div>
       <div class="modal-footer">
          <!-- js controls -->
@@ -239,19 +219,8 @@ include './include/auth_redirect.php';
 
    <script>
       //autocomplete init=============
-      //partner autocomplete
-      document.addEventListener('DOMContentLoaded', function() {
-         var partnerSelect = document.querySelector('#partner-select');
-         var instances = M.Autocomplete.init(partnerSelect, {
-            data: globalState.partners,
-            minLength: 0,
-            onAutocomplete: function() {
-               console.log('gg');
-            }
-         });
-      });
       //goods autocomplete
-      document.addEventListener('DOMContentLoaded', function() {
+      /*document.addEventListener('DOMContentLoaded', function() {
          var goodsSelect = document.querySelector('#goods-select');
          var instances = M.Autocomplete.init(goodsSelect, {
             data: globalState.goods,
@@ -271,7 +240,7 @@ include './include/auth_redirect.php';
                }
             }
          });
-      });
+      });*/
 
       //modal init===================
       document.addEventListener('DOMContentLoaded', function() {
@@ -299,7 +268,7 @@ include './include/auth_redirect.php';
       });
 
       //рендерим таблицу
-      incomeTableRender();
+      doubleTableRender();
    </script>
 
 </body>

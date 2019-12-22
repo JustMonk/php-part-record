@@ -146,3 +146,13 @@ body {
      opacity: 1;
    }
  }
+
+.operation-title {
+   display: flex;
+   align-items: center;
+}
+.operation-icon {
+   font-size: 30px;
+   color: #bbb;
+   margin-right: 5px;
+}
