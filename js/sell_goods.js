@@ -160,6 +160,12 @@ function modalValidation() {
       modal.el.querySelector('#goods-count').className = 'validate invalid';
    }
 
+   //попытка добавить количество, превышаюшее размер партии
+   if (modal.el.querySelector('#goods-count').value > modal.el.querySelector('#goods-avaliable-count').value) {
+      isValid = false;
+      modal.el.querySelector('#goods-count').className = 'validate invalid';
+   }
+
    return isValid;
 }
 

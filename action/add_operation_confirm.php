@@ -10,16 +10,20 @@ include '../include/session_config.php';
 $data = json_decode(file_get_contents('php://input'), true);
 //$data = json_decode('{"docNum":"12312","operationDate":"2019-12-20","partner":"ИП Володянкин","productList":[{"name":"Йогурт Домодедовский КЛАССИЧЕСКИЙ жир. 2,7% (250гр)","count":"32","createDate":"2019-12-22","extFat":"","extSolidity":"","extAcidity":""},{"name":"Биокефир Домодедовский жир. 1% (930гр)","count":"3","createDate":"2019-12-22","extFat":"","extSolidity":"","extAcidity":""}]}', true);
 //$data = json_decode('{"docNum":"3","operationDate":"2019-12-21","partner":"ИП Володянкин","productList":[{"name":"Йогурт Домодедовский КЛАССИЧЕСКИЙ жир. 2,7% (250гр)","count":"11","createDate":"2019-12-16","extFat":"","extSolidity":"","extAcidity":""}]}', true);
-
+//$data = json_decode('{"docNum":"1test-user","operationDate":"2019-12-19","partner":"ООО \"Молочный поставщик\"","productList":[{"name":"Биокефир Домодедовский жир. 1% (930гр)","count":"1","createDate":"2019-12-22","extFat":"","extSolidity":"","extAcidity":""}]}', true);
 
 //разбиваем на переменные для удобства
+//htmlspecialchars - базовая валидация
 $operation_type = 'add';
-$doc_number = $data['docNum'];
-$operation_date = $data['operationDate'];
-$partner = $data['partner'];
+$doc_number = htmlspecialchars($data['docNum']);
+$operation_date = htmlspecialchars($data['operationDate']);
+$partner = htmlspecialchars($data['partner'], ENT_NOQUOTES);
 $product_list = $data['productList'];
-//валидации!!
-//хотя бы HTML special chars добавить надо
+//normalize object values
+foreach ($product_list as $key => $value) {
+   $value[$key] = htmlspecialchars($value[$key]);
+}
+unset($value);
 
 
 //================================={проверка на наличие документа с таким номером}====================================================
@@ -34,12 +38,14 @@ if ($res->num_rows > 0) {
 
 
 //========================={запись в историю операций}=================================
-$res = $mysqli->query("INSERT INTO operation_history(operation_type, document_number, operation_date, partner_code) 
+$res = $mysqli->query("INSERT INTO operation_history(operation_type, document_number, operation_date, partner_code, timestamp, user_code) 
 VALUES(
    (SELECT operation_type_id FROM operation_types WHERE operation_name = '$operation_type'),
    '$doc_number',
    '$operation_date',
-   (SELECT partner_id FROM partners WHERE name = '$partner')
+   (SELECT partner_id FROM partners WHERE name = '$partner'),
+   DEFAULT,
+   (SELECT user_id FROM users WHERE login = '$_SESSION[login]')
 )");
 
 $last_id = $mysqli->query("SELECT LAST_INSERT_ID()");
@@ -120,6 +126,7 @@ foreach ($product_list as $key => $value) {
       }
    }
 }
+unset($value);
 
 header('Content-Type: application/json');
 echo json_encode(array('message' => "Операция прихода успешно создана.", 'type' => 'success'));

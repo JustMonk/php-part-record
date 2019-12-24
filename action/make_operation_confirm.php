@@ -7,20 +7,29 @@ include '../include/session_config.php';
 //TODO: попробовать декодить json из $_POST
 
 //парсим полученный JSON в ассоциативный массив
-//$data = json_decode(file_get_contents('php://input'), true);
-$data = json_decode('{"docNum":"13","operationDate":"2019-12-27","materialList":[{"registry_id":27,"string_key":"Сырое молочко [2019-12-20]","name":"Сырое молочко","count":"1","unit":"л","createDate":"2019-12-20","expireDate":"2019-12-23"}],"productList":[{"product_id":"9","name":"Молоко пастеризованное с мдж 4%","count":"23","unit":"л","createDate":"2019-12-22","expireDate":"2019-12-30"}]}', true);
-exit;
+$data = json_decode(file_get_contents('php://input'), true);
+//$data = json_decode('{"docNum":"13","operationDate":"2019-12-27","materialList":[{"registry_id":27,"string_key":"Сырое молочко [2019-12-20]","name":"Сырое молочко","count":"1","unit":"л","createDate":"2019-12-20","expireDate":"2019-12-23"}],"productList":[{"product_id":"9","name":"Молоко пастеризованное с мдж 4%","count":"23","unit":"л","createDate":"2019-12-22","expireDate":"2019-12-30"}]}', true);
+//$data = json_decode('{"docNum":"63","operationDate":"2019-12-19","materialList":[{"registry_id":27,"string_key":"Сырое молочко [2019-12-20]","name":"Сырое молочко","count":"11","unit":"л","createDate":"2019-12-20","expireDate":"2019-12-23"}],"productList":[{"product_id":"8","name":"Йогурт питьевой с клубникой, мдж 2,7%","count":"111","unit":"л","createDate":"2019-12-23","expireDate":"2019-12-27"}]}', true);
 
 //разбиваем на переменные для удобства
+//htmlspecialchars - базовая валидация
 $operation_type = 'prod';
-$doc_number = $data['docNum'];
-$operation_date = $data['operationDate'];
+$doc_number = htmlspecialchars($data['docNum']);
+$operation_date = htmlspecialchars($data['operationDate']);
 
 $material_list = $data['materialList'];
+//normalize object values
+foreach ($material_list as $key => $value) {
+   $value[$key] = htmlspecialchars($value[$key]);
+}
+unset($value);
 $product_list = $data['productList'];
+//normalize object values
+foreach ($product_list as $key => $value) {
+   $value[$key] = htmlspecialchars($value[$key]);
+}
+unset($value);
 
-//валидации!!
-//хотя бы HTML special chars добавить надо
 
 //=========================={проверка на количество}===========================
 //в рамках проверки у каждого документа уникальный номер, не зависящий от операции (плюс решаем проблему с исчерпанием автоинкремента)
@@ -61,12 +70,14 @@ foreach ($material_list as $key => $value) {
 unset($value);
 
 //=====================Пишем в operation_history=================================
-$res = $mysqli->query("INSERT INTO operation_history(operation_type, document_number, operation_date, partner_code) 
+$res = $mysqli->query("INSERT INTO operation_history(operation_type, document_number, operation_date, partner_code, timestamp, user_code) 
 VALUES(
    (SELECT operation_type_id FROM operation_types WHERE operation_name = '$operation_type'),
    '$doc_number',
    '$operation_date',
-   DEFAULT
+   (SELECT partner_id FROM partners WHERE name = '$partner'),
+   DEFAULT,
+   (SELECT user_id FROM users WHERE login = '$_SESSION[login]')
 )");
 
 $last_id = $mysqli->query("SELECT LAST_INSERT_ID()");
@@ -86,7 +97,7 @@ $values_str = '';
 foreach ($product_list as $key => $value) {
    //получить срок годности
    //$res = $mysqli->query("SELECT expire_date FROM product_registry WHERE registry_id = $value[registry_id]");
-   $res = $mysqli->query("SELECT DATE_ADD('$value[create_date]', INTERVAL (SELECT valid_days FROM product_list WHERE product_id = $value[product_id]) DAY) as expire_date;");
+   $res = $mysqli->query("SELECT DATE_ADD('$value[createDate]', INTERVAL (SELECT valid_days FROM product_list WHERE product_id = $value[product_id]) DAY) as expire_date;");
    $res = $res->fetch_assoc();
    $expire_date = $res["expire_date"];
 
@@ -182,4 +193,4 @@ unset($value);
 
 
 header('Content-Type: application/json');
-echo json_encode(array('message' => 'Операция продажи успешно создана.', 'type' => 'success'));
+echo json_encode(array('message' => 'Операция производства успешно создана.', 'type' => 'success'));

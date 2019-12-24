@@ -44,16 +44,13 @@ include './include/auth_redirect.php';
                            <th>Ед.изм.</th>
                            <th>Дата производства</th>
                            <th>Годен до</th>
-                           <th>Жирность (доп)</th>
-                           <th>Плотность (доп)</th>
-                           <th>Кислотность (доп)</th>
                         </tr>
                      </thead>
 
                      <tbody>
 
                         <?php
-                        foreach ($mysqli->query('SELECT product_registry.registry_id, product_list.title , product_registry.count, units.unit, product_registry.create_date, product_registry.expire_date, product_registry.milk_fat, product_registry.milk_solidity, product_registry.milk_acidity
+                        foreach ($mysqli->query('SELECT product_registry.registry_id, product_list.title , product_registry.count, units.unit, product_registry.create_date, product_registry.expire_date
                         FROM product_registry, product_list, units 
                         WHERE product_registry.product_id = product_list.product_id AND product_list.unit_code = units.unit_id') as $row) {
                            echo "<tr>
@@ -63,9 +60,6 @@ include './include/auth_redirect.php';
                            <td>$row[unit]</td>
                            <td>$row[create_date]</td>
                            <td>$row[expire_date]</td>
-                           <td>$row[milk_fat]</td>
-                           <td>$row[milk_solidity]</td>
-                           <td>$row[milk_acidity]</td>
                            </tr>";
                         }
                         ?>

@@ -12,13 +12,17 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 
 //разбиваем на переменные для удобства
+//htmlspecialchars - базовая валидация
 $operation_type = 'sell';
-$doc_number = $data['docNum'];
-$operation_date = $data['operationDate'];
-$partner = $data['partner'];
+$doc_number = htmlspecialchars($data['docNum']);
+$operation_date = htmlspecialchars($data['operationDate']);
+$partner = htmlspecialchars($data['partner'], ENT_NOQUOTES);
 $product_list = $data['productList'];
-//валидации!!
-//хотя бы HTML special chars добавить надо
+//normalize object values
+foreach ($product_list as $key => $value) {
+   $value[$key] = htmlspecialchars($value[$key]);
+}
+unset($value);
 
 //=========================={проверка на количество}===========================
 //в рамках проверки у каждого документа уникальный номер, не зависящий от операции (плюс решаем проблему с исчерпанием автоинкремента)
@@ -59,12 +63,14 @@ foreach ($product_list as $key => $value) {
 unset($value);
 
 //=====================Пишем в operation_history=================================
-$res = $mysqli->query("INSERT INTO operation_history(operation_type, document_number, operation_date, partner_code) 
+$res = $mysqli->query("INSERT INTO operation_history(operation_type, document_number, operation_date, partner_code, timestamp, user_code) 
 VALUES(
    (SELECT operation_type_id FROM operation_types WHERE operation_name = '$operation_type'),
    '$doc_number',
    '$operation_date',
-   (SELECT partner_id FROM partners WHERE name = '$partner')
+   (SELECT partner_id FROM partners WHERE name = '$partner'),
+   DEFAULT,
+   (SELECT user_id FROM users WHERE login = '$_SESSION[login]')
 )");
 
 $last_id = $mysqli->query("SELECT LAST_INSERT_ID()");

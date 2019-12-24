@@ -83,7 +83,7 @@ document.addEventListener('click', (e) => {
 
       //в зависимости от того, что выбрано в поле номенклатуры (в момент нажатия на кнопку) - устанавливаем "справочный" регистр
       let targetRegistry = globalState.materials.hasOwnProperty(document.getElementById('goods-select').value) ? globalState.materials : globalState.halfway;
-      
+
       globalState.materialTable.set(id, {
          registry_id: targetRegistry[document.getElementById('goods-select').value].registry_id,
          string_key: document.getElementById('goods-select').value,
@@ -156,8 +156,10 @@ document.addEventListener('click', (e) => {
       let goodsSelect = document.querySelector('#goods-select');
       if (typeSelect.value == 'halfway') {
          autocompleteData = globalState.materials;
+         goodsSelect.setAttribute('data-autocomplete-object', 'materials');
       } else {
          autocompleteData = globalState.halfway;
+         goodsSelect.setAttribute('data-autocomplete-object', 'halfway');
       }
 
       let instances = M.Autocomplete.init(goodsSelect, {
@@ -193,8 +195,10 @@ document.addEventListener('click', (e) => {
       let goodsSelect = document.querySelector('#goods-select');
       if (typeSelect.value == 'halfway') {
          autocompleteData = globalState.halfwayList;
+         goodsSelect.setAttribute('data-autocomplete-object', 'halfwayList');
       } else {
          autocompleteData = globalState.finishedList;
+         goodsSelect.setAttribute('data-autocomplete-object', 'finishedList');
       }
 
       let instances = M.Autocomplete.init(goodsSelect, {
@@ -287,10 +291,10 @@ document.addEventListener('click', (e) => {
                onAutocomplete: function (elem) {
                   document.querySelector('#goods-unit').value = globalState.halfwayList[elem].unit;
                   document.querySelector('#goods-avaliable-count').value = '-';
-      
+
                   let nowDate = new Date();
                   document.querySelector('#goods-create-date').value = nowDate.toISOString().split('T')[0];
-      
+
                   let expireDate = new Date();
                   expireDate.setDate(nowDate.getDate() + +globalState.halfwayList[elem].valid_days);
                   document.querySelector('#goods-expire-date').value = expireDate.toISOString().split('T')[0];
@@ -304,10 +308,10 @@ document.addEventListener('click', (e) => {
                onAutocomplete: function (elem) {
                   document.querySelector('#goods-unit').value = globalState.finishedList[elem].unit;
                   document.querySelector('#goods-avaliable-count').value = '-';
-      
+
                   let nowDate = new Date();
                   document.querySelector('#goods-create-date').value = nowDate.toISOString().split('T')[0];
-      
+
                   let expireDate = new Date();
                   expireDate.setDate(nowDate.getDate() + +globalState.finishedList[elem].valid_days);
                   document.querySelector('#goods-expire-date').value = expireDate.toISOString().split('T')[0];
@@ -378,6 +382,18 @@ function modalValidation() {
    if (modal.el.querySelector('#goods-count').value.length < 1) {
       isValid = false;
       modal.el.querySelector('#goods-count').className = 'validate invalid';
+   }
+
+   //попытка добавить количество, превышаюшее размер партии (если подбирается партия)
+   console.log(modal.el.querySelector('#goods-count').value > modal.el.querySelector('#goods-avaliable-count').value);
+   console.log('val = ' + modal.el.querySelector('#goods-count').value);
+   console.log('val = ' + modal.el.querySelector('#goods-avaliable-count').value);
+
+   if (isFinite(modal.el.querySelector('#goods-avaliable-count').value)) {
+      if (+modal.el.querySelector('#goods-count').value > +modal.el.querySelector('#goods-avaliable-count').value) {
+         isValid = false;
+         modal.el.querySelector('#goods-count').className = 'validate invalid';
+      }
    }
 
    return isValid;
@@ -473,7 +489,7 @@ document.addEventListener('focusout', (e) => {
 //очищаем состояние и таблицы при смене типа продукции
 document.addEventListener('change', (e) => {
    if (e.target.id != 'production_type') return;
-    globalState.materialTable.clear();
-    globalState.makeTable.clear();
-    doubleTableRender();
+   globalState.materialTable.clear();
+   globalState.makeTable.clear();
+   doubleTableRender();
 });
