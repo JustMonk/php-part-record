@@ -366,6 +366,7 @@ document.addEventListener('click', (e) => {
       }).then(json => {
          console.log(json);
          showMessage(json);
+         if (json.type == 'success') clearForm();
       });
    }
 })
@@ -439,6 +440,20 @@ function clearAddModal() {
       val.className = '';
    });
    M.updateTextFields();
+}
+
+//полностью очищает форму и состояние
+function clearForm() {
+   let wrapper = document.getElementById('main-wrapper');
+   let inputs = wrapper.querySelectorAll('input');
+   inputs.forEach(val => {
+      val.value = '';
+   });
+   M.updateTextFields();
+   //очистка клиентского состояния
+   globalState.materialTable.clear();
+   globalState.makeTable.clear();
+   doubleTableRender();
 }
 
 //показывает в главной форме карточку с уведомлением (obj: {message: 'string', type: 'string'})

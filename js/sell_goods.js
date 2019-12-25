@@ -1,17 +1,5 @@
 console.log(globalState);
-//тут обработчик события для модалки
 
-//он будет каждый раз открывать модал и переинициализовать поля, которые заполняются сервером
-//если HTML модалки заранее определен, можно так же заранее и инициализировать
-//но суть в том, что для каждой позиции будет своя модалка, поэтому заранее выполненная инициализация это только обложка
-
-//одна модалка для добавления (константа, захардкоженная)
-//одна для редактирования (обложка, динамическая)
-
-//КАК ФИКСИТЬ ВЫБОР ДАТЫ В МОДАЛКЕ!!!!!!!!!
-//modal-conent - position relative
-//modal-datepicker - height auto
-//можно внутри родительской модалке overwrite !important'ы прописать
 
 function incomeTableRender() {
    let num = 1;
@@ -74,7 +62,7 @@ document.addEventListener('click', (e) => {
    if (e.target.closest('a') && e.target.closest('a').classList.contains('delete-row-button')) {
       console.log('вошли в deleterow');
       let row = e.target.closest('tr');
-      globalState.incomeTable.delete(+row.getAttribute('data-id'));
+      globalState.incomeTable.delete(row.getAttribute('data-id'));
       incomeTableRender();
       return;
    }
@@ -142,6 +130,7 @@ document.addEventListener('click', (e) => {
       }).then(json => {
          console.log(json);
          showMessage(json);
+         if (json.type == 'success') clearForm();
       });
    }
 })
@@ -206,6 +195,19 @@ function clearAddModal() {
       val.className = '';
    });
    M.updateTextFields();
+}
+
+//полностью очищает форму и состояние
+function clearForm() {
+   let wrapper = document.getElementById('main-wrapper');
+   let inputs = wrapper.querySelectorAll('input');
+   inputs.forEach(val => {
+      val.value = '';
+   });
+   M.updateTextFields();
+   //очистка клиентского состояния
+   globalState.incomeTable.clear();
+   incomeTableRender();
 }
 
 //показывает в главной форме карточку с уведомлением (obj: {message: 'string', type: 'string'})

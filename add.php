@@ -26,15 +26,7 @@ include './include/auth_redirect.php';
    <div id="dashboard">
 
       <?php include './include/inc_sidebar.php'; ?>
-
-      <script>
-         //подтягиваем состояние БД с сервера
-         let globalState = <?php include './action/get_add_state.php' ?>
-         //создаем состояние операции, которое будем накапливать
-         globalState.incomeTable = new Map();
-         //.set(key, val) .get(key)  .delete(key) .has(key)
-         //.keys() .values() .entries()
-      </script>
+      
 
       <div id="main-wrapper">
          <div class="container" style="padding-top: 40px">
@@ -194,32 +186,6 @@ include './include/auth_redirect.php';
    <script src="./js/add_goods.js"></script>
 
    <script>
-      //autocomplete init=============
-      //partner autocomplete
-      document.addEventListener('DOMContentLoaded', function() {
-         var partnerSelect = document.querySelector('#partner-select');
-         var instances = M.Autocomplete.init(partnerSelect, {
-            data: globalState.partners,
-            minLength: 0,
-            onAutocomplete: function() {
-               console.log('gg');
-            }
-         });
-      });
-      //goods autocomplete
-      document.addEventListener('DOMContentLoaded', function() {
-         var goodsSelect = document.querySelector('#goods-select');
-         var instances = M.Autocomplete.init(goodsSelect, {
-            data: globalState.goods,
-            minLength: 0,
-            onAutocomplete: function(elem) {
-               if (globalState.goods[elem].extended_milk_fields) document.getElementById('extended-fields').style.display = 'block';
-               else document.getElementById('extended-fields').style.display = 'none';
-               document.querySelector('#valid-until').value = globalState.goods[elem].valid_days;
-            }
-         });
-      });
-
       //modal init===================
       document.addEventListener('DOMContentLoaded', function() {
          var elems = document.querySelector('#add-modal');
@@ -244,9 +210,6 @@ include './include/auth_redirect.php';
       M.Tooltip.init(document.querySelectorAll('.help-icon'), {
          position: 'top'
       });
-
-      //рендерим таблицу
-      incomeTableRender();
    </script>
 
 </body>

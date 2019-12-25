@@ -1,17 +1,46 @@
-console.log(globalState);
-//тут обработчик события для модалки
+//state
+let globalState = {
+   incomeTable: new Map()
+};
 
-//он будет каждый раз открывать модал и переинициализовать поля, которые заполняются сервером
-//если HTML модалки заранее определен, можно так же заранее и инициализировать
-//но суть в том, что для каждой позиции будет своя модалка, поэтому заранее выполненная инициализация это только обложка
+//data init
+function getUserState() {
 
-//одна модалка для добавления (константа, захардкоженная)
-//одна для редактирования (обложка, динамическая)
+   fetch('./action/get_add_state.php').then(response => {
+      return response.json()
+   }).then(data => {
+      //очищаем текущий буфер
+      delete globalState.partners;
+      delete globalState.goods;
+      //мерджим полученные с сервера данные в состояние
+      Object.assign(globalState, data);
 
-//КАК ФИКСИТЬ ВЫБОР ДАТЫ В МОДАЛКЕ!!!!!!!!!
-//modal-conent - position relative
-//modal-datepicker - height auto
-//можно внутри родительской модалке overwrite !important'ы прописать
+      var partnerSelect = document.querySelector('#partner-select');
+      var instances = M.Autocomplete.init(partnerSelect, {
+         data: globalState.partners,
+         minLength: 0,
+         onAutocomplete: function () {
+            console.log('gg');
+         }
+      });
+
+      var goodsSelect = document.querySelector('#goods-select');
+      var instances = M.Autocomplete.init(goodsSelect, {
+         data: globalState.goods,
+         minLength: 0,
+         onAutocomplete: function (elem) {
+            if (globalState.goods[elem].extended_milk_fields) document.getElementById('extended-fields').style.display = 'block';
+            else document.getElementById('extended-fields').style.display = 'none';
+            document.querySelector('#valid-until').value = globalState.goods[elem].valid_days;
+         }
+      });
+
+      incomeTableRender();
+      console.log(globalState);
+   });
+}
+
+document.addEventListener('DOMContentLoaded', e => getUserState());
 
 function incomeTableRender() {
    let num = 1;
@@ -124,7 +153,7 @@ document.addEventListener('click', (e) => {
       M.updateTextFields();
    }
 
-   //заглушка под добавление
+   //запрос
    if (e.target.id == 'create-record') {
       if (!formValidation()) return;
 
@@ -147,6 +176,7 @@ document.addEventListener('click', (e) => {
       }).then(json => {
          console.log(json);
          showMessage(json);
+         if (json.type == 'success') clearForm();
       });
    }
 })
@@ -229,6 +259,19 @@ function clearAddModal() {
       val.className = '';
    });
    M.updateTextFields();
+}
+
+//полностью очищает форму и состояние
+function clearForm() {
+   let wrapper = document.getElementById('main-wrapper');
+   let inputs = wrapper.querySelectorAll('input');
+   inputs.forEach(val => {
+      val.value = '';
+   });
+   M.updateTextFields();
+   //очистка клиентского состояния
+   globalState.incomeTable.clear();
+   incomeTableRender();
 }
 
 //показывает в главной форме карточку с уведомлением (obj: {message: 'string', type: 'string'})

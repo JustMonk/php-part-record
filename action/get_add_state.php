@@ -1,26 +1,27 @@
 <?php
-//json общий объект
-$json = '{';
+include '../include/inc_config.php';
+include '../include/session_config.php';
+
+//response общий объект ответа
+$response = array(
+   "partners" => array(),
+   "goods" => array()
+);
 
 //добавляем контрагентов
-$patners = 'partners: {';
 foreach ($mysqli->query('SELECT * FROM partners') as $row) {
-   $patners .= "'$row[name]': null,";
+   $response["partners"]["$row[name]"] = null;
 }
-$patners .= '}';
-$json .= $patners;
 
 //добавляем список номенклатур
-$goods = ',goods: {';
 foreach ($mysqli->query('SELECT * FROM product_list INNER JOIN units ON product_list.unit_code = units.unit_id') as $row) {
-   $goods .= "'$row[title]': {
-      'valid_days': '$row[valid_days]',
-      'id': '$row[product_id]',
-      'extended_milk_fields': $row[extended_milk_fields]
-   },";
+   $response["goods"]["$row[title]"] = array(
+      "valid_days" => "$row[valid_days]",
+      "id" => "$row[product_id]",
+      "extended_milk_fields" => intval($row['extended_milk_fields'])
+   );
 }
-$goods .= '}';
-$json .= $goods;
 
-$json .= '}';
-echo $json;
+header('Content-Type: application/json');
+echo json_encode($response);
+//echo var_dump($response);

@@ -27,4 +27,5 @@ $goods .= '}';
 $json .= $goods;
 
 $json .= '}';
+
 echo $json;
