@@ -6,7 +6,7 @@ let globalState = {
 //data init
 function getUserState() {
 
-   fetch('./action/get_sell_state.php').then(response => {
+   fetch('./action/get_add_state.php').then(response => {
       return response.json()
    }).then(data => {
       //очищаем текущий буфер
@@ -29,18 +29,7 @@ function getUserState() {
          data: globalState.goods,
          minLength: 0,
          onAutocomplete: function (elem) {
-            document.querySelector('#goods-unit').value = globalState.goods[elem].unit;
-            document.querySelector('#goods-avaliable-count').value = globalState.goods[elem].count;
-            document.querySelector('#goods-create-date').value = globalState.goods[elem].create_date;
-            document.querySelector('#goods-expire-date').value = globalState.goods[elem].expire_date;
-            if (globalState.goods[elem].milk_fat == 0 && globalState.goods[elem].milk_solidity == 0 && globalState.goods[elem].milk_acidity == 0) {
-               document.querySelector('#extended-fields').style.display = 'none';
-            } else {
-               document.querySelector('#extended-fields').style.display = 'block';
-               document.querySelector('#ext-fat').value = globalState.goods[elem].milk_fat;
-               document.querySelector('#ext-solidity').value = globalState.goods[elem].milk_solidity;
-               document.querySelector('#ext-acidity').value = globalState.goods[elem].milk_acidity;
-            }
+            document.querySelector('#valid-until').value = globalState.goods[elem].valid_days;
          }
       });
 
@@ -50,7 +39,6 @@ function getUserState() {
 }
 
 document.addEventListener('DOMContentLoaded', e => getUserState());
-
 
 function incomeTableRender() {
    let num = 1;
@@ -65,7 +53,7 @@ function incomeTableRender() {
          <td>${entry[1].name}</td>
          <td>${entry[1].count}</td>
          <td>${entry[1].createDate}</td>
-         <td>${globalState.goods[entry[1].name].expire_date}</td>
+         <td>${globalState.goods[entry[1].name].valid_days}</td>
          <td><a class="delete-row-button"><i class="material-icons">delete_forever</i></a></td>
       </tr>`;
       tableBody.append(tr);
@@ -78,6 +66,34 @@ function incomeTableRender() {
 }
 
 document.addEventListener('click', (e) => {
+   //подтверждение инвентаризации
+   if (e.target.id == 'inventory-confirm') {
+      let data = globalState.compareTable;
+
+      console.log(JSON.stringify(data));
+
+      fetch('action/inv_operation_confirm.php', { method: 'POST', cache: 'no-cache', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(result => {
+         console.log(result);
+         return result.json();
+      }).then(json => {
+         console.log(json);
+         showMessage(json);
+         if (json.type == "success") {
+            showAddForm();
+            clearForm();
+         }
+         //showMessage(json);
+         /*if (json.type == 'success') {
+            clearForm();
+         }*/
+      });
+   }
+
+   //возврат с формы сравнения
+   if (e.target.id == 'return-to-add') {
+      showAddForm();
+   }
+
    //обработчик для кнопки, которая закрывает уведомление
    if (e.target.classList.contains('close-message') || e.target.parentElement.classList.contains('close-message')) {
       e.target.closest('.message-card').remove();
@@ -88,18 +104,26 @@ document.addEventListener('click', (e) => {
    if (e.target.id == 'add-product-button') {
       if (!modalValidation()) return;
 
-      let id;
-      //проверяет есть ли ID, чтобы сохранить изменения по этому ключу
-      if (e.target.hasAttribute('data-id')) {
-         id = e.target.getAttribute('data-id');
-         //предотвращение потери данных и дублирования при редактировании
-         if (globalState.incomeTable.has(id)) globalState.incomeTable.delete(id);
+      let id = Math.floor(Math.random() * Math.floor(9999));
+      while (globalState.incomeTable.has(id)) {
+         id = Math.floor(Math.random() * Math.floor(9999));
       }
-      //let id = globalState.goods[document.getElementById('goods-select').value].registry_id;
-      id = document.getElementById('goods-select').value;
+
+      if (e.target.hasAttribute('data-id')) id = +e.target.getAttribute('data-id');
+
+      //проверка на дублирование
+      for (let entry of globalState.incomeTable) { // то же что и recipeMap.entries()
+         let key = entry[0];
+         let obj = entry[1];
+
+         if (obj.name == document.getElementById('goods-select').value && obj.createDate == document.getElementById('goods-create-date').value) {
+            globalState.incomeTable.delete(id);
+            id = key;
+            break;
+         }
+      }
 
       globalState.incomeTable.set(id, {
-         registry_id: globalState.goods[id].registry_id,
          name: document.getElementById('goods-select').value,
          count: document.getElementById('goods-count').value,
          createDate: document.getElementById('goods-create-date').value,
@@ -113,7 +137,7 @@ document.addEventListener('click', (e) => {
    if (e.target.closest('a') && e.target.closest('a').classList.contains('delete-row-button')) {
       console.log('вошли в deleterow');
       let row = e.target.closest('tr');
-      globalState.incomeTable.delete(row.getAttribute('data-id'));
+      globalState.incomeTable.delete(+row.getAttribute('data-id'));
       incomeTableRender();
       return;
    }
@@ -124,7 +148,7 @@ document.addEventListener('click', (e) => {
       clearAddModal();
 
       modal.el.querySelector('#modal-title').innerText = 'Добавление товара';
-      modal.el.querySelector('#modal-desc').innerText = 'Выберите номенклатуру из списка ниже и введите количество';
+      modal.el.querySelector('#modal-desc').innerText = 'Выберите номенклатуру из списка ниже и заполните информацию о товаре';
       let footer = modal.el.querySelector('.modal-footer');
       footer.innerHTML = `
       <a href="#!" id="add-product-button" class="waves-effect waves-green btn blue">Добавить</a>
@@ -136,18 +160,15 @@ document.addEventListener('click', (e) => {
 
    //модальное окно для редактирования существующей позиции
    if (e.target.closest('tr') && e.target.closest('tr').getAttribute('data-action') == 'product-edit') {
-      let rowId = e.target.closest('tr').getAttribute('data-id');
+      let rowId = +e.target.closest('tr').getAttribute('data-id');
       let modal = M.Modal.getInstance(document.getElementById('add-modal'));
-      let goodsObj = globalState.goods[globalState.incomeTable.get(rowId).name];
       clearAddModal();
 
       //общие поля
       modal.el.querySelector('#goods-select').value = globalState.incomeTable.get(rowId).name;
       modal.el.querySelector('#goods-count').value = globalState.incomeTable.get(rowId).count;
-      modal.el.querySelector('#goods-unit').value = goodsObj.unit;
-      modal.el.querySelector('#goods-avaliable-count').value = goodsObj.count;
       modal.el.querySelector('#goods-create-date').value = globalState.incomeTable.get(rowId).createDate;
-      modal.el.querySelector('#goods-expire-date').value = goodsObj.expire_date;
+      modal.el.querySelector('#valid-until').value = globalState.goods[globalState.incomeTable.get(rowId).name].valid_days;
 
       modal.el.querySelector('#modal-title').innerText = 'Редактирование товара';
       modal.el.querySelector('#modal-desc').innerText = 'Внесите необходимые изменения и нажмите сохранить';
@@ -161,33 +182,67 @@ document.addEventListener('click', (e) => {
       M.updateTextFields();
    }
 
-   //отправка формы
+   //запрос
    if (e.target.id == 'create-record') {
       if (!formValidation()) return;
 
       let data = {
-         docNum: document.getElementById('doc-number').value,
-         operationDate: new Date(document.getElementById('operation-date').value).toISOString().split('T')[0],
-         partner: document.getElementById('partner-select').value,
-         productList: [...globalState.incomeTable.values()]
+         productList: [...globalState.incomeTable.values()].map(val => {
+            let changedObj = val;
+            changedObj.createDate = new Date(changedObj.createDate).toISOString().split('T')[0];
+            return changedObj;
+         })
       }
 
       console.log(JSON.stringify(data));
 
-      fetch('action/sell_operation_confirm.php', { method: 'POST', cache: 'no-cache', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(result => {
+      fetch('action/inv_operation_compare.php', { method: 'POST', cache: 'no-cache', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(result => {
          console.log(result);
          return result.json();
-         //return result.text();
       }).then(json => {
          console.log(json);
-         showMessage(json);
-         if (json.type == 'success') {
-            clearForm();
-            getUserState();
+         console.log(json.compareList);
+         if (json.type == "compare") {
+            globalState.compareTable = json.compareList;
+            showCompareForm(json.compareList);
          }
+         //showMessage(json);
+         /*if (json.type == 'success') {
+            clearForm();
+         }*/
       });
    }
 })
+
+function showCompareForm(compareList) {
+   console.log('compare form init');
+   document.getElementById('add-form').style.display = 'none';
+   document.getElementById('compare-form').style.display = 'block';
+
+   let table = document.getElementById('compare-table');
+   table.tBodies[0].innerHTML = '';
+
+   compareList.forEach((val, i) => {
+      let tr = document.createElement('tr');
+      let diff = +val.real_count - +val.count;
+      tr.innerHTML = `
+      <td>${i+1}</td>
+      <td>${val.title}</td>
+      <td>${val.create_date}</td>
+      <td>${val.unit}</td>
+      <td>${val.count}</td>
+      <td>${val.real_count}</td>
+      <td style="color: ${diff < 0 ?'red':'green'}; font-weight: bold;">${diff}</td>
+      `;
+      table.tBodies[0].append(tr);
+   });
+
+}
+
+function showAddForm() {
+   document.getElementById('compare-form').style.display = 'none';
+   document.getElementById('add-form').style.display = 'block';
+}
 
 function modalValidation() {
    let isValid = true;
@@ -203,32 +258,18 @@ function modalValidation() {
       modal.el.querySelector('#goods-count').className = 'validate invalid';
    }
 
-   //попытка добавить количество, превышаюшее размер партии
-   if (+modal.el.querySelector('#goods-count').value > +modal.el.querySelector('#goods-avaliable-count').value) {
+   if (modal.el.querySelector('#goods-create-date').value.length < 1) {
       isValid = false;
-      modal.el.querySelector('#goods-count').className = 'validate invalid';
+      modal.el.querySelector('#goods-create-date').className = 'validate invalid';
    }
+
+   //проверка на доп.поля (если требуется)
 
    return isValid;
 }
 
 function formValidation() {
    let isValid = true;
-
-   if (document.getElementById('doc-number').value.length < 1) {
-      isValid = false;
-      document.getElementById('doc-number').className = 'validate invalid';
-   }
-
-   if (document.getElementById('operation-date').value.length < 1) {
-      isValid = false;
-      document.getElementById('operation-date').className = 'validate invalid';
-   }
-
-   if (document.getElementById('partner-select').value.length < 1) {
-      isValid = false;
-      document.getElementById('partner-select').className = 'validate invalid';
-   }
 
    //не пустая таблица (состояние)
    if (!globalState.incomeTable.size) {
@@ -253,11 +294,6 @@ function clearAddModal() {
 
 //полностью очищает форму и состояние
 function clearForm() {
-   let wrapper = document.getElementById('main-wrapper');
-   let inputs = wrapper.querySelectorAll('input');
-   inputs.forEach(val => {
-      val.value = '';
-   });
    M.updateTextFields();
    //очистка клиентского состояния
    globalState.incomeTable.clear();

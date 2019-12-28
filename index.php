@@ -40,107 +40,20 @@ include './include/auth_redirect.php';
                         <div class="card-image">
                            <div class="images-dummy" style="width: 100%;height: 400px;background: #5c5377;"></div>
 
-                           <span class="card-title" style="top: 0; font-size: 15px;">Активность</span>
-                           <span class="card-title" style="top: 25px;">Операций за день: 22</span>
+                           <span class="card-title" style="top: 0; font-size: 15px;">Разработка</span>
+                           <span class="card-title" style="top: 25px;">Карточки в разработке</span>
                         </div>
                         <div class="card-content">
-                           <p>Посмотрите список операций.</p>
+                           <p>Используйте меню для навигации.</p>
                         </div>
                         <div class="card-action">
-                           <a href="#">Открыть список</a>
+                           <a href="#">Образец</a>
                         </div>
-                     </div>
-
-                     <div class="card small" style="width: 350px; display: inline-block; margin-right: 20px; margin-top: 20px;">
-                        <div class="card-image">
-                           <div class="images-dummy" style="width: 100%;height: 400px;background: #5972ab;"></div>
-
-                           <span class="card-title" style="top: 0; font-size: 15px;">Статистика</span>
-                           <span class="card-title" style="top: 25px;">Номенклатур: 40</span>
-                        </div>
-                        <div class="card-content">
-                           <p>Сохраненные номенклатуры.</p>
-                        </div>
-                        <div class="card-action">
-                           <a href="#">Перейти в справочник</a>
-                        </div>
-                     </div>
-
-
-                     <div class="card small" style="width: 350px; display: inline-block; margin-right: 20px; margin-top: 20px;">
-                        <div class="card-image">
-                           <div class="images-dummy" style="width: 100%;height: 400px;background: #af744b;"></div>
-
-                           <span class="card-title" style="top: 0; font-size: 15px;">Активность</span>
-                           <span class="card-title" style="top: 25px;">Пользователей: 7</span>
-                        </div>
-                        <div class="card-content">
-                           <p>Доступ к системе.</p>
-                        </div>
-                        <div class="card-action">
-                           <a href="#">Добавить</a>
-                           <a href="#">Настроить доступ</a>
-                        </div>
-                     </div>
-
-
-                     <div class="card small" style="width: 350px; display: inline-block; margin-right: 20px; margin-top: 20px;">
-                        <div class="card-image">
-                           <div class="images-dummy" style="width: 100%;height: 400px;background: #536177;"></div>
-
-                           <span class="card-title" style="top: 0; font-size: 15px;">Планирование</span>
-                           <span class="card-title" style="top: 25px;">Задач в работе: 8</span>
-                        </div>
-                        <div class="card-content">
-                           <p>Отслеживание задач.</p>
-                        </div>
-                        <div class="card-action">
-                           <a href="#">Активные</a>
-                           <a href="#">Завершенные</a>
-                        </div>
-
                      </div>
 
 
                   </div>
 
-
-                  <h3 style="margin: 0; font-family: 'Source Sans Pro', sans-serif; color:#6a869a; margin-top: 5px;">Аналитика</h3>
-                  <div class="card-wrapper" style="margin: 40px 0;">
-
-                     <div class="card small" style="width: 350px; display: inline-block; margin-right: 20px; margin-top: 20px;">
-                        <div class="card-image">
-                           <div class="images-dummy" style="width: 100%;height: 400px;background: #5972ab;"></div>
-
-                           <span class="card-title" style="top: 0; font-size: 15px;">График</span>
-                           <span class="card-title" style="top: 25px;">Номенклатур: 40</span>
-                        </div>
-                        <div class="card-content">
-                           <p>Сохраненные номенклатуры.</p>
-                        </div>
-                        <div class="card-action">
-                           <a href="#">Перейти в справочник</a>
-                        </div>
-                     </div>
-
-                     <div class="card small" style="width: 350px; display: inline-block; margin-right: 20px; margin-top: 20px;">
-                        <div class="card-image">
-                           <div class="images-dummy" style="width: 100%;height: 400px;background: #536177;"></div>
-
-                           <span class="card-title" style="top: 0; font-size: 15px;">Прибыль</span>
-                           <span class="card-title" style="top: 25px;">Задач в работе: 8</span>
-                        </div>
-                        <div class="card-content">
-                           <p>Отслеживание задач.</p>
-                        </div>
-                        <div class="card-action">
-                           <a href="#">Активные</a>
-                           <a href="#">Завершенные</a>
-                        </div>
-                     </div>
-
-
-                  </div>
 
 
                </div>

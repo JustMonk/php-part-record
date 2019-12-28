@@ -27,71 +27,89 @@ include './include/auth_redirect.php';
 
       <?php include './include/inc_sidebar.php'; ?>
 
+
       <div id="main-wrapper">
          <div class="container" style="padding-top: 40px">
 
             <div class="card-panel white">
 
                <div id="prihod" class="content-block">
-                  <h2 style="margin: 0" class="operation-title"><i class="fas fa-dollar-sign fa-fw operation-icon"></i> Продажа</h2>
+                  <h2 style="margin: 0" class="operation-title"><i class="fas fa-dolly-flatbed operation-icon"></i> Инвентаризация</h2>
                   <hr>
-                  <div id="test1" class="col s12" style="padding: 20px">
+                  <h6>Добавьте в таблицу фактические отстаки, чтобы сравнить их с реестром продукции в базе данных.</h6>
 
-                     <div class="row" style="margin-bottom: 0;">
-                        <div class="col s6 flex-col">
-                           <div class="input-field">
-                              <input autocomplete="off" placeholder="Введите номер документа" id="doc-number" type="text" class="">
-                              <label for="doc-number">Номер документа</label>
+                  <div id="add-form">
+                     <div id="test1" class="col s12" style="padding: 20px">
+                        <div class="row" style="margin-bottom: 0;">
+                           <div class="input-field col s12" style="margin: 40px 0px;">
+                              <table id="income-table" class="product-table">
+                                 <thead>
+                                    <tr>
+                                       <th>№</th>
+                                       <th>Номенклатура</th>
+                                       <th>Количество</th>
+                                       <th>Дата изготовления</th>
+                                       <th>Срок годности</th>
+                                       <th></th>
+                                    </tr>
+                                 </thead>
+
+                                 <tbody>
+                                    <tr>
+
+                                    </tr>
+                                 </tbody>
+                              </table>
+                              <p id="empty-message" style="display: none;">Список продукции пуст, нажмите «добавить позицию».</p>
+                              <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-product">добавить позицию</a>
                            </div>
-                           <i class="material-icons help-icon" data-tooltip="Введите номер операции или номер документа в 1С">help_outline</i>
                         </div>
 
-                        <div class="col s6 flex-col">
-                           <div class="input-field">
-                              <input id="operation-date" type="text" class="datepicker">
-                              <label for="operation-date" class="">Дата продажи</label>
-                           </div>
-                        </div>
                      </div>
-
-                     <div class="row" style="margin-bottom: 0;">
-                        <div class="col s12 flex-col">
-                           <div class="input-field autocomplete-field">
-                              <input autocomplete="off" data-autocomplete-object="partners" id="partner-select" type="text" class="">
-                              <label for="partner-select">Контрагент</label>
-                           </div>
-                           <i class="material-icons help-icon" data-tooltip="Выберите контрагента из списка">help_outline</i>
-                        </div>
-                     </div>
-
-                     <div class="row" style="margin-bottom: 0;">
-                        <div class="input-field col s12" style="margin: 40px 0px;">
-                           <table id="income-table" class="product-table">
-                              <thead>
-                                 <tr>
-                                    <th>№</th>
-                                    <th>Номенклатура</th>
-                                    <th>Количество</th>
-                                    <th>Дата изготовления</th>
-                                    <th>Годен до</th>
-                                    <th></th>
-                                 </tr>
-                              </thead>
-
-                              <tbody>
-                                 <tr>
-
-                                 </tr>
-                              </tbody>
-                           </table>
-                           <p id="empty-message" style="display: none;">Список продукции пуст, нажмите «добавить позицию».</p>
-                           <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-product">добавить позицию</a>
-                        </div>
-                     </div>
-
+                     <div class="divider" style="margin: 10px 0px;"></div>
+                     <a id="create-record" class="waves-effect waves-light btn-large" style="width: 100%">Начать инвентаризацию</a>
                   </div>
-                  <div class="divider" style="margin: 10px 0px;"></div>
-                  <a id="create-record" class="waves-effect waves-light btn-large" style="width: 100%">Создать продажу</a>
+
+                  <div id="compare-form" style="display: none;">
+                     <div id="test1" class="col s12" style="padding: 20px">
+                        <div class="row" style="margin-bottom: 0;">
+                        <div class="info-message">Проверьте данные и подтвердите операцию</div>
+                           <div class="col s12">
+                              <table id="compare-table" class="product-table">
+                                 <thead>
+                                    <tr>
+                                       <th>№</th>
+                                       <th>Номенклатура</th>
+                                       <th>Дата изготовления</th>
+                                       <th>Ед.изм</th>
+                                       <th>Количество в журнале</th>
+                                       <th>Количество по факту</th>
+                                       <th>Разница</th>
+                                       <th></th>
+                                    </tr>
+                                 </thead>
+
+                                 <tbody>
+                                    <tr>
+
+                                    </tr>
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+
+                     </div>
+                     <div class="divider" style="margin: 10px 0px;"></div>
+                     <div class="row" style="margin-bottom: 0;">
+                        <div class="col s6">
+                           <a id="inventory-confirm" class="waves-effect waves-light btn-large" style="width: 100%">Скорректировать остатки</a>
+                        </div>
+                        <div class="col s6">
+                           <a id="return-to-add" class="waves-effect waves-light btn-large blue-grey lighten-2" style="width: 100%">Вернуться назад</a>
+                        </div>
+                     </div>
+                  </div>
+
                </div>
             </div>
 
@@ -123,40 +141,30 @@ include './include/auth_redirect.php';
 
 
             <div class="row">
-               <div class="col s8 flex-col">
+               <div class="col s12 flex-col">
                   <div class="input-field">
                      <input autocomplete="off" placeholder="Введите количество товара" id="goods-count" type="text" class="">
                      <label for="goods-count">Количество</label>
                   </div>
                   <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
                </div>
-               <div class="col s2 flex-col">
-                  <div class="input-field">
-                     <input disabled autocomplete="off" placeholder="%ед.изм%" id="goods-unit" type="text" class="">
-                     <label for="goods-unit">Ед.изм</label>
-                  </div>
-               </div>
-               <div class="col s2 flex-col">
-                  <div class="input-field">
-                     <input disabled autocomplete="off" placeholder="%доступно%" id="goods-avaliable-count" type="text" class="">
-                     <label for="goods-avaliable-count">Доступно</label>
-                  </div>
-               </div>
             </div>
 
             <div class="row">
                <div class="col s6 flex-col">
                   <div class="input-field">
-                     <input disabled id="goods-create-date" placeholder="%дата.изг%" type="text" class="datepicker">
+                     <input id="goods-create-date" type="text" class="datepicker">
                      <label for="goods-create-date" class="active">Дата изготовления</label>
                   </div>
+                  <i class="material-icons help-icon" data-tooltip="Введите дату изготовления">help_outline</i>
                </div>
 
                <div class="col s6 flex-col">
                   <div class="input-field">
-                     <input disabled id="goods-expire-date" placeholder="%годен_до%" type="text">
-                     <label for="goods-expire-date" class="active">Годен до</label>
+                     <input disabled id="valid-until" placeholder="Сначала выберите номенклатуру" type="text">
+                     <label for="valid-until" class="active">Срок годности</label>
                   </div>
+                  <i class="material-icons help-icon" data-tooltip="Срок годности вычисляется автоматически">help_outline</i>
                </div>
             </div>
          </div>
@@ -170,7 +178,7 @@ include './include/auth_redirect.php';
    <script src="./assets/materialize/js/materialize.min.js"></script>
    <script src="./js/script.js"></script>
    <script src="./js/logout.js"></script>
-   <script src="./js/sell_goods.js"></script>
+   <script src="./js/inventory_goods.js"></script>
 
    <script>
       //modal init===================
@@ -197,9 +205,6 @@ include './include/auth_redirect.php';
       M.Tooltip.init(document.querySelectorAll('.help-icon'), {
          position: 'top'
       });
-
-      //рендерим таблицу
-      incomeTableRender();
    </script>
 
 </body>

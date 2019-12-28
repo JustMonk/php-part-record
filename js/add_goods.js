@@ -85,6 +85,18 @@ document.addEventListener('click', (e) => {
 
       if (e.target.hasAttribute('data-id')) id = +e.target.getAttribute('data-id');
 
+      //проверка на дублирование
+      for (let entry of globalState.incomeTable) { // то же что и recipeMap.entries()
+         let key = entry[0];
+         let obj = entry[1];
+
+         if (obj.name == document.getElementById('goods-select').value && obj.createDate == document.getElementById('goods-create-date').value) {
+            globalState.incomeTable.delete(id);
+            id = key;
+            break;
+         }
+      }
+
       globalState.incomeTable.set(id, {
          name: document.getElementById('goods-select').value,
          count: document.getElementById('goods-count').value,

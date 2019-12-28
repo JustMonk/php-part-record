@@ -43,16 +43,13 @@ include './include/auth_redirect.php';
                            <th>Количество</th>
                            <th>Дата производства</th>
                            <th>Годен до</th>
-                           <th>Жирность (доп)</th>
-                           <th>Плотность (доп)</th>
-                           <th>Кислотность (доп)</th>
                         </tr>
                      </thead>
 
                      <tbody>
 
                         <?php
-                        foreach ($mysqli->query('SELECT operation_history.document_number, operation_sell.product_name, operation_sell.count, operation_sell.create_date, operation_sell.expire_date, operation_sell.milk_fat, operation_sell.milk_solidity, operation_sell.milk_acidity 
+                        foreach ($mysqli->query('SELECT operation_history.document_number, operation_sell.product_name, operation_sell.count, operation_sell.create_date, operation_sell.expire_date 
                         FROM operation_sell, operation_history 
                         WHERE operation_sell.operation_id = operation_history.operation_id') as $row) {
                            echo "<tr>
@@ -61,9 +58,6 @@ include './include/auth_redirect.php';
                            <td>$row[count]</td>
                            <td>$row[create_date]</td>
                            <td>$row[expire_date]</td>
-                           <td>$row[milk_fat]</td>
-                           <td>$row[milk_solidity]</td>
-                           <td>$row[milk_acidity]</td>
                            </tr>";
                         }
                         ?>

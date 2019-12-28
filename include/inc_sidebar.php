@@ -15,20 +15,19 @@
       <li><a class="nav-button" href="add.php"><i class="fas fa-plus fa-fw"></i>Приход</a></li>
       <li><a class="nav-button" href="sell.php"><i class="fas fa-dollar-sign fa-fw"></i>Продажа</a></li>
       <li><a class="nav-button" href="make.php"><i class="fas fa-industry fa-fw"></i>Производство</a></li>
+      <li><p style="padding: 0px 30px; margin-top: 20px; margin-bottom: 10px; font-weight: bold;">Переучет:</p></li>
+      <li><a class="nav-button" href="inventory.php"><i class="fas fa-dolly-flatbed"></i>Инвентаризация</a></li>
       <li><p style="padding: 0px 30px; margin-top: 20px; margin-bottom: 10px; font-weight: bold;">Разработка:</p></li>
       <li><a class="nav-button" href="operation_history.php"><i class="fas fa-code"></i>История операций</a></li>
       <li><a class="nav-button" href="add_history.php"><i class="fas fa-code"></i>Приходы</a></li>
       <li><a class="nav-button" href="sell_history.php"><i class="fas fa-code"></i>Продажи</a></li>
+      <li><a class="nav-button" href="inv_history.php"><i class="fas fa-code"></i>Инвентаризации</a></li>
       <!--<li><a class="nav-button" href="add_history.php"><i class="fas fa-code"></i>Производства<span class="new badge red lighten-2" data-badge-caption="TODO"></span></a></li>-->
       <li><a class="nav-button" href="product_registry.php"><i class="fas fa-code"></i>Реестр продукции</a></li>
       <li><p style="padding: 0px 30px; margin-top: 20px; margin-bottom: 10px; font-weight: bold;">Справочники:</p></li>
       <li><a class="nav-button" href="product_list.php"><i class="fas fa-code"></i>Номенклатуры</a></li>
       <li><a class="nav-button" href="partners.php"><i class="fas fa-code"></i>Таблица контрагенты</a></li>
       <li><a class="nav-button" href="units_list.php"><i class="fas fa-code"></i>Таблица ед.изм.</a></li>
-      <!--<li><a class="nav-button" data-select="rashod" href="#"><i class="fas fa-dollar-sign fa-fw"></i>Расход</a></li>
-      <li><a class="nav-button" data-select="prodaji" href="#"><i class="fas fa-signal fa-fw"></i>Продажи</a></li>
-      <li><a class="nav-button" data-select="statistika" href="#"><i class="fas fa-table fa-fw"></i>Статистика</a></li>
-      <li><a class="nav-button" data-select="admin" href="#"><i class="fas fa-user-cog fa-fw"></i>Администрирование</a>-->
       </li>
 
    </ul>

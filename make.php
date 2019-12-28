@@ -27,15 +27,6 @@ include './include/auth_redirect.php';
 
       <?php include './include/inc_sidebar.php'; ?>
 
-      <script>
-         //подтягиваем состояние БД с сервера
-         let globalState = <?php include './action/get_make_state.php' ?>
-         //создаем состояние операции, которое будем накапливать
-         globalState.materialTable = new Map();
-         globalState.makeTable = new Map();
-         //.set(key, val) .get(key)  .delete(key) .has(key)
-         //.keys() .values() .entries()
-      </script>
 
       <div id="main-wrapper">
          <div class="container" style="padding-top: 40px">
@@ -218,30 +209,6 @@ include './include/auth_redirect.php';
    <script src="./js/make_goods.js"></script>
 
    <script>
-      //autocomplete init=============
-      //goods autocomplete
-      /*document.addEventListener('DOMContentLoaded', function() {
-         var goodsSelect = document.querySelector('#goods-select');
-         var instances = M.Autocomplete.init(goodsSelect, {
-            data: globalState.goods,
-            minLength: 0,
-            onAutocomplete: function(elem) {
-               document.querySelector('#goods-unit').value = globalState.goods[elem].unit;
-               document.querySelector('#goods-avaliable-count').value = globalState.goods[elem].count;
-               document.querySelector('#goods-create-date').value = globalState.goods[elem].create_date;
-               document.querySelector('#goods-expire-date').value = globalState.goods[elem].expire_date;
-               if (globalState.goods[elem].milk_fat == 0 && globalState.goods[elem].milk_solidity == 0 && globalState.goods[elem].milk_acidity == 0) {
-                  document.querySelector('#extended-fields').style.display = 'none';
-               } else {
-                  document.querySelector('#extended-fields').style.display = 'block';
-                  document.querySelector('#ext-fat').value = globalState.goods[elem].milk_fat;
-                  document.querySelector('#ext-solidity').value = globalState.goods[elem].milk_solidity;
-                  document.querySelector('#ext-acidity').value = globalState.goods[elem].milk_acidity;
-               }
-            }
-         });
-      });*/
-
       //modal init===================
       document.addEventListener('DOMContentLoaded', function() {
          var elems = document.querySelector('#add-modal');

@@ -32,34 +32,32 @@ include './include/auth_redirect.php';
 
 
                <div id="prihod" class="content-block">
-                  <h2 style="margin: 0">История операций</h2>
+                  <h2 style="margin: 0">История инвентаризаций</h2>
                   <hr>
-                  <p>Представление таблицы «<b>operation_history</b>». Содержит список всех операций (приход/продажа/производство). </p>
+                  <p>Представление таблицы «<b>operation_inventory</b>». Содержит список всех изменений по инвентаризации. </p>
                   <table>
                      <thead>
                         <tr>
                            <th>ID операции</th>
-                           <th>Тип операции</th>
-                           <th>Номер документа</th>
-                           <th>Дата операции</th>
-                           <th>Контрагент</th>
-                           <th>Дата записи в базу</th>
+                           <th>Номенклатура</th>
+                           <th>Дата производства</th>
+                           <th>Количество до</th>
+                           <th>Количество после</th>
                         </tr>
                      </thead>
 
                      <tbody>
 
                         <?php
-                        foreach ($mysqli->query('SELECT operation_history.operation_id, operation_types.operation_name, operation_history.document_number, operation_history.operation_date, operation_history.timestamp 
-                        FROM operation_history, operation_types
-                        WHERE operation_history.operation_type = operation_types.operation_type_id') as $row) { //AND operation_history.partner_code = partners.partner_id
+                        foreach ($mysqli->query('SELECT operation_inventory.operation_id, product_list.title, operation_inventory.create_date, operation_inventory.count_before, operation_inventory.count_after 
+                        FROM operation_inventory, product_list 
+                        WHERE operation_inventory.product_id = product_list.product_id') as $row) {
                            echo "<tr>
                            <td>$row[operation_id]</td>
-                           <td>$row[operation_name]</td>
-                           <td>$row[document_number]</td>
-                           <td>$row[operation_date]</td>
-                           <td>$row[name]</td>
-                           <td>$row[timestamp]</td>
+                           <td>$row[title]</td>
+                           <td>$row[create_date]</td>
+                           <td>$row[count_before]</td>
+                           <td>$row[count_after]</td>
                            </tr>";
                         }
                         ?>

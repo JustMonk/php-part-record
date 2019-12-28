@@ -1,5 +1,29 @@
-console.log(globalState);
+//state
+let globalState = {
+   materialTable: new Map(),
+   makeTable: new Map()
+};
 
+//data init
+function getUserState() {
+
+   fetch('./action/get_make_state.php').then(response => {
+      return response.json()
+   }).then(data => {
+      //очищаем текущий буфер (реестры)
+      delete globalState.materials;
+      delete globalState.halfway;
+      delete globalState.halfwayList;
+      delete globalState.finishedList;
+      //мерджим полученные с сервера данные в состояние
+      Object.assign(globalState, data);
+
+      doubleTableRender();
+      console.log(globalState);
+   });
+}
+
+document.addEventListener('DOMContentLoaded', e => getUserState());
 
 function doubleTableRender() {
    //таблица сырья
@@ -113,6 +137,19 @@ document.addEventListener('click', (e) => {
       if (e.target.hasAttribute('data-id')) id = +e.target.getAttribute('data-id');
 
       let targetRegistry = globalState.halfwayList.hasOwnProperty(document.getElementById('goods-select').value) ? globalState.halfwayList : globalState.finishedList;
+
+      //проверка на дублирование
+
+      for (let entry of globalState.makeTable) { // то же что и recipeMap.entries()
+         let key = entry[0];
+         let obj = entry[1];
+
+         if (obj.name == document.getElementById('goods-select').value && obj.createDate == document.getElementById('goods-create-date').value) {
+            globalState.makeTable.delete(id);
+            id = key;
+            break;
+         }
+      }
 
       globalState.makeTable.set(id, {
          product_id: targetRegistry[document.getElementById('goods-select').value].id,
@@ -445,7 +482,8 @@ function clearAddModal() {
 //полностью очищает форму и состояние
 function clearForm() {
    let wrapper = document.getElementById('main-wrapper');
-   let inputs = wrapper.querySelectorAll('input');
+   //все, кроме input'a для селекта
+   let inputs = wrapper.querySelectorAll('input:not(.select-dropdown)');
    inputs.forEach(val => {
       val.value = '';
    });

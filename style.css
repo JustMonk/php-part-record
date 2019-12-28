@@ -43,7 +43,8 @@ body {
 }
 
 #side-navbar a:hover {
-   background: #dcdcdc; /*#dcdcdc*/
+   background: #dcdcdc;
+   /*#dcdcdc*/
 }
 
 /*тег для кнопки*/
@@ -112,6 +113,7 @@ body {
    height: 100%;
    color: grey;
 }
+
 .delete-row-button:hover {
    color: #de4545;
 }
@@ -139,18 +141,19 @@ body {
 
 @keyframes fadein {
    from {
-     opacity: 0;
+      opacity: 0;
    }
- 
+
    to {
-     opacity: 1;
+      opacity: 1;
    }
- }
+}
 
 .operation-title {
    display: flex;
    align-items: center;
 }
+
 .operation-icon {
    font-size: 30px;
    color: #bbb;
@@ -159,4 +162,9 @@ body {
 
 .admin-edit-bar {
    margin-bottom: 30px;
+}
+
+.info-message {
+   background: #f9f9b2;
+   padding: 10px;
 }
