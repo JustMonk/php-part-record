@@ -189,7 +189,7 @@ document.addEventListener('click', (e) => {
       let data = {
          productList: [...globalState.incomeTable.values()].map(val => {
             let changedObj = val;
-            changedObj.createDate = new Date(changedObj.createDate).toISOString().split('T')[0];
+            changedObj.createDate = new Date(changedObj.createDate + ' UTC').toISOString().split('T')[0];
             return changedObj;
          })
       }

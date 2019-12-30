@@ -167,7 +167,7 @@ document.addEventListener('click', (e) => {
 
       let data = {
          docNum: document.getElementById('doc-number').value,
-         operationDate: new Date(document.getElementById('operation-date').value).toISOString().split('T')[0],
+         operationDate: new Date(document.getElementById('operation-date').value + ' UTC').toISOString().split('T')[0],
          partner: document.getElementById('partner-select').value,
          productList: [...globalState.incomeTable.values()]
       }
