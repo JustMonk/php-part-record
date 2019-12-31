@@ -198,6 +198,23 @@ include './include/auth_redirect.php';
    <script src="./js/logout.js"></script>
 
    <script>
+      let globalState;
+
+      function getUnits() {
+         fetch('action/get_units.php', {
+               method: 'POST',
+               cache: 'no-cache',
+               headers: {
+                  'Content-Type': 'application/json'
+               }
+            }).then(result => {
+               console.log(result);
+               return result.json();
+            }).then(json => {
+               return json;
+            });
+      }
+
       //modal init===================
       document.addEventListener('DOMContentLoaded', function() {
          var elems = document.querySelector('#add-modal');
