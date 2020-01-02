@@ -10,7 +10,7 @@ include '../include/session_config.php';
 $data = json_decode(file_get_contents('php://input'), true);
 //$data = json_decode('{"docNum":"12312","operationDate":"2019-12-20","partner":"ИП Володянкин","productList":[{"name":"Йогурт Домодедовский КЛАССИЧЕСКИЙ жир. 2,7% (250гр)","count":"32","createDate":"2019-12-22","extFat":"","extSolidity":"","extAcidity":""},{"name":"Биокефир Домодедовский жир. 1% (930гр)","count":"3","createDate":"2019-12-22","extFat":"","extSolidity":"","extAcidity":""}]}', true);
 //$data = json_decode('{"docNum":"3","operationDate":"2019-12-21","partner":"ИП Володянкин","productList":[{"name":"Йогурт Домодедовский КЛАССИЧЕСКИЙ жир. 2,7% (250гр)","count":"11","createDate":"2019-12-16","extFat":"","extSolidity":"","extAcidity":""}]}', true);
-//$data = json_decode('{"docNum":"1test-user","operationDate":"2019-12-19","partner":"ООО \"Молочный поставщик\"","productList":[{"name":"Биокефир Домодедовский жир. 1% (930гр)","count":"1","createDate":"2019-12-22","extFat":"","extSolidity":"","extAcidity":""}]}', true);
+//$data = json_decode('{"docNum":"float-test","operationDate":"2020-01-30","partner":"АО \"Рубин\"","productList":[{"name":"Сырое молочко","count":"2","createDate":"2020-01-24","extFat":"3.8","extSolidity":"1.033","extAcidity":"1"}]}', true);
 
 //разбиваем на переменные для удобства
 //htmlspecialchars - базовая валидация
@@ -72,7 +72,7 @@ foreach ($product_list as $key => $value) {
    $res = $res->fetch_assoc();
    $expire_date = $res['expire'];
 
-   $values_str .= "($last_id, '$value[name]', $value[count], '$value[createDate]', '$expire_date', $value[extFat], $value[extSolidity], $value[extAcidity])";
+   $values_str .= "($last_id, '$value[name]', $value[count], '$value[createDate]', '$expire_date', '$value[extFat]', '$value[extSolidity]', '$value[extAcidity]')";
    if ($key != count($product_list) - 1) $values_str .= ",";
 }
 unset($value);

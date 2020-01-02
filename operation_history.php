@@ -44,22 +44,26 @@ include './include/auth_redirect.php';
                            <th>Дата операции</th>
                            <th>Контрагент</th>
                            <th>Дата записи в базу</th>
+                           <th>Пользователь</th>
                         </tr>
                      </thead>
 
                      <tbody>
 
                         <?php
-                        foreach ($mysqli->query('SELECT operation_history.operation_id, operation_types.operation_name, operation_history.document_number, operation_history.operation_date, operation_history.timestamp 
-                        FROM operation_history, operation_types
-                        WHERE operation_history.operation_type = operation_types.operation_type_id') as $row) { //AND operation_history.partner_code = partners.partner_id
+                        foreach ($mysqli->query('SELECT operation_history.operation_id, operation_types.operation_name, operation_history.document_number, operation_history.operation_date, partners.name AS partner, operation_history.timestamp, users.login AS user
+                        FROM operation_history
+                        LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL
+                        LEFT JOIN operation_types ON operation_history.operation_type = operation_types.operation_type_id
+                        LEFT JOIN users ON operation_history.user_code = users.user_id') as $row) { //AND operation_history.partner_code = partners.partner_id
                            echo "<tr>
                            <td>$row[operation_id]</td>
                            <td>$row[operation_name]</td>
                            <td>$row[document_number]</td>
                            <td>$row[operation_date]</td>
-                           <td>$row[name]</td>
+                           <td>$row[partner]</td>
                            <td>$row[timestamp]</td>
+                           <td>$row[user]</td>
                            </tr>";
                         }
                         ?>

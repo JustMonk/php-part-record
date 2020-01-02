@@ -79,7 +79,7 @@ include './include/auth_redirect.php';
 
 
 
-   <div id="add-modal" class="modal modal-fixed-footer">
+   <div id="add-modal" class="modal modal-fixed-footer modal-form">
       <div class="modal-content">
          <h4 id="modal-title" style="font-weight: bold;">Добавление контрагента</h4>
          <p id="modal-desc">Заполните необходимую информацию</p>

@@ -159,7 +159,6 @@ body {
 }
 
 .admin-edit-bar {
-   margin-bottom: 30px;
    background: #e8e8e8;
    padding: 15px;
 }
@@ -167,4 +166,24 @@ body {
 .info-message {
    background: #f9f9b2;
    padding: 10px;
+}
+
+/*modal with form have 100% height*/
+.modal-form {
+   top: 0 !important;
+   height: 100% !important;
+   max-height: 100% !important;
+}
+
+/*in-modal datepicker fix*/
+.datepicker-modal {
+   width: 100% !important;
+}
+
+.product-edit {
+   cursor: pointer;
+}
+.product-edit:hover {
+   cursor: pointer;
+   text-decoration: underline;
 }

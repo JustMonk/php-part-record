@@ -104,7 +104,7 @@ include './include/auth_redirect.php';
    </div>
 
    <!-- Modal Structure (модалка для добавления, триггерится по нажатию кнопки "добавить позицию") -->
-   <div id="add-modal" class="modal modal-fixed-footer">
+   <div id="add-modal" class="modal modal-fixed-footer modal-form">
       <div class="modal-content">
          <h4 id="modal-title" style="font-weight: bold;"></h4>
          <p id="modal-desc"></p>

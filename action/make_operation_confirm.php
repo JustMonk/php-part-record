@@ -9,7 +9,7 @@ include '../include/session_config.php';
 //парсим полученный JSON в ассоциативный массив
 $data = json_decode(file_get_contents('php://input'), true);
 //$data = json_decode('{"docNum":"13","operationDate":"2019-12-27","materialList":[{"registry_id":27,"string_key":"Сырое молочко [2019-12-20]","name":"Сырое молочко","count":"1","unit":"л","createDate":"2019-12-20","expireDate":"2019-12-23"}],"productList":[{"product_id":"9","name":"Молоко пастеризованное с мдж 4%","count":"23","unit":"л","createDate":"2019-12-22","expireDate":"2019-12-30"}]}', true);
-//$data = json_decode('{"docNum":"63","operationDate":"2019-12-19","materialList":[{"registry_id":27,"string_key":"Сырое молочко [2019-12-20]","name":"Сырое молочко","count":"11","unit":"л","createDate":"2019-12-20","expireDate":"2019-12-23"}],"productList":[{"product_id":"8","name":"Йогурт питьевой с клубникой, мдж 2,7%","count":"111","unit":"л","createDate":"2019-12-23","expireDate":"2019-12-27"}]}', true);
+//$data = json_decode('{"docNum":"first-prod","operationDate":"2020-01-24","materialList":[{"registry_id":"7","string_key":"Сырое молочко [2020-01-24]","name":"Сырое молочко","count":"11","unit":"л","createDate":"2020-01-24","expireDate":"2020-01-27"}],"productList":[{"product_id":"9","name":"Молоко пастеризованное с мдж 4%","count":"11","unit":"л","createDate":"2020-01-02","expireDate":"2020-01-10"},{"product_id":"10","name":"Снежок с мдж 2,7%","count":"1","unit":"кг","createDate":"2020-01-02","expireDate":"2020-01-05"}]}', true);
 
 //разбиваем на переменные для удобства
 //htmlspecialchars - базовая валидация
@@ -19,16 +19,16 @@ $operation_date = htmlspecialchars($data['operationDate']);
 
 $material_list = $data['materialList'];
 //normalize object values
-foreach ($material_list as $key => $value) {
+/*foreach ($material_list as $key => $value) {
    $value[$key] = htmlspecialchars($value[$key]);
 }
-unset($value);
+unset($value);*/
 $product_list = $data['productList'];
 //normalize object values
-foreach ($product_list as $key => $value) {
+/*foreach ($product_list as $key => $value) {
    $value[$key] = htmlspecialchars($value[$key]);
 }
-unset($value);
+unset($value);*/
 
 
 //=========================={проверка на количество}===========================
@@ -167,7 +167,7 @@ foreach ($material_list as $key => $value) {
    $expire_date = $res["expire_date"];
 
    $values_str .= "($last_id, '$value[name]', $value[count], '$value[createDate]', '$expire_date')";
-   if ($key != count($product_list) - 1) $values_str .= ",";
+   if ($key != count($material_list) - 1) $values_str .= ",";
 }
 unset($value);
 
@@ -175,7 +175,7 @@ $res = $mysqli->query("INSERT INTO operation_prod_consume(operation_id, product_
 if ($mysqli->error) {
    //printf("Errormessage: %s\n", $mysqli->error);
    header('Content-Type: application/json');
-   echo json_encode(array('message' => "add_error: operation_prod_add insert ($mysqli->error) <br> $values_str", 'type' => 'error'));
+   echo json_encode(array('message' => "add_error: operation_prod_consume insert ($mysqli->error) <br> $values_str", 'type' => 'error'));
    exit;
 }
 

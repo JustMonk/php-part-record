@@ -105,7 +105,7 @@ include './include/auth_redirect.php';
    </div>
 
    <!-- Modal Structure (модалка для добавления, триггерится по нажатию кнопки "добавить позицию") -->
-   <div id="add-modal" class="modal modal-fixed-footer">
+   <div id="add-modal" class="modal modal-fixed-footer modal-form">
       <div class="modal-content">
          <h4 id="modal-title" style="font-weight: bold;"></h4>
          <p id="modal-desc"></p>
@@ -156,17 +156,17 @@ include './include/auth_redirect.php';
             <h5>Дополнительные поля</h5>
             <div class="row">
                <div class="input-field col s4">
-                  <input id="ext-fat" placeholder="Введите процент жирности" type="text">
+                  <input id="ext-fat" placeholder="Введите процент жирности" type="number">
                   <label for="ext-fat" class="active">Жирность</label>
                </div>
 
                <div class="input-field col s4">
-                  <input id="ext-solidity" placeholder="Введите плотность" type="text">
+                  <input id="ext-solidity" placeholder="Введите плотность" type="number">
                   <label for="ext-solidity" class="active">Плотность</label>
                </div>
 
                <div class="input-field col s4">
-                  <input id="ext-acidity" placeholder="Введите кислотность" type="text">
+                  <input id="ext-acidity" placeholder="Введите кислотность" type="number">
                   <label for="ext-acidity" class="active">Кислотность</label>
                </div>
             </div>

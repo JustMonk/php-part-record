@@ -24,7 +24,7 @@ $partner_comment = $data['comment'];
 
 //================================={проверка на наличие контрагента (уникальность)}====================================================
 //ключ: имя-инн-кпп
-$res = $mysqli->query("SELECT * FROM partners WHERE name = $partner_name OR inn = $partner_inn AND kpp = $partner_kpp LIMIT 1");
+$res = $mysqli->query("SELECT * FROM partners WHERE name = '$partner_name' OR inn = $partner_inn AND kpp = $partner_kpp LIMIT 1");
 if ($res->num_rows > 0) {
    //отправляем ответ клиенту
    header('Content-Type: application/json');
