@@ -13,10 +13,10 @@ foreach ($mysqli->query('SELECT * FROM partners') as $row) {
    $response["partners"]["$row[name]"] = null;
 }
 
-//добавляем список продукции из реестра
+//добавляем список продукции из реестра (только готовая)
 foreach ($mysqli->query('SELECT product_registry.registry_id, product_list.title, product_registry.count, units.unit, product_registry.create_date, product_registry.expire_date
   FROM product_registry, product_list, units
-  WHERE product_registry.product_id = product_list.product_id AND product_list.unit_code = units.unit_id') as $row) {
+  WHERE product_registry.product_id = product_list.product_id AND product_list.unit_code = units.unit_id AND product_list.product_type = (SELECT type_id FROM product_types WHERE type = "Готовая продукция")') as $row) {
    $response["goods"]["$row[title] [$row[create_date]]"] = array(
       'registry_id' => $row["registry_id"],
       'count' => $row["count"],

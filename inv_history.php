@@ -20,6 +20,9 @@ include './include/auth_redirect.php';
 </head>
 
 <body>
+   <noscript>
+      <div style="position: absolute; height: 100vh; width: 100vw; z-index: 500; background: #fff;">Ваш браузер не поддерживает JavaScript</div>
+   </noscript>
 
    <div id="dashboard">
 

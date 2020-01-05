@@ -62,8 +62,6 @@ function doubleTableRender() {
          <td>${entry[1].name}</td>
          <td>${entry[1].count}</td>
          <td>${entry[1].unit}</td>
-         <td>${entry[1].createDate}</td>
-         <td>${entry[1].expireDate}</td>
          <td><a class="delete-row-button"><i class="material-icons">delete_forever</i></a></td>
       </tr>`;
       tableBody.append(tr);
@@ -155,9 +153,9 @@ document.addEventListener('click', (e) => {
          product_id: targetRegistry[document.getElementById('goods-select').value].id,
          name: document.getElementById('goods-select').value,
          count: document.getElementById('goods-count').value,
-         unit: targetRegistry[document.getElementById('goods-select').value].unit,
-         createDate: document.getElementById('goods-create-date').value,
-         expireDate: document.getElementById('goods-expire-date').value
+         unit: targetRegistry[document.getElementById('goods-select').value].unit
+         //createDate: document.getElementById('goods-create-date').value,
+         //expireDate: document.getElementById('goods-expire-date').value
       });
 
       console.log('добавлена строка в product-map');
@@ -246,11 +244,11 @@ document.addEventListener('click', (e) => {
             document.querySelector('#goods-avaliable-count').value = '-';
 
             let nowDate = new Date();
-            document.querySelector('#goods-create-date').value = nowDate.toISOString().split('T')[0];
+            document.querySelector('#goods-create-date').value = 'Равна дате документа' ;//nowDate.toISOString().split('T')[0];
 
             let expireDate = new Date();
             expireDate.setDate(nowDate.getDate() + +autocompleteData[elem].valid_days);
-            document.querySelector('#goods-expire-date').value = expireDate.toISOString().split('T')[0];
+            document.querySelector('#goods-expire-date').value = '-';//expireDate.toISOString().split('T')[0];
          }
       });
 
@@ -329,12 +327,12 @@ document.addEventListener('click', (e) => {
                   document.querySelector('#goods-unit').value = globalState.halfwayList[elem].unit;
                   document.querySelector('#goods-avaliable-count').value = '-';
 
-                  let nowDate = new Date();
-                  document.querySelector('#goods-create-date').value = nowDate.toISOString().split('T')[0];
+                  //let nowDate = new Date();
+                  document.querySelector('#goods-create-date').value = 'Равна дате документа';//nowDate.toISOString().split('T')[0];
 
-                  let expireDate = new Date();
-                  expireDate.setDate(nowDate.getDate() + +globalState.halfwayList[elem].valid_days);
-                  document.querySelector('#goods-expire-date').value = expireDate.toISOString().split('T')[0];
+                  //let expireDate = new Date();
+                  //expireDate.setDate(nowDate.getDate() + +globalState.halfwayList[elem].valid_days);
+                  document.querySelector('#goods-expire-date').value = '-';//expireDate.toISOString().split('T')[0];
                }
             });
          } else {
@@ -346,12 +344,12 @@ document.addEventListener('click', (e) => {
                   document.querySelector('#goods-unit').value = globalState.finishedList[elem].unit;
                   document.querySelector('#goods-avaliable-count').value = '-';
 
-                  let nowDate = new Date();
-                  document.querySelector('#goods-create-date').value = nowDate.toISOString().split('T')[0];
+                  //let nowDate = new Date();
+                  document.querySelector('#goods-create-date').value = 'Равна дате документа';//nowDate.toISOString().split('T')[0];
 
-                  let expireDate = new Date();
-                  expireDate.setDate(nowDate.getDate() + +globalState.finishedList[elem].valid_days);
-                  document.querySelector('#goods-expire-date').value = expireDate.toISOString().split('T')[0];
+                  //let expireDate = new Date();
+                  //expireDate.setDate(nowDate.getDate() + +globalState.finishedList[elem].valid_days);
+                  document.querySelector('#goods-expire-date').value = '-'//expireDate.toISOString().split('T')[0];
                }
             });
          }
@@ -360,8 +358,8 @@ document.addEventListener('click', (e) => {
          modal.el.querySelector('#goods-count').value = goodsObj.count;
          modal.el.querySelector('#goods-unit').value = goodsObj.unit;
          modal.el.querySelector('#goods-avaliable-count').value = '-';
-         modal.el.querySelector('#goods-create-date').value = goodsObj.createDate;
-         modal.el.querySelector('#goods-expire-date').value = goodsObj.expireDate;
+         modal.el.querySelector('#goods-create-date').value = goodsObj.createDate ? goodsObj.createDate : 'Равна дате документа';
+         modal.el.querySelector('#goods-expire-date').value = goodsObj.expireDate ? goodsObj.expireDate : '-';
 
          footer.innerHTML = `
          <a href="#!" id="add-product-button" data-id="${rowId}" class="waves-effect waves-green btn blue">Сохранить</a>

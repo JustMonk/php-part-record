@@ -28,7 +28,9 @@ $start = $page * $num - $num;
 // Выбираем $num сообщений начиная с номера $start
 $result = $mysqli->query("SELECT product_list.product_id, product_list.title, units.unit, product_list.capacity, product_list.gtin, product_types.type, product_list.valid_days, product_list.extended_milk_fields    
 FROM product_list, units, product_types
-WHERE product_list.unit_code = units.unit_id AND product_list.product_type = product_types.type_id LIMIT $start, $num");
+WHERE product_list.unit_code = units.unit_id AND product_list.product_type = product_types.type_id
+ORDER BY product_id DESC
+LIMIT $start, $num");
 // В цикле переносим результаты запроса в массив $product_rows
 while ($product_rows[] = mysqli_fetch_array($result));
 //echo var_dump($product_rows);
@@ -50,6 +52,9 @@ while ($product_rows[] = mysqli_fetch_array($result));
 </head>
 
 <body>
+   <noscript>
+      <div style="position: absolute; height: 100vh; width: 100vw; z-index: 500; background: #fff;">Ваш браузер не поддерживает JavaScript</div>
+   </noscript>
 
    <div id="dashboard">
 
@@ -439,8 +444,9 @@ while ($product_rows[] = mysqli_fetch_array($result));
                return result.json();
             }).then(json => {
                console.log(json);
-               showMessage(json);
-               modal.close();
+               /*showMessage(json);
+               modal.close();*/
+               window.location.replace(`${window.location.origin + window.location.pathname}?success=${true}&target=${json.title}`);
             });
          }
 
@@ -472,8 +478,9 @@ while ($product_rows[] = mysqli_fetch_array($result));
                return result.json();
             }).then(json => {
                console.log(json);
-               showMessage(json);
-               modal.close();
+               /*showMessage(json);
+               modal.close();*/
+               window.location.replace(`${window.location.origin + window.location.pathname}?success=${true}&target=${json.title}`);
             });
          }
 
@@ -562,6 +569,28 @@ while ($product_rows[] = mysqli_fetch_array($result));
          let parentNode = document.querySelector('#main-wrapper .container');
          parentNode.insertAdjacentElement('afterbegin', messageNode);
       }
+
+
+      function checkMessage() {
+         let dataObj = {};
+         let params = decodeURIComponent(location.search.substr(1)).split('&');
+         for (let i = 0; i < params.length; i++) {
+            let param = params[i].split('=');
+            dataObj[param[0]] = param[1];
+         }
+
+         console.log(dataObj);
+
+         if (dataObj.success == 'true' && dataObj.hasOwnProperty('target')) {
+            let reg = '/\+';
+            showMessage({
+               message: `Объект "${dataObj.target.split('+').join(' ')}" успешно сохранен.`,
+               type: 'success'
+            });
+         }
+
+      }
+      checkMessage();
    </script>
 
 

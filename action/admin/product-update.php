@@ -52,4 +52,4 @@ if ($mysqli->error) {
 }
 
 header('Content-Type: application/json');
-echo json_encode(array('message' => "Изменения сохранены.", 'type' => 'success'));
+echo json_encode(array('title' => urlencode($product_title), 'type' => 'success'));

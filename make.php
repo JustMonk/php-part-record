@@ -5,6 +5,7 @@ include './include/auth_redirect.php';
 
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -22,6 +23,9 @@ include './include/auth_redirect.php';
 </head>
 
 <body>
+   <noscript>
+      <div style="position: absolute; height: 100vh; width: 100vw; z-index: 500; background: #fff;">Ваш браузер не поддерживает JavaScript</div>
+   </noscript>
 
    <div id="dashboard">
 
@@ -72,6 +76,7 @@ include './include/auth_redirect.php';
                      <div class="row" style="margin-bottom: 0;">
                         <div class="input-field col s12" style="margin: 40px 0px;">
                            <h5><i class="fas fa-cubes"></i> Сырье</h5>
+                           <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-material">добавить сырье</a>
                            <table id="material-table" class="product-table">
                               <thead>
                                  <tr>
@@ -92,15 +97,16 @@ include './include/auth_redirect.php';
                               </tbody>
                            </table>
                            <p id="empty-material-message" style="display: none;">Список сырья пуст, нажмите «добавить сырье».</p>
-                           <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-material">добавить сырье</a>
+
                         </div>
                      </div>
 
-                     <div class="divider"></div>
+                     <!--<div class="divider"></div>-->
 
                      <div class="row" style="margin-bottom: 0;">
                         <div class="input-field col s12" style="margin: 40px 0px;">
                            <h5><i class="fas fa-cheese"></i> Производимая продукция</h5>
+                           <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-product">добавить продукт</a>
                            <table id="make-table" class="product-table">
                               <thead>
                                  <tr>
@@ -108,8 +114,6 @@ include './include/auth_redirect.php';
                                     <th>Номенклатура</th>
                                     <th>Количество</th>
                                     <th>Ед.изм</th>
-                                    <th>Дата изготовления</th>
-                                    <th>Годен до</th>
                                     <th></th>
                                  </tr>
                               </thead>
@@ -121,7 +125,7 @@ include './include/auth_redirect.php';
                               </tbody>
                            </table>
                            <p id="empty-make-message" style="display: none;">Список продукции пуст, нажмите «добавить позицию».</p>
-                           <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-product">добавить продукт</a>
+
                         </div>
                      </div>
 
@@ -161,7 +165,7 @@ include './include/auth_redirect.php';
             <div class="row">
                <div class="col s8 flex-col">
                   <div class="input-field">
-                     <input autocomplete="off" placeholder="Введите количество товара" id="goods-count" type="text" class="">
+                     <input autocomplete="off" placeholder="Введите количество товара" id="goods-count" type="number" min="1" class="">
                      <label for="goods-count">Количество</label>
                   </div>
                   <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
