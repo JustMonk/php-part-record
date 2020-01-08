@@ -32,7 +32,7 @@ include './include/auth_redirect.php';
 
 
       <div id="main-wrapper">
-         <div class="container" style="padding-top: 40px">
+         <div class="content-wrapper">
 
             <div class="card-panel white">
 
@@ -44,7 +44,7 @@ include './include/auth_redirect.php';
                   <div id="add-form">
                      <div id="test1" class="col s12" style="padding: 20px">
                         <div class="row" style="margin-bottom: 0;">
-                           <div class="input-field col s12" style="margin: 40px 0px;">
+                           <div class="input-field col s12">
                               <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-product">добавить позицию</a>
                               <table id="income-table" class="product-table">
                                  <thead>

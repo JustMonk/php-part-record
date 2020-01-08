@@ -61,7 +61,7 @@ while ($product_rows[] = mysqli_fetch_array($result));
       <?php include './include/inc_sidebar.php'; ?>
 
       <div id="main-wrapper">
-         <div class="container" style="padding-top: 40px">
+         <div class="content-wrapper">
             <div class="card-panel white">
 
                <div id="prihod" class="content-block">
@@ -103,42 +103,10 @@ while ($product_rows[] = mysqli_fetch_array($result));
                               <td>$row[valid_days]</td>
                               <td>$row[extended_milk_fields]</td>
                               <td><a class=\"product-edit\" data-product-id=\"$row[product_id]\">ред.</a></td>
-                              <tr>";
+                              </tr>";
                            }
                         }
-                        /*for ($i = 0; $i < $num; $i++) {
-                           echo "<tr>
-                           <td>" . $product_rows[$i]['product_id'] . "</td>
-                           <td>" . $product_rows[$i]['title'] . "</td>
-                           <td>" . $product_rows[$i]['unit'] . "</td>
-                           <td>" . $product_rows[$i]['capacity'] . "</td>
-                           <td>" . $product_rows[$i]['gtin'] . "</td>
-                           <td>" . $product_rows[$i]['type'] . "</td>
-                           <td>" . $product_rows[$i]['valid_days'] . "</td>
-                           <td>" . $product_rows[$i]['extended_milk_fields'] . "</td>
-                           <td><a class=\"product-edit\" data-product-id=" . $product_rows[$i]['product_id'] . ">ред.</a></td>
-                           </tr>";
-                        }*/
                         ?>
-
-                        <?php
-                        /*
-                        foreach ($mysqli->query('SELECT product_list.product_id, product_list.title, units.unit, product_list.capacity, product_list.gtin, product_types.type, product_list.valid_days, product_list.extended_milk_fields    
-                        FROM product_list, units, product_types
-                        WHERE product_list.unit_code = units.unit_id AND product_list.product_type = product_types.type_id') as $row) {
-                           echo "<tr>
-                           <td>$row[product_id]</td>
-                           <td>$row[title]</td>
-                           <td>$row[unit]</td>
-                           <td>$row[capacity]</td>
-                           <td>$row[gtin]</td>
-                           <td>$row[type]</td>
-                           <td>$row[valid_days]</td>
-                           <td>$row[extended_milk_fields]</td>
-                           <td><a class=\"product-edit\" data-product-id=\"$row[product_id]\">ред.</a></td>
-                           </tr>";
-                        }
-                        */ ?>
 
                      </tbody>
                   </table>

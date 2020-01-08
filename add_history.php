@@ -29,7 +29,8 @@ include './include/auth_redirect.php';
       <?php include './include/inc_sidebar.php'; ?>
 
       <div id="main-wrapper">
-         <div class="container" style="padding-top: 40px">
+         <div class="content-wrapper">
+
             <div class="card-panel white">
 
 

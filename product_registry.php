@@ -61,7 +61,7 @@ while ($product_rows[] = mysqli_fetch_array($result));
       <?php include './include/inc_sidebar.php'; ?>
 
       <div id="main-wrapper">
-         <div class="container" style="padding-top: 40px">
+         <div class="content-wrapper">
             <div class="card-panel white">
 
 

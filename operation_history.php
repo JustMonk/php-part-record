@@ -4,6 +4,39 @@ include './include/session_config.php';
 include './include/auth_redirect.php';
 ?>
 
+<?php
+// Переменная хранит число сообщений выводимых на станице
+$num = 20;
+// Извлекаем из URL текущую страницу
+$page = $_GET['page'];
+// Определяем общее число сообщений в базе данных
+$result = $mysqli->query("SELECT COUNT(*) FROM operation_history");
+$operations = $result->fetch_row()[0];
+
+// Находим общее число страниц
+$total = intval(($operations - 1) / $num) + 1;
+// Определяем начало сообщений для текущей страницы
+$page = intval($page);
+// Если значение $page меньше единицы или отрицательно
+// переходим на первую страницу
+// А если слишком большое, то переходим на последнюю
+if (empty($page) or $page < 0) $page = 1;
+if ($page > $total) $page = $total;
+// Вычисляем начиная к какого номера
+// следует выводить сообщения
+$start = $page * $num - $num;
+// Выбираем $num сообщений начиная с номера $start
+$result = $mysqli->query("SELECT operation_history.operation_id, operation_types.operation_name, operation_history.document_number, operation_history.operation_date, partners.name AS partner, operation_history.timestamp, users.login AS user
+FROM operation_history
+LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL
+LEFT JOIN operation_types ON operation_history.operation_type = operation_types.operation_type_id
+LEFT JOIN users ON operation_history.user_code = users.user_id
+ORDER BY operation_id DESC
+LIMIT $start, $num");
+// В цикле переносим результаты запроса в массив $product_rows
+while ($operation_rows[] = mysqli_fetch_array($result));
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -29,7 +62,7 @@ include './include/auth_redirect.php';
       <?php include './include/inc_sidebar.php'; ?>
 
       <div id="main-wrapper">
-         <div class="container" style="padding-top: 40px">
+         <div class="content-wrapper">
             <div class="card-panel white">
 
 
@@ -54,20 +87,18 @@ include './include/auth_redirect.php';
                      <tbody>
 
                         <?php
-                        foreach ($mysqli->query('SELECT operation_history.operation_id, operation_types.operation_name, operation_history.document_number, operation_history.operation_date, partners.name AS partner, operation_history.timestamp, users.login AS user
-                        FROM operation_history
-                        LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL
-                        LEFT JOIN operation_types ON operation_history.operation_type = operation_types.operation_type_id
-                        LEFT JOIN users ON operation_history.user_code = users.user_id') as $row) { //AND operation_history.partner_code = partners.partner_id
-                           echo "<tr>
-                           <td>$row[operation_id]</td>
-                           <td>$row[operation_name]</td>
-                           <td>$row[document_number]</td>
-                           <td>$row[operation_date]</td>
-                           <td>$row[partner]</td>
-                           <td>$row[timestamp]</td>
-                           <td>$row[user]</td>
-                           </tr>";
+                        foreach ($operation_rows as $row) {
+                           if ($row) {
+                              echo "<tr>
+                              <td>$row[operation_id]</td>
+                              <td>$row[operation_name]</td>
+                              <td>$row[document_number]</td>
+                              <td>$row[operation_date]</td>
+                              <td>$row[partner]</td>
+                              <td>$row[timestamp]</td>
+                              <td>$row[user]</td>
+                              </tr>";
+                           }
                         }
                         ?>
 
@@ -75,7 +106,27 @@ include './include/auth_redirect.php';
                   </table>
                </div>
 
+               <ul class="pagination">
+                  <?php
+                  // Проверяем нужны ли стрелки назад
+                  $pervpage = '<li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>'; //дефолтное значение (серая кнопка)
+                  if ($page != 1) $pervpage = '<li class="waves-effect"><a href= ./operation_history.php?page=' . ($page - 1) . '><i class="material-icons">chevron_left</i></a></li>';
+                  // <a href= ./product_list.php?page=' . ($page - 1) . '><</a> ';
+                  // Проверяем нужны ли стрелки вперед
+                  $nextpage = '<li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>'; //дефолтное значение (серая кнопка)
+                  if ($page != $total) $nextpage = '<li class="waves-effect"><a href= ./operation_history.php?page=' . ($page + 1) . '><i class="material-icons">chevron_right</i></a></li>';
+                  //<a href= ./product_list.php?page=' . $total . '>>></a>';
 
+                  // Находим две ближайшие станицы с обоих краев, если они есть
+                  if ($page - 2 > 0) $page2left = '<li class="waves-effect"> <a href= ./operation_history.php?page=' . ($page - 2) . '>' . ($page - 2) . '</a> </li>';
+                  if ($page - 1 > 0) $page1left = '<li class="waves-effect"> <a href= ./operation_history.php?page=' . ($page - 1) . '>' . ($page - 1) . '</a> </li>';
+                  if ($page + 2 <= $total) $page2right = '<li class="waves-effect"> <a href= ./operation_history.php?page=' . ($page + 2) . '>' . ($page + 2) . '</a> </li>';
+                  if ($page + 1 <= $total) $page1right = '<li class="waves-effect"> <a href= ./operation_history.php?page=' . ($page + 1) . '>' . ($page + 1) . '</a> </li>';
+
+                  // Вывод меню
+                  echo $pervpage . $page2left . $page1left . '<li class="active"><a href="#!">' . $page . '</a></li>' . $page1right . $page2right . $nextpage;
+                  ?>
+               </ul>
 
             </div>
 

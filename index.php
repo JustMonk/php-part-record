@@ -33,27 +33,55 @@ include './include/auth_redirect.php';
             <div class="">
 
 
-               <div id="prihod" class="content-block">
+               <div class="content-block">
                   <h2 style="margin: 0">Главная</h2>
-                  <h3 style="margin: 0; font-family: 'Source Sans Pro', sans-serif; color:#6a869a; margin-top: 5px;">Быстрый старт</h3>
+                  <h3 style="margin: 0; font-family: 'Source Sans Pro', sans-serif; color:#6a869a; margin-top: 5px;">Сегодня</h3>
 
                   <div class="card-wrapper" style="margin: 40px 0;">
 
-                     <div class="card small" style="width: 350px; display: inline-block; margin-right: 20px; margin-top: 20px;">
-                        <div class="card-image">
-                           <div class="images-dummy" style="width: 100%;height: 400px;background: #5c5377;"></div>
-
-                           <span class="card-title" style="top: 0; font-size: 15px;">Разработка</span>
-                           <span class="card-title" style="top: 25px;">Карточки в разработке</span>
-                        </div>
-                        <div class="card-content">
-                           <p>Используйте меню для навигации.</p>
-                        </div>
-                        <div class="card-action">
-                           <a href="#">Образец</a>
+                     <div class="card today-card">
+                        <div class="operation-title" style="color: grey;"><i class="fas fa-plus fa-fw operation-icon" style="font-size: 15px;"></i>Приходов</div>
+                        <div class="count-title">
+                           <?php
+                           $date = date('Y-m-d');
+                           $result = $mysqli->query("SELECT COUNT(*) FROM operation_history WHERE operation_type = (SELECT operation_type_id FROM operation_types WHERE operation_name = 'add') AND operation_date = '$date'");
+                           echo $result->fetch_row()[0];
+                           ?>
                         </div>
                      </div>
 
+                     <div class="card today-card">
+                        <div class="operation-title" style="color: grey;"><i class="fas fa-dollar-sign fa-fw operation-icon" style="font-size: 15px;"></i>Продаж</div>
+                        <div class="count-title">
+                           <?php
+                           $date = date('Y-m-d');
+                           $result = $mysqli->query("SELECT COUNT(*) FROM operation_history WHERE operation_type = (SELECT operation_type_id FROM operation_types WHERE operation_name = 'sell') AND operation_date = '$date'");
+                           echo $result->fetch_row()[0];
+                           ?>
+                        </div>
+                     </div>
+
+                     <div class="card today-card">
+                        <div class="operation-title" style="color: grey;"><i class="fas fa-industry fa-fw operation-icon" style="font-size: 15px;"></i>Производств</div>
+                        <div class="count-title">
+                           <?php
+                           $date = date('Y-m-d');
+                           $result = $mysqli->query("SELECT COUNT(*) FROM operation_history WHERE operation_type = (SELECT operation_type_id FROM operation_types WHERE operation_name = 'prod') AND operation_date = '$date'");
+                           echo $result->fetch_row()[0];
+                           ?>
+                        </div>
+                     </div>
+
+                     <div class="card today-card">
+                        <div class="operation-title" style="color: grey;"><i class="fas fa-dolly-flatbed operation-icon" style="font-size: 15px;"></i>Инвентаризаций</div>
+                        <div class="count-title">
+                           <?php
+                           $date = date('Y-m-d');
+                           $result = $mysqli->query("SELECT COUNT(*) FROM operation_history WHERE operation_type = (SELECT operation_type_id FROM operation_types WHERE operation_name = 'inv') AND operation_date = '$date'");
+                           echo $result->fetch_row()[0];
+                           ?>
+                        </div>
+                     </div>
 
                   </div>
 

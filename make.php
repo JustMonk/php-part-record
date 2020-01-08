@@ -33,7 +33,7 @@ include './include/auth_redirect.php';
 
 
       <div id="main-wrapper">
-         <div class="container" style="padding-top: 40px">
+         <div class="content-wrapper">
 
             <div class="card-panel white">
 
@@ -74,7 +74,7 @@ include './include/auth_redirect.php';
 
 
                      <div class="row" style="margin-bottom: 0;">
-                        <div class="input-field col s12" style="margin: 40px 0px;">
+                        <div class="input-field col s12">
                            <h5><i class="fas fa-cubes"></i> Сырье</h5>
                            <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-material">добавить сырье</a>
                            <table id="material-table" class="product-table">
@@ -104,7 +104,7 @@ include './include/auth_redirect.php';
                      <!--<div class="divider"></div>-->
 
                      <div class="row" style="margin-bottom: 0;">
-                        <div class="input-field col s12" style="margin: 40px 0px;">
+                        <div class="input-field col s12">
                            <h5><i class="fas fa-cheese"></i> Производимая продукция</h5>
                            <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-product">добавить продукт</a>
                            <table id="make-table" class="product-table">
