@@ -71,7 +71,7 @@ while ($operation_rows[] = mysqli_fetch_array($result));
                   <h2 style="margin: 0">История операций</h2>
                   <hr>
                   <p>Представление таблицы «<b>operation_history</b>». Содержит список всех операций (приход/продажа/производство). </p>
-                  <table>
+                  <table class="monitoring-table">
                      <thead>
                         <tr>
                            <th>ID операции</th>
@@ -90,13 +90,13 @@ while ($operation_rows[] = mysqli_fetch_array($result));
                         foreach ($operation_rows as $row) {
                            if ($row) {
                               echo "<tr>
-                              <td>$row[operation_id]</td>
-                              <td>$row[operation_name]</td>
-                              <td>$row[document_number]</td>
-                              <td>$row[operation_date]</td>
-                              <td>$row[partner]</td>
-                              <td>$row[timestamp]</td>
-                              <td>$row[user]</td>
+                              <td> <a href='./operation_view.php?id=$row[operation_id]'>$row[operation_id]</a> </td>
+                              <td> <a href='./operation_view.php?id=$row[operation_id]'>$row[operation_name]</a> </td>
+                              <td> <a href='./operation_view.php?id=$row[operation_id]'>$row[document_number]</a> </td>
+                              <td> <a href='./operation_view.php?id=$row[operation_id]'>$row[operation_date]</a> </td>
+                              <td> <a href='./operation_view.php?id=$row[operation_id]'>$row[partner]</a> </td>
+                              <td> <a href='./operation_view.php?id=$row[operation_id]'>$row[timestamp]</a> </td>
+                              <td> <a href='./operation_view.php?id=$row[operation_id]'>$row[user]</a> </td>
                               </tr>";
                            }
                         }
