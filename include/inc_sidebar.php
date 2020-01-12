@@ -17,8 +17,9 @@
       <li><a class="nav-button" href="make.php"><i class="fas fa-industry fa-fw"></i>Производство</a></li>
       <li><p style="padding: 0px 30px; margin-top: 20px; margin-bottom: 10px; font-weight: bold;">Переучет:</p></li>
       <li><a class="nav-button" href="inventory.php"><i class="fas fa-dolly-flatbed"></i>Инвентаризация</a></li>
-      <li><p style="padding: 0px 30px; margin-top: 20px; margin-bottom: 10px; font-weight: bold;">Разработка:</p></li>
+      <li><p style="padding: 0px 30px; margin-top: 20px; margin-bottom: 10px; font-weight: bold;">Детализация:</p></li>
       <li><a class="nav-button" href="operation_history.php"><i class="fas fa-code"></i>История операций</a></li>
+      <li><p style="padding: 0px 30px; margin-top: 20px; margin-bottom: 10px; font-weight: bold;">Движения продукции:</p></li>
       <li><a class="nav-button" href="add_history.php"><i class="fas fa-code"></i>Приходы</a></li>
       <li><a class="nav-button" href="sell_history.php"><i class="fas fa-code"></i>Продажи</a></li>
       <li><a class="nav-button" href="inv_history.php"><i class="fas fa-code"></i>Инвентаризации</a></li>

@@ -8,7 +8,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 //$data = json_decode('{"productList":[{"name":"Снежок с мдж 2,7%","count":"321","createDate":"2019-12-20","extFat":"","extSolidity":"","extAcidity":""},{"name":"Йогурт Домодедовский ПЕРСИК жир. 2,7% (250гр)","count":"3","createDate":"2019-12-27","extFat":"","extSolidity":"","extAcidity":""},{"name":"Йогурт питьевой с клубникой, мдж 2,7%","count":"11","createDate":"2019-12-25","extFat":"","extSolidity":"","extAcidity":""}]}', true);
 //$data = json_decode('{"productList":[{"name":"Йогурт Домодедовский КЛАССИЧЕСКИЙ жир. 2,7% (250гр)","count":"1","createDate":"2019-12-27","extFat":"","extSolidity":"","extAcidity":""}]}', true);
 //$data = json_decode('{"productList":[{"name":"Биокефир Домодедовский жир. 1% (930гр)","count":"3","createDate":"2020-01-31"}]}', true);
-//$data = json_decode('{"productList":[{"name":"Йогурт Домодедовский ВИШНЯ жир. 2,7% (250гр)","count":"445","createDate":"2020-01-30"}]}', true);
+//$data = json_decode('{"productList":[{"name":"Йогурт Домодедовский КЛУБНИКА жир. 2,7% (250гр)","count":"1","createDate":"2020-01-24"}]}', true);
 
 //разбиваем на переменные для удобства
 $product_list = $data['productList'];
@@ -52,7 +52,11 @@ if (count($used_id) > 0) {
       if ($key < count($used_id)-1) {
          $condition_string .= "NOT(product_registry.registry_id = $value";
          $condition_string .= " OR ";
+      } elseif (count($used_id) == 1) {
+         //если позиция всего одна
+         $condition_string .= "NOT(product_registry.registry_id = $value) AND";
       } else {
+         //закрывающая скобка (для последней позиции)
          $condition_string .= "product_registry.registry_id = $value) AND";
       }
    }

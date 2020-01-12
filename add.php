@@ -68,31 +68,9 @@ include './include/auth_redirect.php';
                         </div>
                      </div>
 
-                     <div class="row" style="margin-bottom: 0;">
-                        <div class="input-field col s12">
-                           <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-product">добавить позицию</a>
-                           <table id="income-table" class="product-table">
-                              <thead>
-                                 <tr>
-                                    <th>№</th>
-                                    <th>Номенклатура</th>
-                                    <th>Количество</th>
-                                    <th>Дата изготовления</th>
-                                    <th>Срок годности</th>
-                                    <th></th>
-                                 </tr>
-                              </thead>
+                     <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-product">добавить позицию</a>
 
-                              <tbody>
-                                 <tr>
-
-                                 </tr>
-                              </tbody>
-                           </table>
-                           <p id="empty-message" style="display: none;">Список продукции пуст, нажмите «добавить позицию».</p>
-
-                        </div>
-                     </div>
+                     <?php include './include/inc_add_form.php'; ?>
 
                   </div>
                   <div class="divider" style="margin: 10px 0px;"></div>
@@ -106,83 +84,9 @@ include './include/auth_redirect.php';
 
       </div>
    </div>
-   </div>
 
-   <!-- Modal Structure (модалка для добавления, триггерится по нажатию кнопки "добавить позицию") -->
-   <div id="add-modal" class="modal modal-fixed-footer modal-form">
-      <div class="modal-content">
-         <h4 id="modal-title" style="font-weight: bold;"></h4>
-         <p id="modal-desc"></p>
-         <h5>Основные поля</h5>
-
-         <div id="main-fields">
-            <div class="row">
-               <div class="col s12 flex-col">
-                  <div class="input-field">
-                     <input autocomplete="off" data-autocomplete-object="goods" placeholder="Нажмите для выбора или поиска номенклатуры" id="goods-select" type="text" class="">
-                     <label for="goods-select">Номенклатура</label>
-                  </div>
-                  <i class="material-icons help-icon" data-tooltip="Начните вводить название для поиска">help_outline</i>
-               </div>
-            </div>
-
-
-            <div class="row">
-               <div class="col s12 flex-col">
-                  <div class="input-field">
-                     <input autocomplete="off" placeholder="Введите количество товара" id="goods-count" type="number" min="1" class="">
-                     <label for="goods-count">Количество</label>
-                  </div>
-                  <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
-               </div>
-            </div>
-
-            <div class="row">
-               <div class="col s6 flex-col">
-                  <div class="input-field">
-                     <input id="goods-create-date" type="text" class="datepicker">
-                     <label for="goods-create-date" class="active">Дата изготовления</label>
-                  </div>
-                  <i class="material-icons help-icon" data-tooltip="Введите дату изготовления">help_outline</i>
-               </div>
-
-               <div class="col s6 flex-col">
-                  <div class="input-field">
-                     <input disabled id="valid-until" placeholder="Сначала выберите номенклатуру" type="text">
-                     <label for="valid-until" class="active">Срок годности</label>
-                  </div>
-                  <i class="material-icons help-icon" data-tooltip="Срок годности вычисляется автоматически">help_outline</i>
-               </div>
-            </div>
-         </div>
-
-         <div id="extended-fields" style="display: none;">
-            <h5>Дополнительные поля</h5>
-            <div class="row">
-               <div class="input-field col s4">
-                  <input id="ext-fat" placeholder="Введите процент жирности" type="number">
-                  <label for="ext-fat" class="active">Жирность</label>
-               </div>
-
-               <div class="input-field col s4">
-                  <input id="ext-solidity" placeholder="Введите плотность" type="number">
-                  <label for="ext-solidity" class="active">Плотность</label>
-               </div>
-
-               <div class="input-field col s4">
-                  <input id="ext-acidity" placeholder="Введите кислотность" type="number">
-                  <label for="ext-acidity" class="active">Кислотность</label>
-               </div>
-            </div>
-         </div>
-
-
-
-      </div>
-      <div class="modal-footer">
-         <!-- js controls -->
-      </div>
-   </div>
+   <?php include './include/modals/add_modal.php'; ?>
+   
 
    <script src="./assets/materialize/js/materialize.min.js"></script>
    <script src="./js/script.js"></script>

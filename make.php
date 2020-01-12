@@ -72,62 +72,8 @@ include './include/auth_redirect.php';
                         </div>
                      </div>
 
+                     <?php include './include/inc_make_form.php'; ?>
 
-                     <div class="row" style="margin-bottom: 0;">
-                        <div class="input-field col s12">
-                           <h5><i class="fas fa-cubes"></i> Сырье</h5>
-                           <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-material">добавить сырье</a>
-                           <table id="material-table" class="product-table">
-                              <thead>
-                                 <tr>
-                                    <th>№</th>
-                                    <th>Номенклатура</th>
-                                    <th>Количество</th>
-                                    <th>Ед.изм</th>
-                                    <th>Дата изготовления</th>
-                                    <th>Годен до</th>
-                                    <th></th>
-                                 </tr>
-                              </thead>
-
-                              <tbody>
-                                 <tr>
-
-                                 </tr>
-                              </tbody>
-                           </table>
-                           <p id="empty-material-message" style="display: none;">Список сырья пуст, нажмите «добавить сырье».</p>
-
-                        </div>
-                     </div>
-
-                     <!--<div class="divider"></div>-->
-
-                     <div class="row" style="margin-bottom: 0;">
-                        <div class="input-field col s12">
-                           <h5><i class="fas fa-cheese"></i> Производимая продукция</h5>
-                           <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-product">добавить продукт</a>
-                           <table id="make-table" class="product-table">
-                              <thead>
-                                 <tr>
-                                    <th>№</th>
-                                    <th>Номенклатура</th>
-                                    <th>Количество</th>
-                                    <th>Ед.изм</th>
-                                    <th></th>
-                                 </tr>
-                              </thead>
-
-                              <tbody>
-                                 <tr>
-
-                                 </tr>
-                              </tbody>
-                           </table>
-                           <p id="empty-make-message" style="display: none;">Список продукции пуст, нажмите «добавить позицию».</p>
-
-                        </div>
-                     </div>
 
                   </div>
                   <div class="divider" style="margin: 10px 0px;"></div>
@@ -141,71 +87,9 @@ include './include/auth_redirect.php';
 
       </div>
    </div>
-   </div>
-
-   <!-- Modal Structure (модалка для добавления, триггерится по нажатию кнопки "добавить позицию") -->
-   <div id="add-modal" class="modal modal-fixed-footer modal-form">
-      <div class="modal-content">
-         <h4 id="modal-title" style="font-weight: bold;"></h4>
-         <p id="modal-desc"></p>
-         <h5>Основные поля</h5>
-
-         <div id="main-fields">
-            <div class="row">
-               <div class="col s12 flex-col">
-                  <div class="input-field">
-                     <input autocomplete="off" data-autocomplete-object="goods" placeholder="Нажмите для выбора или поиска номенклатуры" id="goods-select" type="text" class="">
-                     <label for="goods-select">Номенклатура</label>
-                  </div>
-                  <i class="material-icons help-icon" data-tooltip="Начните вводить название для поиска">help_outline</i>
-               </div>
-            </div>
 
 
-            <div class="row">
-               <div class="col s8 flex-col">
-                  <div class="input-field">
-                     <input autocomplete="off" placeholder="Введите количество товара" id="goods-count" type="number" min="1" class="">
-                     <label for="goods-count">Количество</label>
-                  </div>
-                  <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
-               </div>
-               <div class="col s2 flex-col">
-                  <div class="input-field">
-                     <input disabled autocomplete="off" placeholder="%ед.изм%" id="goods-unit" type="text" class="">
-                     <label for="goods-unit">Ед.изм</label>
-                  </div>
-               </div>
-               <div class="col s2 flex-col">
-                  <div class="input-field">
-                     <input disabled autocomplete="off" placeholder="%доступно%" id="goods-avaliable-count" type="text" class="">
-                     <label for="goods-avaliable-count">Доступно</label>
-                  </div>
-               </div>
-            </div>
-
-            <div class="row">
-               <div class="col s6 flex-col">
-                  <div class="input-field">
-                     <input disabled id="goods-create-date" placeholder="%дата.изг%" type="text" class="datepicker">
-                     <label for="goods-create-date" class="active">Дата изготовления</label>
-                  </div>
-               </div>
-
-               <div class="col s6 flex-col">
-                  <div class="input-field">
-                     <input disabled id="goods-expire-date" placeholder="%годен_до%" type="text">
-                     <label for="goods-expire-date" class="active">Годен до</label>
-                  </div>
-               </div>
-            </div>
-         </div>
-
-      </div>
-      <div class="modal-footer">
-         <!-- js controls -->
-      </div>
-   </div>
+   <?php include './include/modals/make_modal.php'; ?>
 
    <script src="./assets/materialize/js/materialize.min.js"></script>
    <script src="./js/script.js"></script>
