@@ -534,7 +534,7 @@ while ($product_rows[] = mysqli_fetch_array($result));
             ${response.message}
             <a class="close-message"><i class="material-icons">close</i></a>
             `;
-         let parentNode = document.querySelector('#main-wrapper .container');
+         let parentNode = document.querySelector('#main-wrapper .content-wrapper');
          parentNode.insertAdjacentElement('afterbegin', messageNode);
       }
 

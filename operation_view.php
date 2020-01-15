@@ -336,7 +336,22 @@ if ($res['operation_name'] == 'inv') {
                <div id="prihod" class="content-block">
                   <h2 style="margin: 0">Просмотр операции</h2>
                   <hr>
-                  <p><a href="./operation_history.php">Вернуться к списку</a></p>
+
+                  <?php 
+                  //обратная ссылка со всеми параметрами, но без ID
+                  $query_array = explode('&', $_SERVER['QUERY_STRING']);
+                  foreach($query_array as $key => $value) {
+                     if(substr($value, 0, 3) == 'id=') {
+                        unset($query_array[$key]);
+                     }
+                  }
+                  $return_link = join("&",$query_array);
+                  if (strlen($return_link) > 0) $return_link = './operation_history.php?' . $return_link;
+                  else $return_link = './operation_history.php';
+
+                  echo "<p><a href='$return_link'>Вернуться к списку</a></p>"
+                  ?>
+                  
 
                   <?php
                   $date = date("d.m.yy", strtotime("$res[operation_date]")); //"формат", "исходная дата"
