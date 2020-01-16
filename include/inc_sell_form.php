@@ -1,4 +1,4 @@
-<div class="row" style="margin-bottom: 0;">
+<div class="row" style="margin-bottom: 0; overflow-x: scroll;">
    <div class="input-field col s12">
       
       <table id="income-table" class="product-table">
