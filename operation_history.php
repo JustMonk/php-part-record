@@ -10,34 +10,35 @@ $num = 20;
 
 //поиск
 $search_condition = array();
-$search_form = array(); //форма с человекочитаемым текущим запросом и кнопкой отмены поиска
+$search_tags = array(); //форма с человекочитаемым текущим запросом и кнопкой отмены поиска
 if ($_GET['type']) {
    $type = $_GET['type'];
    if ($_GET['type'] == 'any') {
       $type = '';
    }
-   array_push($search_form, 'операция = ' . (htmlspecialchars($type) ? htmlspecialchars($type) : 'любая'));
+   array_push($search_tags, 'Операция: ' . (htmlspecialchars($type) ? htmlspecialchars($type) : 'любая'));
    array_push($search_condition, 'operation_name LIKE "%' . htmlspecialchars($type) . '%"');
 }
 if ($_GET['document']) {
-   array_push($search_form, 'документ = ' . htmlspecialchars($_GET['document']));
+   array_push($search_tags, 'Документ: ' . htmlspecialchars($_GET['document']));
    array_push($search_condition, 'document_number LIKE "%' . htmlspecialchars($_GET['document']) . '%"');
 }
 if ($_GET['date']) {
-   array_push($search_form, 'дата операции = ' . htmlspecialchars($_GET['date']));
+   array_push($search_tags, 'Дата операции: ' . htmlspecialchars($_GET['date']));
    array_push($search_condition, 'operation_date LIKE "%' . htmlspecialchars($_GET['date']) . '%"');
 }
 if ($_GET['partner']) {
-   array_push($search_form, 'контрагент = ' . htmlspecialchars($_GET['partner']));
+   array_push($search_tags, 'Контрагент: ' . htmlspecialchars($_GET['partner']));
    array_push($search_condition, 'partners.name LIKE "%' . htmlspecialchars($_GET['partner']) . '%"');
 }
 //если условий больше 0, то создаем WHERE
 if (count($search_condition) > 0) {
    $search_condition = 'WHERE ' . join(" AND ", $search_condition);
-   $search_form = 'Поиск: ' . join(", ", $search_form) . '<br>' . '<a href="./operation_history.php">Отменить поиск</a>';
+   $cancel_search = '<a href="./operation_history.php">Отменить поиск</a>';
 } else {
    $search_condition = '';
-   $search_form = '';
+   $search_tags = array();
+   $cancel_search = '';
 }
 
 
@@ -117,7 +118,17 @@ while ($operation_rows[] = mysqli_fetch_array($result));
                   </div>
                   <div class="info-message">
                      <?php 
-                     echo "Результатов: $operations <br> $search_form";
+                     $tag_list = '';
+                     foreach($search_tags as $value) {
+                        $tag_list .= "<div class='search-tag'>$value</div>";
+                     }
+
+                     echo "Результатов: $operations <br>
+                     <div class='search-form'>
+                     $tag_list
+                     </div>
+                     $cancel_search
+                     ";
                      //echo '/operation_view.php?' . $_SERVER['QUERY_STRING'];
                      ?>
                   </div>
@@ -172,7 +183,10 @@ while ($operation_rows[] = mysqli_fetch_array($result));
                   }
                   $return_link = join("&",$query_array);
                   if (strlen($return_link) > 0) $return_link = './operation_history.php?' . $return_link;
-                  else $return_link = './operation_history.php';
+                  else {
+                     $return_link = './operation_history.php?';
+                     $join_symbol = '';
+                  }
                   $page_link = $return_link . $join_symbol . "page=";
 
                   // Проверяем нужны ли стрелки назад

@@ -3,25 +3,30 @@
       <div class="row" style="margin-bottom: 0;">
          <div class="input-field col s12">
             <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-product">добавить позицию</a>
-            <table id="income-table" class="product-table">
-               <thead>
-                  <tr>
-                     <th>№</th>
-                     <th>Номенклатура</th>
-                     <th>Количество</th>
-                     <th>Дата изготовления</th>
-                     <th>Срок годности</th>
-                     <th></th>
-                  </tr>
-               </thead>
 
-               <tbody>
-                  <tr>
+            <div class="table-wrapper" style="overflow-x: scroll;">
+               <table id="income-table" class="product-table">
+                  <thead>
+                     <tr>
+                        <th>№</th>
+                        <th>Номенклатура</th>
+                        <th>Количество</th>
+                        <th>Дата изготовления</th>
+                        <th>Срок годности</th>
+                        <th></th>
+                     </tr>
+                  </thead>
 
-                  </tr>
-               </tbody>
-            </table>
-            <p id="empty-message" style="display: none;">Список продукции пуст, нажмите «добавить позицию».</p>
+                  <tbody>
+                     <tr>
+
+                     </tr>
+                  </tbody>
+               </table>
+               <p id="empty-message" style="display: none;">Список продукции пуст, нажмите «добавить позицию».</p>
+            </div>
+
+            <a class="product-edit" style="margin-top: 5px;" id="fill-current-registry">заполнить таблицу текущим реестром</a>
 
          </div>
       </div>
@@ -35,7 +40,7 @@
    <div id="test1" class="col s12" style="padding: 20px">
       <div class="row" style="margin-bottom: 0;">
          <div class="info-message">Проверьте данные и подтвердите операцию</div>
-         <div class="col s12">
+         <div class="col s12" style="overflow-x: scroll;">
             <table id="compare-table" class="product-table">
                <thead>
                   <tr>

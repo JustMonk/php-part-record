@@ -212,6 +212,28 @@ document.addEventListener('click', (e) => {
          }*/
       });
    }
+
+   //обработчик для заполнения таблицы текущим реестром
+   if (e.target.id == 'fill-current-registry') {
+      let data = {};
+      fetch('action/inv_operation_compare.php', { method: 'POST', cache: 'no-cache', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(result => {
+         console.log(result);
+         return result.json();
+      }).then(json => {
+         //очищаем текущий map
+         globalState.incomeTable.clear();
+         //перезаписываем с новыми ключами (по порядку)
+         json.compareList.forEach((val, i) => {
+            globalState.incomeTable.set(i, {
+               name: val.title,
+               count: val.count,
+               createDate: val.create_date
+            });
+         });
+         //обновляем таблицу
+         incomeTableRender();
+      });
+   }
 })
 
 function showCompareForm(compareList) {

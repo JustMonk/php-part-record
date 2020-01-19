@@ -10,7 +10,7 @@ $num = 20;
 // Извлекаем из URL текущую страницу
 $page = $_GET['page'];
 // Определяем общее число сообщений в базе данных
-$result = $mysqli->query("SELECT COUNT(*) FROM partners");
+$result = $mysqli->query("SELECT COUNT(*) FROM users");
 $partners = $result->fetch_row()[0];
 
 // Находим общее число страниц
@@ -26,11 +26,12 @@ if ($page > $total) $page = $total;
 // следует выводить сообщения
 $start = $page * $num - $num;
 // Выбираем $num сообщений начиная с номера $start
-$result = $mysqli->query("SELECT * FROM partners
-ORDER BY partner_id DESC
+$result = $mysqli->query("SELECT * FROM users
+LEFT JOIN account_types ON users.access_id = account_types.ID
+ORDER BY user_id DESC
 LIMIT $start, $num");
 // В цикле переносим результаты запроса в массив $product_rows
-while ($partners_rows[] = mysqli_fetch_array($result));
+while ($users_rows[] = mysqli_fetch_array($result));
 ?>
 
 <!DOCTYPE html>
@@ -69,31 +70,33 @@ while ($partners_rows[] = mysqli_fetch_array($result));
                   <p>Представление таблицы «<b>users</b>». Содержит список пользователей. </p>
 
                   <div class="admin-edit-bar">
-                     <a class="waves-effect waves-light btn blue lighten-2" id="add-partner-form">Добавить пользователя</a>
+                     <a class="waves-effect waves-light btn blue lighten-2" id="add-user-form">Добавить пользователя</a>
                   </div>
 
                   <table>
                      <thead>
                         <tr>
                            <th>ID</th>
-                           <th>Название</th>
-                           <th>ИНН</th>
-                           <th>КПП</th>
-                           <th>Комментарий</th>
+                           <th>Логин</th>
+                           <th>Полномочия</th>
+                           <th>Имя</th>
+                           <th>Фамилия</th>
+                           <th></th>
                         </tr>
                      </thead>
 
                      <tbody>
 
                         <?php
-                        foreach ($partners_rows as $row) {
+                        foreach ($users_rows as $row) {
                            if ($row) {
                               echo "<tr>
-                              <td>$row[partner_id1]</td>
-                              <td>$row[name1]</td>
-                              <td>$row[inn1]</td>
-                              <td>$row[kpp1]</td>
-                              <td>$row[comment1]</td>
+                              <td>$row[user_id]</td>
+                              <td>$row[login]</td>
+                              <td>$row[title]</td>
+                              <td>$row[name]</td>
+                              <td>$row[lastname]</td>
+                              <td><a class=\"product-edit\" data-user-id=\"$row[user_id]\">ред.</a></td>
                               </tr>";
                            }
                         }
@@ -136,60 +139,7 @@ while ($partners_rows[] = mysqli_fetch_array($result));
 
 
    <div id="add-modal" class="modal modal-fixed-footer modal-form">
-      <div class="modal-content">
-         <h4 id="modal-title" style="font-weight: bold;">Добавление контрагента</h4>
-         <p id="modal-desc">Заполните необходимую информацию</p>
-         <h5>Основные поля</h5>
 
-         <div id="main-fields">
-            <div class="row">
-               <div class="col s6 flex-col">
-                  <div class="input-field">
-                     <input autocomplete="off" placeholder="Введите ИНН" id="inn-input" type="text" class="">
-                     <label for="goods-select">ИНН</label>
-                  </div>
-                  <i class="material-icons help-icon" data-tooltip="Начните вводить название для поиска">help_outline</i>
-               </div>
-
-               <div class="col s6 flex-col">
-                  <div class="input-field">
-                     <input autocomplete="off" placeholder="Введите КПП" id="kpp-input" type="text" class="">
-                     <label for="goods-count">КПП (опционально)</label>
-                  </div>
-                  <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
-               </div>
-            </div>
-
-
-            <div class="row">
-               <div class="col s12 flex-col">
-                  <div class="input-field">
-                     <input autocomplete="off" placeholder="Введите название организации" id="name-input" type="text" class="">
-                     <label for="goods-count">Наименование контрагента</label>
-                  </div>
-                  <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
-               </div>
-            </div>
-
-            <div class="row">
-               <div class="col s12 flex-col">
-                  <div class="input-field">
-                     <input autocomplete="off" placeholder="Введите комментарий (не обязательно)" id="comment-input" type="text" class="">
-                     <label for="goods-count">Комментарий (опционально)</label>
-                  </div>
-                  <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
-               </div>
-            </div>
-
-         </div>
-
-      </div>
-
-      <div class="modal-footer">
-         <!-- js controls -->
-         <a href="#!" id="add-partner-button" class="waves-effect waves-green btn blue">Добавить</a>
-         <a href="#!" class="modal-close waves-effect waves-green btn grey">Отмена</a>
-      </div>
    </div>
 
    <script src="./assets/materialize/js/materialize.min.js"></script>
@@ -207,24 +157,26 @@ while ($partners_rows[] = mysqli_fetch_array($result));
 
       document.addEventListener('click', (e) => {
          let modal = M.Modal.getInstance(document.getElementById('add-modal'));
-         if (e.target.id == 'add-partner-form') {
-            clearForm();
+         if (e.target.id == 'add-user-form') {
+            setAddModal();
             modal.open();
          }
 
-         if (e.target.id == 'add-partner-button') {
+         //обработчик добавления пользователя
+         if (e.target.id == 'add-user-button') {
             if (!formValidation()) return;
 
             let data = {
-               inn: document.getElementById('inn-input').value,
-               kpp: document.getElementById('kpp-input').value,
+               login: document.getElementById('login-input').value,
                name: document.getElementById('name-input').value,
-               comment: document.getElementById('comment-input').value
+               lastname: document.getElementById('lastname-input').value,
+               access: document.getElementById('access-level').value,
+               password: document.getElementById('password-input').value
             }
 
             console.log(JSON.stringify(data));
 
-            fetch('action/admin/partner-add.php', {
+            fetch('action/admin/user_add.php', {
                method: 'POST',
                cache: 'no-cache',
                headers: {
@@ -235,19 +187,85 @@ while ($partners_rows[] = mysqli_fetch_array($result));
                console.log(result);
                return result.json();
             }).then(json => {
-               console.log(json);
-               showMessage(json);
-               modal.close();
+               /*console.log(json);
+               showMessage(json)
+               modal.close();*/
+               window.location.replace(`${window.location.origin + window.location.pathname}?success=${true}&target=${json.title}`);
             });
+         }
+
+         //модалка для редактирования
+         if (e.target.tagName == 'A' && e.target.hasAttribute('data-user-id')) {
+            setEditModal(e.target.getAttribute('data-user-id'));
+
+            //edit-data fetch
+            fetch(`action/admin/get_user_info.php?id=${e.target.getAttribute('data-user-id')}`, {
+               method: 'GET'
+            }).then(result => {
+               return result.json();
+            }).then(json => {
+               console.log(json);
+               document.getElementById('login-input').value = json.login;
+               document.getElementById('name-input').value = json.name;
+               document.getElementById('lastname-input').value = json.lastname;
+               document.getElementById('access-level').value = json.access;
+               //select init
+               M.FormSelect.init(document.querySelectorAll('select'), {});
+               //reinit
+               M.updateTextFields();
+               /*showMessage(json);
+               modal.close();*/
+            });
+
+            modal.open();
+         }
+
+         //обработчик редактирования
+         if (e.target.id == 'edit-user-button') {
+            if (!editFormValidation()) return;
+
+            let data = {
+               id: document.getElementById('edit-user-button').getAttribute('data-id'),
+               login: document.getElementById('login-input').value,
+               name: document.getElementById('name-input').value,
+               lastname: document.getElementById('lastname-input').value,
+               access: document.getElementById('access-level').value,
+            }
+
+            if (document.getElementById('password-input').value.length != 0 && document.getElementById('password-input').value.length > 4) {
+               data.password = document.getElementById('password-input').value;
+            }
+
+            console.log(JSON.stringify(data));
+
+            fetch('action/admin/user_update.php', {
+               method: 'POST',
+               cache: 'no-cache',
+               headers: {
+                  'Content-Type': 'application/json'
+               },
+               body: JSON.stringify(data)
+            }).then(result => {
+               return result.json();
+            }).then(json => {
+               console.log(json);
+               /*showMessage(json);
+               modal.close();*/
+               window.location.replace(`${window.location.origin + window.location.pathname}?success=${true}&target=${json.title}`);
+            });
+         }
+
+         if (e.target.classList.contains('close-message') || e.target.parentElement.classList.contains('close-message')) {
+            e.target.closest('.message-card').remove();
          }
 
          function formValidation() {
             let isValid = true;
             let modal = M.Modal.getInstance(document.getElementById('add-modal'));
 
-            if (modal.el.querySelector('#inn-input').value.length < 1) {
+            if (modal.el.querySelector('#login-input').value.length < 4) {
                isValid = false;
-               modal.el.querySelector('#inn-input').className = 'validate invalid';
+               modal.el.querySelector('#login-input').className = 'validate invalid';
             }
 
             if (modal.el.querySelector('#name-input').value.length < 1) {
@@ -255,57 +273,254 @@ while ($partners_rows[] = mysqli_fetch_array($result));
                modal.el.querySelector('#name-input').className = 'validate invalid';
             }
 
+            if (modal.el.querySelector('#lastname-input').value.length < 1) {
+               isValid = false;
+               modal.el.querySelector('#lastname-input').className = 'validate invalid';
+            }
+
+            if (modal.el.querySelector('#password-input').value.length < 4) {
+               isValid = false;
+               modal.el.querySelector('#password-input').className = 'validate invalid';
+            }
+
             return isValid;
          }
 
-         function clearForm() {
-            let modalNode = document.getElementById('add-modal');
-            let inputs = modalNode.querySelectorAll('input');
-            inputs.forEach(val => {
-               val.value = '';
-            });
-         }
+         function editFormValidation() {
+            let isValid = true;
+            let modal = M.Modal.getInstance(document.getElementById('add-modal'));
 
-         function showMessage(response) {
-            //удалить старое сообщение
-            let oldMessage = document.querySelector('.message-card');
-            if (oldMessage) oldMessage.remove();
-
-            let color;
-            switch (response.type) {
-               case 'message':
-                  color = 'blue';
-                  break;
-
-               case 'error':
-                  color = 'red';
-                  break;
-
-               case 'success':
-                  color = 'green';
-                  break;
-
-               default:
-                  color = 'blue';
-                  break;
+            if (modal.el.querySelector('#login-input').value.length < 4) {
+               isValid = false;
+               modal.el.querySelector('#login-input').className = 'validate invalid';
             }
 
-            if (e.target.classList.contains('close-message') || e.target.parentElement.classList.contains('close-message')) {
-               e.target.closest('.message-card').remove();
+            if (modal.el.querySelector('#name-input').value.length < 1) {
+               isValid = false;
+               modal.el.querySelector('#name-input').className = 'validate invalid';
             }
 
+            if (modal.el.querySelector('#lastname-input').value.length < 1) {
+               isValid = false;
+               modal.el.querySelector('#lastname-input').className = 'validate invalid';
+            }
 
-            let messageNode = document.createElement('div');
-            messageNode.className = `card-panel ${color} lighten-4 message-card fadeIn`;
-            messageNode.innerHTML = `
-            ${response.message}
-            <a class="close-message"><i class="material-icons">close</i></a>
-            `;
-            let parentNode = document.querySelector('#main-wrapper .container');
-            parentNode.insertAdjacentElement('afterbegin', messageNode);
+            if (modal.el.querySelector('#password-input').value.length != 0 && modal.el.querySelector('#password-input').value.length < 4) {
+               isValid = false;
+               modal.el.querySelector('#password-input').className = 'validate invalid';
+            }
+
+            return isValid;
          }
 
       });
+
+      function setAddModal() {
+         document.querySelector('#add-modal').innerHTML = `<div class="modal-content">
+         <h4 id="modal-title" style="font-weight: bold;">Добавление пользователя</h4>
+         <p id="modal-desc">Заполните необходимую информацию</p>
+         <h5>Основные поля</h5>
+
+         <div id="main-fields">
+            <div class="row">
+               <div class="col s12 flex-col">
+                  <div class="input-field">
+                     <input autocomplete="off" placeholder="Введите логин" id="login-input" type="text" class="">
+                     <label for="login-input">Логин</label>
+                  </div>
+                  <i class="material-icons help-icon" data-tooltip="Начните вводить название для поиска">help_outline</i>
+               </div>
+            </div>
+
+
+            <div class="row">
+               <div class="col s6 flex-col">
+                  <div class="input-field">
+                     <input autocomplete="off" placeholder="Введите имя" id="name-input" type="text" class="">
+                     <label for="name-input">Имя</label>
+                  </div>
+                  <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
+               </div>
+
+               <div class="col s6 flex-col">
+                  <div class="input-field">
+                     <input autocomplete="off" placeholder="Введите фамилию" id="lastname-input" type="text" class="">
+                     <label for="lastname-input">Фамилия</label>
+                  </div>
+                  <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
+               </div>
+            </div>
+
+            <div class="row">
+               <div class="col s12 flex-col">
+                  <div class="input-field">
+                     <select id="access-level">
+                        <option value="user" selected>Пользователь</option>
+                        <option value="admin">Администратор</option>
+                     </select>
+                     <label>Полномочия</label>
+                  </div>
+                  <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
+               </div>
+            </div>
+
+            <div class="row">
+               <div class="col s12 flex-col">
+                  <div class="input-field">
+                     <input autocomplete="off" placeholder="Задайте начальный пароль" id="password-input" type="text" class="">
+                     <label for="password-input">Пароль</label>
+                  </div>
+                  <i class="material-icons help-icon" data-tooltip="Начните вводить название для поиска">help_outline</i>
+               </div>
+            </div>
+
+         </div>
+
+      </div>
+
+      <div class="modal-footer">
+         <!-- js controls -->
+         <a href="#!" id="add-user-button" class="waves-effect waves-green btn blue">Добавить</a>
+         <a href="#!" class="modal-close waves-effect waves-green btn grey">Отмена</a>
+      </div>`;
+
+         //select init
+         M.FormSelect.init(document.querySelectorAll('select'), {});
+         //reinit
+         M.updateTextFields();
+      }
+
+      function setEditModal(id) {
+         document.querySelector('#add-modal').innerHTML = `<div class="modal-content">
+         <h4 id="modal-title" style="font-weight: bold;">Редактирование пользователя</h4>
+         <p id="modal-desc">Измените интересующую информацию</p>
+         <h5>Основные поля</h5>
+
+         <div id="main-fields">
+            <div class="row">
+               <div class="col s12 flex-col">
+                  <div class="input-field">
+                     <input autocomplete="off" placeholder="Введите логин" id="login-input" type="text" class="">
+                     <label for="login-input">Логин</label>
+                  </div>
+                  <i class="material-icons help-icon" data-tooltip="Начните вводить название для поиска">help_outline</i>
+               </div>
+            </div>
+
+
+            <div class="row">
+               <div class="col s6 flex-col">
+                  <div class="input-field">
+                     <input autocomplete="off" placeholder="Введите имя" id="name-input" type="text" class="">
+                     <label for="name-input">Имя</label>
+                  </div>
+                  <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
+               </div>
+
+               <div class="col s6 flex-col">
+                  <div class="input-field">
+                     <input autocomplete="off" placeholder="Введите фамилию" id="lastname-input" type="text" class="">
+                     <label for="lastname-input">Фамилия</label>
+                  </div>
+                  <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
+               </div>
+            </div>
+
+            <div class="row">
+               <div class="col s12 flex-col">
+                  <div class="input-field">
+                     <select id="access-level">
+                        <option value="user" selected>Пользователь</option>
+                        <option value="admin">Администратор</option>
+                     </select>
+                     <label>Полномочия</label>
+                  </div>
+                  <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
+               </div>
+            </div>
+
+            <div class="row">
+            <div class="info-message">Если пользователь забыл пароль, вы можете временно задать ему новый. Если необходимости менять пароль нет, оставьте поле пустым.</div>
+               <div class="col s12 flex-col">
+                  <div class="input-field">
+                     <input autocomplete="off" placeholder="Задайте новый пароль или оставьте пустым" id="password-input" type="text" class="">
+                     <label for="password-input">Пароль</label>
+                  </div>
+                  <i class="material-icons help-icon" data-tooltip="Начните вводить название для поиска">help_outline</i>
+               </div>
+            </div>
+
+
+         </div>
+
+      </div>
+
+      <div class="modal-footer">
+         <!-- js controls -->
+         <a href="#!" id="edit-user-button" data-id="${id}" class="waves-effect waves-green btn blue">Сохранить</a>
+         <a href="#!" class="modal-close waves-effect waves-green btn grey">Отмена</a>
+      </div>`;
+
+         //select init
+         M.FormSelect.init(document.querySelectorAll('select'), {});
+         //reinit
+         M.updateTextFields();
+      }
+
+      function showMessage(response) {
+         //удалить старое сообщение
+         let oldMessage = document.querySelector('.message-card');
+         if (oldMessage) oldMessage.remove();
+
+         let color;
+         switch (response.type) {
+            case 'message':
+               color = 'blue';
+               break;
+
+            case 'error':
+               color = 'red';
+               break;
+
+            case 'success':
+               color = 'green';
+               break;
+
+            default:
+               color = 'blue';
+               break;
+         }
+
+         let messageNode = document.createElement('div');
+         messageNode.className = `card-panel ${color} lighten-4 message-card fadeIn`;
+         messageNode.innerHTML = `
+            ${response.message}
+            <a class="close-message"><i class="material-icons">close</i></a>
+            `;
+         let parentNode = document.querySelector('#main-wrapper .content-wrapper');
+         parentNode.insertAdjacentElement('afterbegin', messageNode);
+      }
+
+      function checkMessage() {
+         let dataObj = {};
+         let params = decodeURIComponent(location.search.substr(1)).split('&');
+         for (let i = 0; i < params.length; i++) {
+            let param = params[i].split('=');
+            dataObj[param[0]] = param[1];
+         }
+
+         console.log(dataObj);
+
+         if (dataObj.success == 'true' && dataObj.hasOwnProperty('target')) {
+            let reg = '/\+';
+            showMessage({
+               message: `Пользователь "${dataObj.target.split('+').join(' ')}" успешно сохранен.`,
+               type: 'success'
+            });
+         }
+
+      }
+      checkMessage();
    </script>
 
 </body>

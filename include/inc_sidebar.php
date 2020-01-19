@@ -7,8 +7,10 @@
 
          <p style="text-align: center"><?php echo ("$_SESSION[name] $_SESSION[lastname]") ?></p>
          <p style="text-align: center">@<?php echo ("$_SESSION[login]") ?></p>
-         <div style="display: flex; justify-content: center;">
-            <a id="logout" style="width: 90%; height: 36px; padding: 0; margin: 10px 0px; text-align: center;" class="waves-effect waves-light btn grey lighten-4">Выход</a>
+
+         <div style="display: flex; justify-content: center; flex-direction: column; padding: 10px;">
+            <a id="user-settings-1" style="height: 36px; padding: 0; margin-bottom: 10px; text-align: center;" class="waves-effect waves-light btn grey lighten-4">Настройки</a>
+            <a id="logout" style="height: 36px; padding: 0; margin-bottom: 10px; text-align: center;" class="waves-effect waves-light btn grey lighten-4">Выход</a>
          </div>
 
       </li>

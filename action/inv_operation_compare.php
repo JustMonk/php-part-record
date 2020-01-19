@@ -11,7 +11,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 //$data = json_decode('{"productList":[{"name":"Йогурт Домодедовский КЛУБНИКА жир. 2,7% (250гр)","count":"1","createDate":"2020-01-24"}]}', true);
 
 //разбиваем на переменные для удобства
-$product_list = $data['productList'];
+$product_list = $data['productList'] ? $data['productList'] : array();
 
 //объект ответа
 $response = array();

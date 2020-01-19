@@ -22,7 +22,7 @@ include './include/auth_redirect.php';
 
 <body>
 
-   <div id="login-screen" style="">
+   <div id="login-screen">
 
       <div id="login-card" class="card-panel white" style="width: 500px">
          <h5 style="margin-bottom: 30px; margin-top: 0;">Вход в систему</h5>
