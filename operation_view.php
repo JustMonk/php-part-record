@@ -45,6 +45,7 @@ if ($res['operation_name'] == 'add') {
    foreach ($result as $row) {
       if ($row) {
          $current = array(
+            "product_id" => $row['product_id'],
             "name" => $row['product_name'],
             "count" => $row['count'],
             "createDate" => $row['create_date'],
@@ -57,7 +58,7 @@ if ($res['operation_name'] == 'add') {
       }
    }
    $json = json_encode($incomeTable);
-   $script = '<script>
+   /*$script = '<script>
    function incomeTableRender() {
       let num = 1;
       let tableBody = document.getElementById("income-table").tBodies[0];
@@ -85,7 +86,7 @@ if ($res['operation_name'] == 'add') {
       globalState.incomeTable.set(i, val);
    });
    incomeTableRender();
-   </script>";
+   </script>";*/
 }
 
 if ($res['operation_name'] == 'sell') {
@@ -103,7 +104,7 @@ if ($res['operation_name'] == 'sell') {
       }
    }
    $json = json_encode($incomeTable);
-   $script = '<script>
+   /* $script = '<script>
    function incomeTableRender() {
       let num = 1;
       let tableBody = document.getElementById("income-table").tBodies[0];
@@ -131,7 +132,7 @@ if ($res['operation_name'] == 'sell') {
       globalState.incomeTable.set(i, val);
    });
    incomeTableRender();
-   </script>";
+   </script>";*/
 }
 
 if ($res['operation_name'] == 'prod') {
@@ -143,6 +144,7 @@ if ($res['operation_name'] == 'prod') {
    foreach ($result as $row) {
       if ($row) {
          $current = array(
+            "product_id" => $row['product_id'],
             "name" => $row['product_name'],
             "count" => $row['count'],
             "unit" => $row['unit'],
@@ -161,6 +163,7 @@ if ($res['operation_name'] == 'prod') {
    foreach ($result as $row) {
       if ($row) {
          $current = array(
+            "product_id" => $row['product_id'],
             "name" => $row['product_name'],
             "count" => $row['count'],
             "unit" => $row['unit']
@@ -172,7 +175,7 @@ if ($res['operation_name'] == 'prod') {
    $materials_json = json_encode($materialTable);
    $make_json = json_encode($makeTable);
 
-   $script = '<script>
+   /*$script = '<script>
    function doubleTableRender() {
       //таблица сырья
       let num = 1;
@@ -232,7 +235,7 @@ if ($res['operation_name'] == 'prod') {
    });
 
    doubleTableRender();
-   </script>";
+   </script>";*/
 }
 
 if ($res['operation_name'] == 'inv') {
@@ -276,7 +279,7 @@ if ($res['operation_name'] == 'inv') {
          table.tBodies[0].append(tr);
       });
    
-   }'."
+   }' . "
    let inventoryData = JSON.parse('$inventory_json');
    showCompareForm(inventoryData);
    </script>";
@@ -300,18 +303,22 @@ if ($res['operation_name'] == 'inv') {
    <link href="./assets/font-awesome/css/all.css" rel="stylesheet">
    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700&display=swap&subset=cyrillic" rel="stylesheet">
    <style>
-      .input-field a {
+      /*.input-field a {
          display: none;
-      }
+      }*/
+
       #add-form {
          display: none;
       }
+
       #compare-form {
          display: block !important;
       }
+
       #compare-form a {
          display: none;
       }
+
       .info-message {
          display: none;
       }
@@ -337,26 +344,26 @@ if ($res['operation_name'] == 'inv') {
                   <h2 style="margin: 0">Просмотр операции</h2>
                   <hr>
 
-                  <?php 
+                  <?php
                   //обратная ссылка со всеми параметрами, но без ID
                   $query_array = explode('&', $_SERVER['QUERY_STRING']);
-                  foreach($query_array as $key => $value) {
-                     if(substr($value, 0, 3) == 'id=') {
+                  foreach ($query_array as $key => $value) {
+                     if (substr($value, 0, 3) == 'id=') {
                         unset($query_array[$key]);
                      }
                   }
-                  $return_link = join("&",$query_array);
+                  $return_link = join("&", $query_array);
                   if (strlen($return_link) > 0) $return_link = './operation_history.php?' . $return_link;
                   else $return_link = './operation_history.php';
 
                   echo "<p><a href='$return_link'>Вернуться к списку</a></p>"
                   ?>
-                  
+
 
                   <?php
                   $date = date("d.m.yy", strtotime("$res[operation_date]")); //"формат", "исходная дата"
                   echo "
-                     <h4>$res[operation_name] № $res[document_number] от $date</h4>
+                     <h5>$res[operation_name] № $res[document_number] от $date</h5>
 
                      <div class='card-panel blue lighten-5'>
                      <p>Дата операции: $date</p>
@@ -372,6 +379,13 @@ if ($res['operation_name'] == 'inv') {
 
                   ?>
 
+                  <?php
+                  echo "<div class=\"divider\" style=\"margin: 10px 0px;\"></div>
+                     <a class=\"waves-effect waves-light btn blue lighten-1\">Сохранить изменения</a>
+                     <a class=\"waves-effect waves-light btn grey\">Удалить операцию</a>
+                     "
+                  ?>
+
                </div>
 
             </div>
@@ -381,10 +395,192 @@ if ($res['operation_name'] == 'inv') {
       </div>
    </div>
 
+   <?php
+   //echo $script;
+   if ($res['operation_name'] == 'add') {
+      include './include/modals/add_modal.php';
+   }
+   if ($res['operation_name'] == 'sell') {
+      include './include/modals/sell_modal.php';
+   }
+   if ($res['operation_name'] == 'prod') {
+      include './include/modals/make_modal.php';
+   }
+   if ($res['operation_name'] == 'inv') {
+      include './include/modals/inv_modal.php';
+   }
+   ?>
+
    <script src="./assets/materialize/js/materialize.min.js"></script>
    <script src="./js/script.js"></script>
    <script src="./js/logout.js"></script>
-   <?php echo $script ?>
+   <?php
+   //echo $script;
+   if ($res['operation_name'] == 'add') {
+      echo "<script src='./js/add_goods.js'></script>";
+      echo "
+      <script>
+      //modal init===================
+      document.addEventListener('DOMContentLoaded', function() {
+         var elems = document.querySelector('#add-modal');
+         var instances = M.Modal.init(elems, {
+            //onOpenStart: clearAddModal
+         });
+      });
+
+      //datepicker init===========
+      document.addEventListener('DOMContentLoaded', function() {
+         var elems = document.querySelector('#goods-create-date');
+         var instances = M.Datepicker.init(elems, {});
+      });
+
+      //все остальные datepicker'ы
+      document.addEventListener('DOMContentLoaded', function() {
+         var elems = document.querySelector('#operation-date');
+         var instances = M.Datepicker.init(elems, {});
+      });
+
+      //вспывающие подсказки
+      M.Tooltip.init(document.querySelectorAll('.help-icon'), {
+         position: 'top'
+      });
+
+   globalState.incomeTable = new Map();
+   let data = JSON.parse('$json');
+   data.forEach((val, i) => {
+      globalState.incomeTable.set(i, val);
+   });
+   incomeTableRender();
+   </script>
+      ";
+   }
+   if ($res['operation_name'] == 'sell') {
+      echo "<script src='./js/sell_goods.js'></script>";
+      echo "
+      <script>
+      //modal init===================
+      document.addEventListener('DOMContentLoaded', function() {
+         var elems = document.querySelector('#add-modal');
+         var instances = M.Modal.init(elems, {
+            //onOpenStart: clearAddModal
+         });
+      });
+
+      //datepicker init===========
+      document.addEventListener('DOMContentLoaded', function() {
+         var elems = document.querySelector('#goods-create-date');
+         var instances = M.Datepicker.init(elems, {});
+      });
+
+      //все остальные datepicker'ы
+      document.addEventListener('DOMContentLoaded', function() {
+         var elems = document.querySelector('#operation-date');
+         var instances = M.Datepicker.init(elems, {});
+      });
+
+      //вспывающие подсказки
+      M.Tooltip.init(document.querySelectorAll('.help-icon'), {
+         position: 'top'
+      });
+
+      globalState.incomeTable = new Map();
+      let data = JSON.parse('$json');
+      data.forEach((val, i) => {
+      globalState.incomeTable.set(val.name, val);
+      console.log(val);
+      });
+      
+      document.addEventListener('fetchComplete', e => {
+         for(let val of globalState.incomeTable.values()) {
+            if (!globalState.goods[val.name]) {
+               globalState.goods[val.name] = val;
+               globalState.goods[val.name].expire_date = globalState.goods[val.name].expireDate;
+               globalState.goods[val.name].create_date = globalState.goods[val.name].createDate;
+               console.log(globalState.goods[val.name]);
+            } else {
+               globalState.goods[val.name].count = +globalState.goods[val.name].count + +val.count;
+            } 
+         }
+         incomeTableRender();
+      });
+
+      </script>
+      ";
+   }
+   if ($res['operation_name'] == 'prod') {
+      echo "<script src='./js/make_goods.js'></script>";
+      echo "
+      <script>
+      //modal init===================
+      document.addEventListener('DOMContentLoaded', function() {
+         var elems = document.querySelector('#add-modal');
+         var instances = M.Modal.init(elems, {
+            //onOpenStart: clearAddModal
+         });
+      });
+
+      //datepicker init===========
+      document.addEventListener('DOMContentLoaded', function() {
+         var elems = document.querySelector('#goods-create-date');
+         var instances = M.Datepicker.init(elems, {});
+      });
+
+      //все остальные datepicker'ы
+      document.addEventListener('DOMContentLoaded', function() {
+         var elems = document.querySelector('#operation-date');
+         var instances = M.Datepicker.init(elems, {});
+      });
+
+      //вспывающие подсказки
+      M.Tooltip.init(document.querySelectorAll('.help-icon'), {
+         position: 'top'
+      });
+
+      //в производстве 2 мапа (materialTable и makeTable)
+      globalState.materialTable = new Map();
+      let materialData = JSON.parse('$materials_json');
+      materialData.forEach((val, i) => {
+      globalState.materialTable.set(val.name + ' [' + val.createDate + ']', val);
+      console.log(val);
+      });
+
+      //второй мап
+      globalState.makeTable = new Map();
+      let makeData = JSON.parse('$make_json');
+      makeData.forEach((val, i) => {
+      globalState.makeTable.set(i, val);
+      console.log(val);
+      });
+
+      //определение типа производимой продукции
+      let mark = '';
+      if (globalState.finishedList[globalState.makeTable.get(0).name]) {
+
+      }
+
+      //для добавления количества (сумма остатка и резерва)
+      document.addEventListener('fetchComplete', e => {
+         for(let val of globalState.incomeTable.values()) {
+            if (!globalState.goods[val.name]) {
+               globalState.goods[val.name] = val;
+               globalState.goods[val.name].expire_date = globalState.goods[val.name].expireDate;
+               globalState.goods[val.name].create_date = globalState.goods[val.name].createDate;
+               console.log(globalState.goods[val.name]);
+            } else {
+               globalState.goods[val.name].count = +globalState.goods[val.name].count + +val.count;
+            } 
+         }
+         doubleTableRender();
+      });
+      //рендерим таблицу
+      doubleTableRender();
+      </script>
+      ";
+   }
+   if ($res['operation_name'] == 'inv') {
+      echo "<script src='./js/inventory_goods.js'></script>";
+   }
+   ?>
 
 </body>
 

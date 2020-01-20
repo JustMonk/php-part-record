@@ -17,6 +17,9 @@ function getUserState() {
       delete globalState.finishedList;
       //мерджим полученные с сервера данные в состояние
       Object.assign(globalState, data);
+      //диспатчим эвент после получения данных
+      let event = new Event("fetchComplete", {bubbles: true});
+      document.dispatchEvent(event);
 
       doubleTableRender();
       console.log(globalState);
@@ -108,6 +111,7 @@ document.addEventListener('click', (e) => {
 
       globalState.materialTable.set(id, {
          registry_id: targetRegistry[document.getElementById('goods-select').value].registry_id,
+         product_id: targetRegistry[document.getElementById('goods-select').value].product_id,
          string_key: document.getElementById('goods-select').value,
          name: targetRegistry[document.getElementById('goods-select').value].name,
          count: document.getElementById('goods-count').value,

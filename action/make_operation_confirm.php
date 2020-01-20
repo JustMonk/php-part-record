@@ -9,7 +9,7 @@ include '../include/session_config.php';
 //парсим полученный JSON в ассоциативный массив
 $data = json_decode(file_get_contents('php://input'), true);
 //$data = json_decode('{"docNum":"13","operationDate":"2019-12-27","materialList":[{"registry_id":27,"string_key":"Сырое молочко [2019-12-20]","name":"Сырое молочко","count":"1","unit":"л","createDate":"2019-12-20","expireDate":"2019-12-23"}],"productList":[{"product_id":"9","name":"Молоко пастеризованное с мдж 4%","count":"23","unit":"л","createDate":"2019-12-22","expireDate":"2019-12-30"}]}', true);
-$data = json_decode('{"docNum":"test-upd","operationDate":"2020-01-17","materialList":[{"registry_id":"24","string_key":"дымовой слэш [2020-01-31]","name":"дымовой слэш","count":"5","unit":"шт","createDate":"2020-01-31","expireDate":"2020-02-01"}],"productList":[{"product_id":"38","name":"Молоко безысходности 2","count":"10","unit":"л"}]}', true);
+//$data = json_decode('{"docNum":"test_prod_1","operationDate":"2020-01-31","materialList":[{"registry_id":"7","product_id":"7","string_key":"Сырое молочко [2020-01-24]","name":"Сырое молочко","count":"11","unit":"л","createDate":"2020-01-24","expireDate":"2020-01-27"}],"productList":[{"product_id":"15","name":"Йогурт Домодедовский ПЕРСИК жир. 33%","count":"11","unit":"л"}]}', true);
 
 //разбиваем на переменные для удобства
 //htmlspecialchars - базовая валидация
@@ -101,12 +101,13 @@ foreach ($product_list as $key => $value) {
    $res = $res->fetch_assoc();
    $expire_date = $res["expire_date"];
 
-   $values_str .= "($last_id, '$value[name]', $value[count], '$operation_date', (SELECT DATE_ADD('$operation_date', INTERVAL (SELECT valid_days FROM product_list WHERE title = '$value[name]') DAY)) )";
+   $values_str .= "($last_id, $value[product_id], '$value[name]', $value[count], '$operation_date', (SELECT DATE_ADD('$operation_date', INTERVAL (SELECT valid_days FROM product_list WHERE title = '$value[name]') DAY)) )";
    if ($key != count($product_list) - 1) $values_str .= ",";
 }
 unset($value);
 
-$res = $mysqli->query("INSERT INTO operation_prod_add(operation_id, product_name, count, create_date, expire_date) VALUES $values_str");
+
+$res = $mysqli->query("INSERT INTO operation_prod_add(operation_id, product_id, product_name, count, create_date, expire_date) VALUES $values_str");
 if ($mysqli->error) {
    //printf("Errormessage: %s\n", $mysqli->error);
    header('Content-Type: application/json');
@@ -166,12 +167,12 @@ foreach ($material_list as $key => $value) {
    $res = $res->fetch_assoc();
    $expire_date = $res["expire_date"];
 
-   $values_str .= "($last_id, '$value[name]', $value[count], '$value[createDate]', '$expire_date')";
+   $values_str .= "($last_id, $value[product_id], '$value[name]', $value[count], '$value[createDate]', '$expire_date')";
    if ($key != count($material_list) - 1) $values_str .= ",";
 }
 unset($value);
 
-$res = $mysqli->query("INSERT INTO operation_prod_consume(operation_id, product_name, count, create_date, expire_date) VALUES $values_str");
+$res = $mysqli->query("INSERT INTO operation_prod_consume(operation_id, product_id, product_name, count, create_date, expire_date) VALUES $values_str");
 if ($mysqli->error) {
    //printf("Errormessage: %s\n", $mysqli->error);
    header('Content-Type: application/json');

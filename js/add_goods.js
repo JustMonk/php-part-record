@@ -98,6 +98,7 @@ document.addEventListener('click', (e) => {
       }
 
       globalState.incomeTable.set(id, {
+         product_id: globalState.goods[document.getElementById('goods-select').value].id,
          name: document.getElementById('goods-select').value,
          count: document.getElementById('goods-count').value,
          createDate: document.getElementById('goods-create-date').value,

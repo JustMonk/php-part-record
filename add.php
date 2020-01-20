@@ -68,8 +68,6 @@ include './include/auth_redirect.php';
                         </div>
                      </div>
 
-                     <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-product">добавить позицию</a>
-
                      <?php include './include/inc_add_form.php'; ?>
 
                   </div>

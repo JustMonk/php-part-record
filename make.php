@@ -59,19 +59,6 @@ include './include/auth_redirect.php';
                         </div>
                      </div>
 
-                     <div class="row" style="margin-bottom: 0;">
-                        <div class="col s12 flex-col">
-                           <div class="input-field autocomplete-field">
-                              <select id="production_type">
-                                 <option value="halfway" selected>Полуфабрикат</option>
-                                 <option value="finished">Готовая продукция</option>
-                              </select>
-                              <label>Тип производимой продукции</label>
-                           </div>
-                           <i class="material-icons help-icon" data-tooltip="Выберите тип производимой продукции">help_outline</i>
-                        </div>
-                     </div>
-
                      <?php include './include/inc_make_form.php'; ?>
 
 

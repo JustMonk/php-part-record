@@ -5,7 +5,6 @@ let globalState = {
 
 //data init
 function getUserState() {
-
    fetch('./action/get_sell_state.php').then(response => {
       return response.json()
    }).then(data => {
@@ -14,6 +13,9 @@ function getUserState() {
       delete globalState.goods;
       //мерджим полученные с сервера данные в состояние
       Object.assign(globalState, data);
+      //диспатчим эвент после получения данных
+      let event = new Event("fetchComplete", {bubbles: true});
+      document.dispatchEvent(event);
 
       var partnerSelect = document.querySelector('#partner-select');
       var instances = M.Autocomplete.init(partnerSelect, {
@@ -100,6 +102,7 @@ document.addEventListener('click', (e) => {
 
       globalState.incomeTable.set(id, {
          registry_id: globalState.goods[id].registry_id,
+         product_id: globalState.goods[id].product_id,
          name: document.getElementById('goods-select').value,
          count: document.getElementById('goods-count').value,
          createDate: document.getElementById('goods-create-date').value,

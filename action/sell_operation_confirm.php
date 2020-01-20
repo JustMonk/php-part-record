@@ -8,8 +8,7 @@ include '../include/session_config.php';
 
 //парсим полученный JSON в ассоциативный массив
 $data = json_decode(file_get_contents('php://input'), true);
-//$data = json_decode('{"docNum":"23","operationDate":"2019-12-19","partner":"ООО \"Молочный поставщик\"","productList":[{"registry_id":1,"name":"Йогурт Домодедовский КЛАССИЧЕСКИЙ жир. 2,7% (250гр)","count":"2623","createDate":"2019-12-21","extFat":"","extSolidity":"","extAcidity":""}]}', true);
-
+//$data = json_decode('{"docNum":"test_sell_2","operationDate":"2020-01-31","partner":"ОАО \"Кросс-докинг\"","productList":[{"registry_id":"9","product_id":"10","name":"Снежок с мдж 2,1% [2020-01-25]","count":"3","createDate":"2020-01-25"}]}', true);
 
 //разбиваем на переменные для удобства
 //htmlspecialchars - базовая валидация
@@ -19,10 +18,10 @@ $operation_date = htmlspecialchars($data['operationDate']);
 $partner = htmlspecialchars($data['partner'], ENT_NOQUOTES);
 $product_list = $data['productList'];
 //normalize object values
-foreach ($product_list as $key => $value) {
+/*foreach ($product_list as $key => $value) {
    $value[$key] = htmlspecialchars($value[$key]);
 }
-unset($value);
+unset($value);*/
 
 //=========================={проверка на количество}===========================
 //в рамках проверки у каждого документа уникальный номер, не зависящий от операции (плюс решаем проблему с исчерпанием автоинкремента)
@@ -93,12 +92,12 @@ foreach ($product_list as $key => $value) {
    $res = $res->fetch_assoc();
    $expire_date = $res["expire_date"];
 
-   $values_str .= "($last_id, '$value[name]', $value[count], '$value[createDate]', '$expire_date')";
+   $values_str .= "($last_id, $value[product_id], (SELECT title FROM product_list WHERE product_id = $value[product_id]), $value[count], '$value[createDate]', '$expire_date')"; //'$value[name]'
    if ($key != count($product_list) - 1) $values_str .= ",";
 }
 unset($value);
 
-$res = $mysqli->query("INSERT INTO operation_sell(operation_id, product_name, count, create_date, expire_date) VALUES $values_str");
+$res = $mysqli->query("INSERT INTO operation_sell(operation_id, product_id, product_name, count, create_date, expire_date) VALUES $values_str");
 if ($mysqli->error) {
    //printf("Errormessage: %s\n", $mysqli->error);
    header('Content-Type: application/json');
