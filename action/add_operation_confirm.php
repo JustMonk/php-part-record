@@ -9,7 +9,7 @@ include '../include/session_config.php';
 //парсим полученный JSON в ассоциативный массив
 $data = json_decode(file_get_contents('php://input'), true);
 //$data = json_decode('{"docNum":"12312","operationDate":"2019-12-20","partner":"ИП Володянкин","productList":[{"name":"Йогурт Домодедовский КЛАССИЧЕСКИЙ жир. 2,7% (250гр)","count":"32","createDate":"2019-12-22","extFat":"","extSolidity":"","extAcidity":""},{"name":"Биокефир Домодедовский жир. 1% (930гр)","count":"3","createDate":"2019-12-22","extFat":"","extSolidity":"","extAcidity":""}]}', true);
-//$data = json_decode('{"docNum":"test222","operationDate":"2020-01-31","partner":"ООО \"Молочный поставщик\"","productList":[{"product_id":"4","name":"Йогурт Домодедовский КЛАССИЧЕСКИЙ жир. 2,7% (250гр)","count":"3","createDate":"2020-01-31","extFat":"","extSolidity":"","extAcidity":""}]}', true);
+//$data = json_decode('{"operation_id":"68","operation_type":"add","docNum":"space_add","operationDate":"2020-01-31","partner":"ИП Володянкин","productList":[{"product_id":"4","name":"Йогурт Домодедовский КЛАССИЧЕСКИЙ жир. 2,7% (250гр)","count":"3333","createDate":"2020-01-31","expireDate":"2020-02-15","extFat":null,"extSolidity":null,"extAcidity":null},{"product_id":"23","name":"Йогурт Домодедовский ВИШНЯ жир. 2,7% (650гр)","count":"3333","createDate":"2020-01-30","expireDate":"2020-02-06","extFat":null,"extSolidity":null,"extAcidity":null}],"rewrite":false}', true);
 
 //разбиваем на переменные для удобства
 //htmlspecialchars - базовая валидация
@@ -18,48 +18,48 @@ $doc_number = htmlspecialchars($data['docNum']);
 $operation_date = htmlspecialchars($data['operationDate']);
 $partner = htmlspecialchars($data['partner'], ENT_NOQUOTES);
 $product_list = $data['productList'];
-//normalize object values
-foreach ($product_list as $key => $value) {
-   $value[$key] = htmlspecialchars($value[$key]);
-}
-unset($value);
-
+//если передано
+$operation_id = intval(htmlspecialchars($data['operation_id']));
 
 //================================={проверка на наличие документа с таким номером}====================================================
 //в рамках проверки у каждого документа уникальный номер, не зависящий от операции (плюс решаем проблему с исчерпанием автоинкремента)
-$res = $mysqli->query("SELECT * FROM operation_history WHERE document_number = '$doc_number' LIMIT 1");
-if ($res->num_rows > 0) {
-   //отправляем ответ клиенту
-   header('Content-Type: application/json');
-   echo json_encode(array('message' => 'Документ с таким номером уже существует. Откорректируйте его, либо обратитесь к администратору.', 'type' => 'error'));
-   exit;
-}
+//если флаг rewrite не передан - то проверяем номер, если передан - то игнорируем проверку
+if (!$data['rewrite']) {
+   $res = $mysqli->query("SELECT * FROM operation_history WHERE document_number = '$doc_number' LIMIT 1");
+   if ($res->num_rows > 0) {
+      //отправляем ответ клиенту
+      header('Content-Type: application/json');
+      echo json_encode(array('message' => 'Документ с таким номером уже существует. Откорректируйте его, либо обратитесь к администратору.', 'type' => 'error'));
+      exit;
+   }
 
-
-//========================={запись в историю операций}=================================
-$res = $mysqli->query("INSERT INTO operation_history(operation_type, document_number, operation_date, partner_code, timestamp, user_code) 
-VALUES(
+   //========================={запись в историю операций}=================================
+   $user_login = $_SESSION['login'] ? $_SESSION['login'] : $data['user']; //если передан логин
+   $res = $mysqli->query("INSERT INTO operation_history(operation_type, document_number, operation_date, partner_code, timestamp, user_code) 
+   VALUES(
    (SELECT operation_type_id FROM operation_types WHERE operation_name = '$operation_type'),
    '$doc_number',
    '$operation_date',
    (SELECT partner_id FROM partners WHERE name = '$partner'),
    DEFAULT,
-   (SELECT user_id FROM users WHERE login = '$_SESSION[login]')
-)");
+   (SELECT user_id FROM users WHERE login = '$user_login')
+   )");
 
-$last_id = $mysqli->query("SELECT LAST_INSERT_ID()");
-$last_id->data_seek(0);
-$last_id = $last_id->fetch_assoc();
-$last_id = $last_id['LAST_INSERT_ID()'];
+   $last_id = $mysqli->query("SELECT LAST_INSERT_ID()");
+   $last_id->data_seek(0);
+   $last_id = $last_id->fetch_assoc();
+   $last_id = $last_id['LAST_INSERT_ID()'];
 
-if ($mysqli->error) {
-   //printf("Errormessage: %s\n", $mysqli->error);
-   header('Content-Type: application/json');
-   echo json_encode(array('message' => "history_error - last id ($mysqli->error)", 'type' => 'error'));
-   exit;
+   if ($mysqli->error) {
+      //printf("Errormessage: %s\n", $mysqli->error);
+      header('Content-Type: application/json');
+      echo json_encode(array('message' => "history_error - last id ($mysqli->error)", 'type' => 'error'));
+      exit;
+   }
 }
 
 //=========================={запись в историю прихода}===================================
+if ($data['rewrite'] && $operation_id) $last_id = $operation_id; //если это изменение, то ID заранее известен
 $values_str = '';
 foreach ($product_list as $key => $value) {
    if (!$value["extFat"]) $value["extFat"] = 'DEFAULT';
@@ -81,7 +81,7 @@ $res = $mysqli->query("INSERT INTO operation_add(operation_id, product_id, produ
 if ($mysqli->error) {
    //printf("Errormessage: %s\n", $mysqli->error);
    header('Content-Type: application/json');
-   echo json_encode(array('message' => "add error - last id ($mysqli->error)", 'type' => 'error'));
+   echo json_encode(array('message' => "add error - last id = $last_id | $user_login ($mysqli->error)", 'type' => 'error'));
    exit;
 }
 

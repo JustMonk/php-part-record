@@ -14,6 +14,9 @@ function getUserState() {
       delete globalState.goods;
       //мерджим полученные с сервера данные в состояние
       Object.assign(globalState, data);
+      //диспатчим эвент после получения данных
+      let event = new Event("fetchComplete", {bubbles: true});
+      document.dispatchEvent(event);
 
       var partnerSelect = document.querySelector('#partner-select');
       var instances = M.Autocomplete.init(partnerSelect, {

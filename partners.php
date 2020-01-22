@@ -2,6 +2,7 @@
 include './include/inc_config.php';
 include './include/session_config.php';
 include './include/auth_redirect.php';
+include './include/check_admin_access.php';
 ?>
 
 <?php
@@ -40,7 +41,7 @@ while ($partners_rows[] = mysqli_fetch_array($result));
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-   <title>Reactive record</title>
+   <title>Part record</title>
    <link href="./assets/materialize/css/materialize.min.css" rel="stylesheet">
    <link href="./style.css" rel="stylesheet">
    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
