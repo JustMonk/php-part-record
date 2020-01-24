@@ -6,12 +6,19 @@ $access = ($access_query->fetch_assoc())['title']; //admin or user
 ?>
 
 <?php $link_path = 'http://' . $_SERVER['HTTP_HOST']; ?>
+<div id="mobile-nav">
+   <a id="openSideMenu"><i class="fas fa-bars"></i></a>
+   <div style='display: flex; align-items: center; justify-content: center; margin-left: 1.5rem; color: #fff;'>
+      <h4>Part Record</h4> <span style='font-size: 16px; background: #41b2f4; color: #fff; padding: 2px 5px; margin-left: 5px; border-radius: 3px; text-shadow: 1px 1px 1px black;'>2.1</span>
+   </div>
+</div>
+
 <div id="side-navbar" class="z-depth-1">
    <ul style="margin: 0;">
       <li class="side-logo white-text" style="background: #546e7a ; margin-bottom: 30px">
 
-      <?php
-      echo "
+         <?php
+         echo "
          <div style='display: flex; align-items: center; justify-content: center;'>
             <h4>Part Record</h4> <span style='font-size: 16px; background: #41b2f4; color: #fff; padding: 2px 5px; margin-left: 5px; border-radius: 3px; text-shadow: 1px 1px 1px black;'>2.1</span>
          </div>
@@ -37,11 +44,11 @@ $access = ($access_query->fetch_assoc())['title']; //admin or user
       </li>
       <li><a class='nav-button' href='$link_path/inventory.php''><i class=' fas fa-dolly-flatbed'></i>Инвентаризация</a></li>
       ";
-      ?>
+         ?>
 
-      <?php
-      if ($access == 'admin') {
-         echo "
+         <?php
+         if ($access == 'admin') {
+            echo "
          <li>
             <p style='padding: 0px 30px; margin-top: 20px; margin-bottom: 10px; font-weight: bold;'>Детализация:</p>
          </li>
@@ -62,8 +69,8 @@ $access = ($access_query->fetch_assoc())['title']; //admin or user
          <li><a class='nav-button' href='$link_path/units_list.php'><i class='fas fa-code'></i>Таблица ед.изм.</a></li>
          </li>
          ";
-      }
-      ?>
+         }
+         ?>
 
    </ul>
 </div>
@@ -71,5 +78,25 @@ $access = ($access_query->fetch_assoc())['title']; //admin or user
 <script>
    //выделяем текущую вкладку
    let sidebarLinks = document.querySelector(`#side-navbar a[href="${window.location.origin + '/' + window.location.pathname.slice(1)}"]:not(.header-button)`);
-   sidebarLinks.parentElement.classList.add('current-tab');
+   if (sidebarLinks) sidebarLinks.parentElement.classList.add('current-tab');
+
+   document.addEventListener('click', e => {
+      if(e.target.id == 'openSideMenu' || e.target.parentElement.id == 'openSideMenu') {
+         //выкатываем сайдменю
+         let sidemenu = document.getElementById('side-navbar');
+         sidemenu.style.left = '0';
+         document.body.style.overflow = 'hidden';
+
+         //создаем и добавляем оверлей
+         let overlay = document.createElement('div');
+         overlay.id = 'body-overlay';
+         overlay.style.cssText = 'background: rgba(150, 150, 150, 0.5); position: fixed; width: 100%; height: 100%; top: 0; z-index: 999;';
+         overlay.onclick = () => {
+            overlay.remove();
+            sidemenu.style.left = '-100%';
+            document.body.style.overflow = 'visible';
+         };
+         document.body.append(overlay);
+      }
+   });
 </script>

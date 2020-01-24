@@ -43,7 +43,7 @@ include './include/auth_redirect.php';
                   <div id="test1" class="col s12" style="padding: 20px">
 
                      <div class="row" style="margin-bottom: 0;">
-                        <div class="col s6 flex-col">
+                        <div class="col s12 m6 flex-col">
                            <div class="input-field">
                               <input autocomplete="off" placeholder="Введите номер документа" id="doc-number" type="text" class="">
                               <label for="doc-number">Номер документа</label>
@@ -51,7 +51,7 @@ include './include/auth_redirect.php';
                            <i class="material-icons help-icon" data-tooltip="Введите номер операции или номер документа в 1С">help_outline</i>
                         </div>
 
-                        <div class="col s6 flex-col">
+                        <div class="col s12 m6 flex-col">
                            <div class="input-field">
                               <input id="operation-date" type="text" class="datepicker">
                               <label for="operation-date" class="">Дата производства</label>

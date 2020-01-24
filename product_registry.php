@@ -71,24 +71,25 @@ while ($product_rows[] = mysqli_fetch_array($result));
                   <h2 style="margin: 0">Реестр продукции</h2>
                   <hr>
                   <p>Представление таблицы «<b>product_registry</b>». Аналог складского журнала </p>
-                  <table>
-                     <thead>
-                        <tr>
-                           <th>ID в реестре</th>
-                           <th>Наименование</th>
-                           <th>Количество</th>
-                           <th>Ед.изм.</th>
-                           <th>Дата производства</th>
-                           <th>Годен до</th>
-                        </tr>
-                     </thead>
+                  <div class="table-wrapper">
+                     <table>
+                        <thead>
+                           <tr>
+                              <th>ID в реестре</th>
+                              <th>Наименование</th>
+                              <th>Количество</th>
+                              <th>Ед.изм.</th>
+                              <th>Дата производства</th>
+                              <th>Годен до</th>
+                           </tr>
+                        </thead>
 
-                     <tbody>
+                        <tbody>
 
-                        <?php
-                        foreach ($product_rows as $row) {
-                           if ($row) {
-                              echo "<tr>
+                           <?php
+                           foreach ($product_rows as $row) {
+                              if ($row) {
+                                 echo "<tr>
                               <td>$row[registry_id]</td>
                               <td>$row[title]</td>
                               <td>$row[count]</td>
@@ -96,12 +97,13 @@ while ($product_rows[] = mysqli_fetch_array($result));
                               <td>$row[create_date]</td>
                               <td>$row[expire_date]</td>
                               <tr>";
+                              }
                            }
-                        }
-                        ?>
+                           ?>
 
-                     </tbody>
-                  </table>
+                        </tbody>
+                     </table>
+                  </div>
                </div>
 
 

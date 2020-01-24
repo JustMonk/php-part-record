@@ -74,27 +74,28 @@ while ($product_rows[] = mysqli_fetch_array($result));
                      <a class="waves-effect waves-light btn blue lighten-2" id="add-product-form">Добавить номенклатуру</a>
                   </div>
 
-                  <table>
-                     <thead>
-                        <tr>
-                           <th>ID</th>
-                           <th>Наименование</th>
-                           <th>Ед.изм</th>
-                           <th>Объем</th>
-                           <th>GTIN</th>
-                           <th>Вид номенклатуры</th>
-                           <th>Срок годности (суток)</th>
-                           <th>Доп.поля (молоко)</th>
-                           <th></th>
-                        </tr>
-                     </thead>
+                  <div class="table-wrapper">
+                     <table>
+                        <thead>
+                           <tr>
+                              <th>ID</th>
+                              <th>Наименование</th>
+                              <th>Ед.изм</th>
+                              <th>Объем</th>
+                              <th>GTIN</th>
+                              <th>Вид номенклатуры</th>
+                              <th>Срок годности (суток)</th>
+                              <th>Доп.поля (молоко)</th>
+                              <th></th>
+                           </tr>
+                        </thead>
 
-                     <tbody>
+                        <tbody>
 
-                        <?php
-                        foreach ($product_rows as $row) {
-                           if ($row) {
-                              echo "<tr>
+                           <?php
+                           foreach ($product_rows as $row) {
+                              if ($row) {
+                                 echo "<tr>
                               <td>$row[product_id]</td>
                               <td>$row[title]</td>
                               <td>$row[unit]</td>
@@ -105,12 +106,13 @@ while ($product_rows[] = mysqli_fetch_array($result));
                               <td>$row[extended_milk_fields]</td>
                               <td><a class=\"product-edit\" data-product-id=\"$row[product_id]\">ред.</a></td>
                               </tr>";
+                              }
                            }
-                        }
-                        ?>
+                           ?>
 
-                     </tbody>
-                  </table>
+                        </tbody>
+                     </table>
+                  </div>
 
                </div>
 

@@ -74,24 +74,25 @@ while ($users_rows[] = mysqli_fetch_array($result));
                      <a class="waves-effect waves-light btn blue lighten-2" id="add-user-form">Добавить пользователя</a>
                   </div>
 
-                  <table>
-                     <thead>
-                        <tr>
-                           <th>ID</th>
-                           <th>Логин</th>
-                           <th>Полномочия</th>
-                           <th>Имя</th>
-                           <th>Фамилия</th>
-                           <th></th>
-                        </tr>
-                     </thead>
+                  <div class="table-wrapper">
+                     <table>
+                        <thead>
+                           <tr>
+                              <th>ID</th>
+                              <th>Логин</th>
+                              <th>Полномочия</th>
+                              <th>Имя</th>
+                              <th>Фамилия</th>
+                              <th></th>
+                           </tr>
+                        </thead>
 
-                     <tbody>
+                        <tbody>
 
-                        <?php
-                        foreach ($users_rows as $row) {
-                           if ($row) {
-                              echo "<tr>
+                           <?php
+                           foreach ($users_rows as $row) {
+                              if ($row) {
+                                 echo "<tr>
                               <td>$row[user_id]</td>
                               <td>$row[login]</td>
                               <td>$row[title]</td>
@@ -99,12 +100,13 @@ while ($users_rows[] = mysqli_fetch_array($result));
                               <td>$row[lastname]</td>
                               <td><a class=\"product-edit\" data-user-id=\"$row[user_id]\">ред.</a></td>
                               </tr>";
+                              }
                            }
-                        }
-                        ?>
+                           ?>
 
-                     </tbody>
-                  </table>
+                        </tbody>
+                     </table>
+                  </div>
                </div>
 
                <ul class="pagination">

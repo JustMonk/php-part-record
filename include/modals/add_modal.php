@@ -28,7 +28,7 @@
          </div>
 
          <div class="row">
-            <div class="col s6 flex-col">
+            <div class="col s12 m6 flex-col">
                <div class="input-field">
                   <input id="goods-create-date" type="text" class="datepicker">
                   <label for="goods-create-date" class="active">Дата изготовления</label>
@@ -36,7 +36,7 @@
                <i class="material-icons help-icon" data-tooltip="Введите дату изготовления">help_outline</i>
             </div>
 
-            <div class="col s6 flex-col">
+            <div class="col s12 m6 flex-col">
                <div class="input-field">
                   <input disabled id="valid-until" placeholder="Сначала выберите номенклатуру" type="text">
                   <label for="valid-until" class="active">Срок годности</label>

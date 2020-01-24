@@ -39,29 +39,31 @@ include './include/check_admin_access.php';
                   <h2 style="margin: 0">Таблица единиц измерения</h2>
                   <hr>
                   <p>Представление таблицы «<b>units</b>». Содержит список доступных единиц измерения с кратким и полным обозначением. </p>
-                  <table>
-                     <thead>
-                        <tr>
-                           <th>ID</th>
-                           <th>Обозначение</th>
-                           <th>Полное название</th>
-                        </tr>
-                     </thead>
+                  <div class="table-wrapper">
+                     <table>
+                        <thead>
+                           <tr>
+                              <th>ID</th>
+                              <th>Обозначение</th>
+                              <th>Полное название</th>
+                           </tr>
+                        </thead>
 
-                     <tbody>
+                        <tbody>
 
-                        <?php
-                        foreach ($mysqli->query('SELECT * FROM units') as $row) {
-                           echo "<tr>
+                           <?php
+                           foreach ($mysqli->query('SELECT * FROM units') as $row) {
+                              echo "<tr>
                            <td>$row[unit_id]</td>
                            <td>$row[unit]</td>
                            <td>$row[full_title]</td>
                            </tr>";
-                        }
-                        ?>
+                           }
+                           ?>
 
-                     </tbody>
-                  </table>
+                        </tbody>
+                     </table>
+                  </div>
                </div>
 
 

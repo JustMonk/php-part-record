@@ -71,26 +71,27 @@ while ($product_rows[] = mysqli_fetch_array($result));
                   <h2 style="margin: 0">История прихода</h2>
                   <hr>
                   <p>Представление таблицы «<b>operation_add</b>». Содержит список всех поступивших позиций, привязанных к операции прихода. </p>
-                  <table>
-                     <thead>
-                        <tr>
-                           <th>Номер документа</th>
-                           <th>Номенклатура</th>
-                           <th>Количество</th>
-                           <th>Дата производства</th>
-                           <th>Годен до</th>
-                           <th>Жирность (доп)</th>
-                           <th>Плотность (доп)</th>
-                           <th>Кислотность (доп)</th>
-                        </tr>
-                     </thead>
+                  <div class="table-wrapper">
+                     <table>
+                        <thead>
+                           <tr>
+                              <th>Номер документа</th>
+                              <th>Номенклатура</th>
+                              <th>Количество</th>
+                              <th>Дата производства</th>
+                              <th>Годен до</th>
+                              <th>Жирность (доп)</th>
+                              <th>Плотность (доп)</th>
+                              <th>Кислотность (доп)</th>
+                           </tr>
+                        </thead>
 
-                     <tbody>
+                        <tbody>
 
-                        <?php
-                        foreach ($product_rows as $row) {
-                           if ($row) {
-                              echo "<tr>
+                           <?php
+                           foreach ($product_rows as $row) {
+                              if ($row) {
+                                 echo "<tr>
                               <td>$row[document_number]</td>
                               <td>$row[product_name]</td>
                               <td>$row[count]</td>
@@ -100,12 +101,13 @@ while ($product_rows[] = mysqli_fetch_array($result));
                               <td>$row[milk_solidity]</td>
                               <td>$row[milk_acidity]</td>
                               </tr>";
+                              }
                            }
-                        }
-                        ?>
+                           ?>
 
-                     </tbody>
-                  </table>
+                        </tbody>
+                     </table>
+                  </div>
                </div>
 
                <ul class="pagination">

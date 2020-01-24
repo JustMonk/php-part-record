@@ -18,20 +18,20 @@
 
 
          <div class="row">
-            <div class="col s8 flex-col">
+            <div class="col s12 m8 flex-col">
                <div class="input-field">
                   <input autocomplete="off" placeholder="Введите количество товара" id="goods-count" type="number" min="1" class="">
                   <label for="goods-count">Количество</label>
                </div>
                <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
             </div>
-            <div class="col s2 flex-col">
+            <div class="col s6 m2 flex-col">
                <div class="input-field">
                   <input disabled autocomplete="off" placeholder="%ед.изм%" id="goods-unit" type="text" class="">
                   <label for="goods-unit">Ед.изм</label>
                </div>
             </div>
-            <div class="col s2 flex-col">
+            <div class="col s6 m2 flex-col">
                <div class="input-field">
                   <input disabled autocomplete="off" placeholder="%доступно%" id="goods-avaliable-count" type="text" class="">
                   <label for="goods-avaliable-count">Доступно</label>

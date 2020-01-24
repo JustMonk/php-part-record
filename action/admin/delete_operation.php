@@ -9,7 +9,7 @@ include '../../include/session_config.php';
 //парсим полученный JSON в ассоциативный массив
 $data = json_decode(file_get_contents('php://input'), true);
 //$data = json_decode('{"docNum":"12312","operationDate":"2019-12-20","partner":"ИП Володянкин","productList":[{"name":"Йогурт Домодедовский КЛАССИЧЕСКИЙ жир. 2,7% (250гр)","count":"32","createDate":"2019-12-22","extFat":"","extSolidity":"","extAcidity":""},{"name":"Биокефир Домодедовский жир. 1% (930гр)","count":"3","createDate":"2019-12-22","extFat":"","extSolidity":"","extAcidity":""}]}', true);
-//$data = json_decode('{"operation_id":"96","operation_type":"sell","docNum":"and_another_sell","operationDate":"2020-01-31","partner":"ООО \"Молочный поставщик\"","productList":[{"name":"Тестовый продукт [2020-01-31]","count":"50","createDate":"2020-01-31","expireDate":"2020-03-04"}],"rewrite":true}', true);
+//$data = json_decode('{"operation_id":"119","operation_type":"prod","docNum":"пр/2","operationDate":"2020-01-13","materialList":[{"product_id":"67","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 2,5% (930мл)","count":"0","unit":"шт","type":"Полуфабрикат","createDate":"2020-01-03","expireDate":"2020-01-13"}],"productList":[{"product_id":"68","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 3,2% (2л)","count":"188","unit":"шт","type":"Полуфабрикат"},{"product_id":"66","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 1,5% (930мл)","count":"120","unit":"шт","type":"Полуфабрикат"},{"product_id":"67","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 2,5% (930мл)","count":"600","unit":"шт","type":"Полуфабрикат"},{"product_id":"69","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 3,2% (930мл)","count":"1240","unit":"шт","type":"Полуфабрикат"},{"product_id":"70","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 4% (930мл)","count":"240","unit":"шт","type":"Полуфабрикат"},{"product_id":"82","name":"БЕЗ ДАТЫ. Творог жир. 5% (250гр)","count":"257","unit":"шт","type":"Полуфабрикат"},{"product_id":"84","name":"БЕЗ ДАТЫ. Творог жир. 9% (250гр)","count":"264","unit":"шт","type":"Полуфабрикат"},{"product_id":"72","name":"БЕЗ ДАТЫ. Молоко топленое жир. 3,5% (930мл)","count":"279","unit":"шт","type":"Полуфабрикат"},{"product_id":"83","name":"БЕЗ ДАТЫ. Творог жир. 5% (300гр)","count":"87","unit":"шт","type":"Полуфабрикат"},{"product_id":"85","name":"БЕЗ ДАТЫ. Творог жир. 9% (300гр)","count":"100","unit":"шт","type":"Полуфабрикат"},{"product_id":"86","name":"БЕЗ ДАТЫ. Творог жир. 9% (500гр) / контейнер","count":"10","unit":"шт","type":"Полуфабрикат"},{"product_id":"87","name":"БЕЗ ДАТЫ. Творог жир. 9% (500гр) / пакет","count":"171","unit":"шт","type":"Полуфабрикат"},{"product_id":"65","name":"БЕЗ ДАТЫ. Масса творожная с изюмом (300гр)","count":"7","unit":"шт","type":"Полуфабрикат"},{"product_id":"79","name":"БЕЗ ДАТЫ. Сыр БРЫНЗА жир. 40% (300гр)","count":"19","unit":"шт","type":"Полуфабрикат"},{"product_id":"90","name":"БЕЗ ДАТЫ. Творог жир. 9% в ведре (3кг)","count":"1","unit":"шт","type":"Полуфабрикат"}],"rewrite":true}', true);
 
 
 //разбиваем на переменные для удобства
@@ -40,7 +40,7 @@ if ($res->num_rows < 1) {
 if ($operation_type == 'add') {
    //списываем из реестра (если есть)
    foreach ($mysqli->query("SELECT * FROM operation_add WHERE operation_id = '$operation_id'") as $row) {
-      $mysqli->query("UPDATE product_registry SET count = (SELECT count FROM product_registry WHERE product_id = '$row[product_id]' AND create_date = '$row[create_date]' LIMIT 1) - $row[count]
+      $mysqli->query("UPDATE product_registry SET count = (SELECT count FROM (SELECT * FROM product_registry) AS current_count WHERE product_id = '$row[product_id]' AND create_date = '$row[create_date]' LIMIT 1) - $row[count]
       WHERE product_id = '$row[product_id]' AND create_date = '$row[create_date]' LIMIT 1");
       //если количество 0 - то удяляем запись из реестра
       $count = $mysqli->query("SELECT count FROM product_registry WHERE product_id = '$row[product_id]' AND create_date = '$row[create_date]' LIMIT 1");
@@ -125,11 +125,13 @@ if ($operation_type == 'prod') {
    //сначала списываем добавленное
    //списываем из реестра (если есть)
    foreach ($mysqli->query("SELECT * FROM operation_prod_add WHERE operation_id = '$operation_id'") as $row) {
-      $mysqli->query("UPDATE product_registry SET count = (SELECT count FROM product_registry WHERE product_id = '$row[product_id]' AND create_date = '$row[create_date]' LIMIT 1) - $row[count]
+      $mysqli->query("UPDATE product_registry SET count = (SELECT count FROM (SELECT * FROM product_registry) AS current_count WHERE product_id = '$row[product_id]' AND create_date = '$row[create_date]' LIMIT 1) - $row[count]
       WHERE product_id = '$row[product_id]' AND create_date = '$row[create_date]' LIMIT 1");
+      
       //если количество 0 - то удяляем запись из реестра
       $count = $mysqli->query("SELECT count FROM product_registry WHERE product_id = '$row[product_id]' AND create_date = '$row[create_date]' LIMIT 1");
       $count = ($count->fetch_assoc())['count'];
+
       if (intval($count) < 1) {
          $mysqli->query("DELETE FROM product_registry WHERE product_id = '$row[product_id]' AND create_date = '$row[create_date]' LIMIT 1");
       }

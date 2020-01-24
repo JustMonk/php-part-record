@@ -118,9 +118,9 @@ while ($operation_rows[] = mysqli_fetch_array($result));
                      <a class="waves-effect waves-light btn blue lighten-2" id="search-operation-form">Поиск</a>
                   </div>
                   <div class="info-message">
-                     <?php 
+                     <?php
                      $tag_list = '';
-                     foreach($search_tags as $value) {
+                     foreach ($search_tags as $value) {
                         $tag_list .= "<div class='search-tag'>$value</div>";
                      }
 
@@ -134,29 +134,30 @@ while ($operation_rows[] = mysqli_fetch_array($result));
                      ?>
                   </div>
 
-                  <table class="monitoring-table">
-                     <thead>
-                        <tr>
-                           <th>ID операции</th>
-                           <th>Тип операции</th>
-                           <th>Номер документа</th>
-                           <th>Дата операции</th>
-                           <th>Контрагент</th>
-                           <th>Дата записи в базу</th>
-                           <th>Пользователь</th>
-                        </tr>
-                     </thead>
+                  <div class="table-wrapper">
+                     <table class="monitoring-table">
+                        <thead>
+                           <tr>
+                              <th>ID операции</th>
+                              <th>Тип операции</th>
+                              <th>Номер документа</th>
+                              <th>Дата операции</th>
+                              <th>Контрагент</th>
+                              <th>Дата записи в базу</th>
+                              <th>Пользователь</th>
+                           </tr>
+                        </thead>
 
-                     <tbody>
+                        <tbody>
 
-                        <?php
-                        if (stristr($_SERVER['REQUEST_URI'], '?')) $join_symbol = '&';
-                        else $join_symbol = '';
+                           <?php
+                           if (stristr($_SERVER['REQUEST_URI'], '?')) $join_symbol = '&';
+                           else $join_symbol = '';
 
-                        foreach ($operation_rows as $row) {
-                           if ($row) {
-                              $link = './operation_view.php?' . $_SERVER['QUERY_STRING'] . $join_symbol . "id=$row[operation_id]";
-                              echo "<tr>
+                           foreach ($operation_rows as $row) {
+                              if ($row) {
+                                 $link = './operation_view.php?' . $_SERVER['QUERY_STRING'] . $join_symbol . "id=$row[operation_id]";
+                                 echo "<tr>
                               <td> <a href='$link'>$row[operation_id]</a> </td>
                               <td> <a href='$link'>$row[operation_name]</a> </td>
                               <td> <a href='$link'>$row[document_number]</a> </td>
@@ -165,24 +166,25 @@ while ($operation_rows[] = mysqli_fetch_array($result));
                               <td> <a href='$link'>$row[timestamp]</a> </td>
                               <td> <a href='$link'>$row[user]</a> </td>
                               </tr>";
+                              }
                            }
-                        }
-                        ?>
+                           ?>
 
-                     </tbody>
-                  </table>
+                        </tbody>
+                     </table>
+                  </div>
                </div>
 
                <ul class="pagination">
                   <?php
                   //ссылка со всеми параметрами, но без page
                   $query_array = explode('&', $_SERVER['QUERY_STRING']);
-                  foreach($query_array as $key => $value) {
-                     if(substr($value, 0, 5) == 'page=') {
+                  foreach ($query_array as $key => $value) {
+                     if (substr($value, 0, 5) == 'page=') {
                         unset($query_array[$key]);
                      }
                   }
-                  $return_link = join("&",$query_array);
+                  $return_link = join("&", $query_array);
                   if (strlen($return_link) > 0) $return_link = './operation_history.php?' . $return_link;
                   else {
                      $return_link = './operation_history.php?';
@@ -192,7 +194,7 @@ while ($operation_rows[] = mysqli_fetch_array($result));
 
                   // Проверяем нужны ли стрелки назад
                   $pervpage = '<li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>'; //дефолтное значение (серая кнопка)
-                  
+
                   if ($page != 1) $pervpage = "<li class='waves-effect'> <a href=$page_link" . ($page - 1) . '><i class="material-icons">chevron_left</i></a></li>';
                   // <a href= ./product_list.php?page=' . ($page - 1) . '><</a> ';
                   // Проверяем нужны ли стрелки вперед
@@ -325,10 +327,10 @@ while ($operation_rows[] = mysqli_fetch_array($result));
             let operationDate = document.getElementById('operation-date').value; //new Date(document.getElementById('operation-date').value + ' UTC').toISOString().split('T')[0];
             let partner = document.getElementById('partner-select').value;
 
-            let query = `type=${type}`
-            + (documentNum ? '&document=' + encodeURI(documentNum) : '')
-            + (operationDate ? '&date=' + new Date(document.getElementById('operation-date').value + ' UTC').toISOString().split('T')[0] : '')
-            + (partner ? '&partner=' + encodeURI(partner) : '');
+            let query = `type=${type}` +
+               (documentNum ? '&document=' + encodeURI(documentNum) : '') +
+               (operationDate ? '&date=' + new Date(document.getElementById('operation-date').value + ' UTC').toISOString().split('T')[0] : '') +
+               (partner ? '&partner=' + encodeURI(partner) : '');
 
             console.log(query);
 

@@ -1,6 +1,6 @@
-<div class="row" style="margin-bottom: 0; overflow-x: scroll;">
+<a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-product">добавить позицию</a>
 
-   <a class="waves-effect waves-light btn blue-grey lighten-4 z-depth-0" style="width: 100%; margin-top: 5px;" id="add-new-product">добавить позицию</a>
+<div class="row" style="margin-bottom: 0; overflow-x: scroll;">
 
    <div class="input-field col s12">
 

@@ -70,35 +70,37 @@ while ($product_rows[] = mysqli_fetch_array($result));
                   <h2 style="margin: 0">История инвентаризаций</h2>
                   <hr>
                   <p>Представление таблицы «<b>operation_inventory</b>». Содержит список всех изменений по инвентаризации. </p>
-                  <table>
-                     <thead>
-                        <tr>
-                           <th>ID операции</th>
-                           <th>Номенклатура</th>
-                           <th>Дата производства</th>
-                           <th>Количество до</th>
-                           <th>Количество после</th>
-                        </tr>
-                     </thead>
+                  <div class="table-wrapper">
+                     <table>
+                        <thead>
+                           <tr>
+                              <th>ID операции</th>
+                              <th>Номенклатура</th>
+                              <th>Дата производства</th>
+                              <th>Количество до</th>
+                              <th>Количество после</th>
+                           </tr>
+                        </thead>
 
-                     <tbody>
-                        
-                        <?php
-                        foreach ($product_rows as $row) {
-                           if ($row) {
-                              echo "<tr>
+                        <tbody>
+
+                           <?php
+                           foreach ($product_rows as $row) {
+                              if ($row) {
+                                 echo "<tr>
                               <td>$row[operation_id]</td>
                               <td>$row[title]</td>
                               <td>$row[create_date]</td>
                               <td>$row[count_before]</td>
                               <td>$row[count_after]</td>
                               </tr>";
+                              }
                            }
-                        }
-                        ?>
+                           ?>
 
-                     </tbody>
-                  </table>
+                        </tbody>
+                     </table>
+                  </div>
                </div>
 
                <ul class="pagination">

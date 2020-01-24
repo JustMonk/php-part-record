@@ -73,35 +73,37 @@ while ($partners_rows[] = mysqli_fetch_array($result));
                      <a class="waves-effect waves-light btn blue lighten-2" id="add-partner-form">Добавить контрагента</a>
                   </div>
 
-                  <table>
-                     <thead>
-                        <tr>
-                           <th>ID</th>
-                           <th>Название</th>
-                           <th>ИНН</th>
-                           <th>КПП</th>
-                           <th>Комментарий</th>
-                        </tr>
-                     </thead>
+                  <div class="table-wrapper">
+                     <table>
+                        <thead>
+                           <tr>
+                              <th>ID</th>
+                              <th>Название</th>
+                              <th>ИНН</th>
+                              <th>КПП</th>
+                              <th>Комментарий</th>
+                           </tr>
+                        </thead>
 
-                     <tbody>
+                        <tbody>
 
-                        <?php
-                        foreach ($partners_rows as $row) {
-                           if ($row) {
-                              echo "<tr>
+                           <?php
+                           foreach ($partners_rows as $row) {
+                              if ($row) {
+                                 echo "<tr>
                               <td>$row[partner_id]</td>
                               <td>$row[name]</td>
                               <td>$row[inn]</td>
                               <td>$row[kpp]</td>
                               <td>$row[comment]</td>
                               </tr>";
+                              }
                            }
-                        }
-                        ?>
+                           ?>
 
-                     </tbody>
-                  </table>
+                        </tbody>
+                     </table>
+                  </div>
                </div>
 
                <ul class="pagination">
