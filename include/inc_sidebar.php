@@ -84,8 +84,7 @@ $access = ($access_query->fetch_assoc())['title']; //admin or user
       if(e.target.id == 'openSideMenu' || e.target.parentElement.id == 'openSideMenu') {
          //выкатываем сайдменю
          let sidemenu = document.getElementById('side-navbar');
-         sidemenu.style.left = '0';
-         document.body.style.overflow = 'hidden';
+         sidemenu.classList.add('menu-open');
 
          //создаем и добавляем оверлей
          let overlay = document.createElement('div');
@@ -93,8 +92,8 @@ $access = ($access_query->fetch_assoc())['title']; //admin or user
          overlay.style.cssText = 'background: rgba(150, 150, 150, 0.5); position: fixed; width: 100%; height: 100%; top: 0; z-index: 999;';
          overlay.onclick = () => {
             overlay.remove();
-            sidemenu.style.left = '-100%';
-            document.body.style.overflow = 'visible';
+            sidemenu.classList.remove('menu-open');
+            document.body.classList.remove('modal-overlay')
          };
          document.body.append(overlay);
       }

@@ -1,6 +1,7 @@
 body {
    background: #edf0f2 !important;
    /*#f5f5f5 - lighter | #edf0f2 - little blue*/
+   overflow: visible;
 }
 
 .content-wrapper {
@@ -261,6 +262,14 @@ body {
    cursor: pointer;
 }
 
+.modal-overflow {
+   overflow: visible;
+}
+
+#body-overlay {
+   display: none;
+}
+
 @media only screen and (max-width : 900px) {
    #side-navbar {
       left: -300px;
@@ -271,6 +280,10 @@ body {
    #mobile-nav {
       display: flex;
       align-items: center;
+   }
+
+   .menu-open {
+      left: 0 !important;
    }
 
    #main-wrapper {
@@ -292,5 +305,13 @@ body {
 
    .modal {
       width: 95%;
+   }
+
+   .modal-overflow {
+      overflow: hidden;
+   }
+
+   #body-overlay {
+      display: block;
    }
 }
