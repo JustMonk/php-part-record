@@ -1,10 +1,6 @@
 <?php
 include '../../include/inc_config.php';
 include '../../include/session_config.php';
-//include 'include/auth_redirect.php';
-
-
-//TODO: попробовать декодить json из $_POST
 
 //парсим полученный JSON в ассоциативный массив
 $data = json_decode(file_get_contents('php://input'), true);
@@ -24,9 +20,8 @@ if ($data['password']) {
    $password_field = '';
    $user_password = '';
 }
-//$user_password = crypt($data['password'], 'hardcodesalt');
 
-//================================={проверка на наличие пользователя (уникальность)}====================================================
+//================================={проверка на наличие пользователя}====================================================
 $res = $mysqli->query("SELECT * FROM users WHERE user_id = '$user_id' LIMIT 1");
 if ($res->num_rows < 1) {
    //отправляем ответ клиенту
@@ -46,7 +41,6 @@ SET
 WHERE user_id = '$user_id'
 ");
 if ($mysqli->error) {
-   //printf("Errormessage: %s\n", $mysqli->error);
    header('Content-Type: application/json');
    echo json_encode(array('message' => "update error - last id ($mysqli->error)", 'type' => 'error'));
    exit;

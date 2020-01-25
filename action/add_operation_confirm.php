@@ -1,18 +1,11 @@
 <?php
 include '../include/inc_config.php';
 include '../include/session_config.php';
-//include 'include/auth_redirect.php';
-
-
-//TODO: попробовать декодить json из $_POST
 
 //парсим полученный JSON в ассоциативный массив
 $data = json_decode(file_get_contents('php://input'), true);
-//$data = json_decode('{"docNum":"12312","operationDate":"2019-12-20","partner":"ИП Володянкин","productList":[{"name":"Йогурт Домодедовский КЛАССИЧЕСКИЙ жир. 2,7% (250гр)","count":"32","createDate":"2019-12-22","extFat":"","extSolidity":"","extAcidity":""},{"name":"Биокефир Домодедовский жир. 1% (930гр)","count":"3","createDate":"2019-12-22","extFat":"","extSolidity":"","extAcidity":""}]}', true);
-//$data = json_decode('{"operation_id":"68","operation_type":"add","docNum":"space_add","operationDate":"2020-01-31","partner":"ИП Володянкин","productList":[{"product_id":"4","name":"Йогурт Домодедовский КЛАССИЧЕСКИЙ жир. 2,7% (250гр)","count":"3333","createDate":"2020-01-31","expireDate":"2020-02-15","extFat":null,"extSolidity":null,"extAcidity":null},{"product_id":"23","name":"Йогурт Домодедовский ВИШНЯ жир. 2,7% (650гр)","count":"3333","createDate":"2020-01-30","expireDate":"2020-02-06","extFat":null,"extSolidity":null,"extAcidity":null}],"rewrite":false}', true);
 
 //разбиваем на переменные для удобства
-//htmlspecialchars - базовая валидация
 $operation_type = 'add';
 $doc_number = htmlspecialchars($data['docNum']);
 $operation_date = htmlspecialchars($data['operationDate']);
@@ -51,7 +44,6 @@ if (!$data['rewrite']) {
    $last_id = $last_id['LAST_INSERT_ID()'];
 
    if ($mysqli->error) {
-      //printf("Errormessage: %s\n", $mysqli->error);
       header('Content-Type: application/json');
       echo json_encode(array('message' => "history_error - last id ($mysqli->error)", 'type' => 'error'));
       exit;
@@ -79,7 +71,6 @@ unset($value);
 
 $res = $mysqli->query("INSERT INTO operation_add(operation_id, product_id, product_name, count, create_date, expire_date, milk_fat, milk_solidity, milk_acidity) VALUES $values_str");
 if ($mysqli->error) {
-   //printf("Errormessage: %s\n", $mysqli->error);
    header('Content-Type: application/json');
    echo json_encode(array('message' => "add error - last id = $last_id | $user_login ($mysqli->error)", 'type' => 'error'));
    exit;
@@ -90,7 +81,6 @@ foreach ($product_list as $key => $value) {
    //проверка - существует ли такая партия в реестре
    $is_exist = $mysqli->query("SELECT EXISTS(SELECT * FROM product_registry WHERE product_id = (SELECT product_id FROM product_list WHERE title = '$value[name]') AND create_date = '$value[createDate]' LIMIT 1) AS exist;");
    if ($mysqli->error) {
-      //printf("Errormessage: %s\n", $mysqli->error);
       header('Content-Type: application/json');
       echo json_encode(array('message' => "exist error - query ($mysqli->error)", 'type' => 'error'));
       exit;
@@ -103,7 +93,6 @@ foreach ($product_list as $key => $value) {
       //если есть такая запись в реестре - обновляем
       $res = $mysqli->query("UPDATE product_registry SET count = count + $value[count] WHERE product_id = (SELECT product_id FROM product_list WHERE title = '$value[name]') AND create_date = '$value[createDate]'");
       if ($mysqli->error) {
-         //printf("Errormessage: %s\n", $mysqli->error);
          header('Content-Type: application/json');
          echo json_encode(array('message' => "registry_error - update ($mysqli->error)", 'type' => 'error'));
          exit;
@@ -119,7 +108,6 @@ foreach ($product_list as $key => $value) {
          (SELECT DATE_ADD('$value[createDate]', INTERVAL (SELECT valid_days FROM product_list WHERE title = '$value[name]') DAY ))
       );");
       if ($mysqli->error) {
-         //printf("Errormessage: %s\n", $mysqli->error);
          header('Content-Type: application/json');
          echo json_encode(array('message' => "registry_error - insert ($mysqli->error)", 'type' => 'error'));
          exit;

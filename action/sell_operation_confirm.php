@@ -1,19 +1,11 @@
 <?php
 include '../include/inc_config.php';
 include '../include/session_config.php';
-//include 'include/auth_redirect.php';
-
-
-//TODO: попробовать декодить json из $_POST
 
 //парсим полученный JSON в ассоциативный массив
 $data = json_decode(file_get_contents('php://input'), true);
-//$data = json_decode('{"docNum":"test_sell_2","operationDate":"2020-01-31","partner":"ОАО \"Кросс-докинг\"","productList":[{"registry_id":"9","product_id":"10","name":"Снежок с мдж 2,1% [2020-01-25]","count":"3","createDate":"2020-01-25"}]}', true);
-//$data = json_decode('{"operation_id":"107","operation_type":"sell","docNum":"sell_test_message","operationDate":"2020-01-24","partner":"ИП Володянкин","productList":[{"registry_id":"170","product_id":"4","name":"Йогурт Домодедовский КЛАССИЧЕСКИЙ жир. 2,7% (250гр) [2020-01-30]","count":"11","createDate":"2020-01-30"}],"rewrite":true}', true);
-
 
 //разбиваем на переменные для удобства
-//htmlspecialchars - базовая валидация
 $operation_type = 'sell';
 $doc_number = htmlspecialchars($data['docNum']);
 $operation_date = htmlspecialchars($data['operationDate']);
@@ -52,7 +44,6 @@ if (!$data['rewrite']) {
    $last_id = $last_id['LAST_INSERT_ID()'];
 
    if ($mysqli->error) {
-      //printf("Errormessage: %s\n", $mysqli->error);
       header('Content-Type: application/json');
       echo json_encode(array('message' => 'history_error: insert', 'type' => 'error'));
       exit;
@@ -79,7 +70,6 @@ unset($value);
 foreach ($product_list as $key => $value) {
    $res = $mysqli->query("UPDATE product_registry SET count = count - $value[count] WHERE product_id = $value[product_id] AND create_date = '$value[createDate]'");
    if ($mysqli->error) {
-      //printf("Errormessage: %s\n", $mysqli->error);
       header('Content-Type: application/json');
       echo json_encode(array('message' => 'update_error: registry decrease', 'type' => 'error'));
       exit;
@@ -103,7 +93,6 @@ unset($value);
 
 $res = $mysqli->query("INSERT INTO operation_sell(operation_id, product_id, product_name, count, create_date, expire_date) VALUES $values_str");
 if ($mysqli->error) {
-   //printf("Errormessage: %s\n", $mysqli->error);
    header('Content-Type: application/json');
    echo json_encode(array('message' => "add_error: operation_sell insert ($mysqli->error) <br> $values_str", 'type' => 'error'));
    exit;

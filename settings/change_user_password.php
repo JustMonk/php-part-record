@@ -1,7 +1,6 @@
 <?php
 include '../include/inc_config.php';
 include '../include/session_config.php';
-//include 'include/auth_redirect.php';
 
 //парсим полученный JSON в ассоциативный массив
 $data = json_decode(file_get_contents('php://input'), true);

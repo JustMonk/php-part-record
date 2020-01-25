@@ -1,12 +1,10 @@
 <?php
 include '../../include/inc_config.php';
 include '../../include/session_config.php';
-//include 'include/auth_redirect.php';
 
 $id = htmlspecialchars($_GET["id"]);
 
-//================================={проверка на наличие номенклатуры (уникальность)}====================================================
-//ключ: имя-инн-кпп
+//================================={проверка на наличие номенклатуры}====================================================
 $res = $mysqli->query("SELECT product_list.product_id, product_list.title, units.unit, product_list.capacity, product_types.type, product_list.gtin, product_list.valid_days, product_list.extended_milk_fields
 FROM product_list, units, product_types
    WHERE product_id = '$id' AND product_list.unit_code = units.unit_id AND product_list.product_type = product_types.type_id

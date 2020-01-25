@@ -1,7 +1,6 @@
 <?php
 include '../../include/inc_config.php';
 include '../../include/session_config.php';
-//include 'include/auth_redirect.php';
 
 $id = htmlspecialchars($_GET["id"]);
 

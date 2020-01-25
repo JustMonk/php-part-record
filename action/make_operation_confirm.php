@@ -1,38 +1,20 @@
 <?php
 include '../include/inc_config.php';
 include '../include/session_config.php';
-//include 'include/auth_redirect.php';
-
-
-//TODO: попробовать декодить json из $_POST
 
 //парсим полученный JSON в ассоциативный массив
 $data = json_decode(file_get_contents('php://input'), true);
-//$data = json_decode('{"docNum":"test_prod_1","operationDate":"2020-01-31","materialList":[{"registry_id":"7","product_id":"7","string_key":"Сырое молочко [2020-01-24]","name":"Сырое молочко","count":"11","unit":"л","createDate":"2020-01-24","expireDate":"2020-01-27"}],"productList":[{"product_id":"15","name":"Йогурт Домодедовский ПЕРСИК жир. 33%","count":"11","unit":"л"}]}', true);
-//{"docNum":"2prod","operationDate":"2020-01-30","materialList":[{"registry_id":"147","product_id":"20","string_key":"Йогурт Домодедовский ВИШНЯ жир. 2,7% (350гр) [2020-01-31]","name":"Йогурт Домодедовский ВИШНЯ жир. 2,7% (350гр)","count":"12","unit":"шт","createDate":"2020-01-31","expireDate":"2020-02-07"}],"productList":[{"product_id":"37","name":"молоко полной безысходности","count":"500","unit":"л"}]}
-//$data = json_decode('{"operation_id":"119","operation_type":"prod","docNum":"пр/2","operationDate":"2020-01-03","materialList":[{"product_id":"67","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 2,5% (930мл)","count":"0","unit":"шт","type":"Полуфабрикат","createDate":"2020-01-03","expireDate":"2020-01-13"}],"productList":[{"product_id":"68","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 3,2% (2л)","count":"188","unit":"шт","type":"Полуфабрикат"},{"product_id":"66","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 1,5% (930мл)","count":"120","unit":"шт","type":"Полуфабрикат"},{"product_id":"67","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 2,5% (930мл)","count":"600","unit":"шт","type":"Полуфабрикат"},{"product_id":"69","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 3,2% (930мл)","count":"1240","unit":"шт","type":"Полуфабрикат"},{"product_id":"70","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 4% (930мл)","count":"240","unit":"шт","type":"Полуфабрикат"},{"product_id":"82","name":"БЕЗ ДАТЫ. Творог жир. 5% (250гр)","count":"257","unit":"шт","type":"Полуфабрикат"},{"product_id":"84","name":"БЕЗ ДАТЫ. Творог жир. 9% (250гр)","count":"264","unit":"шт","type":"Полуфабрикат"},{"product_id":"72","name":"БЕЗ ДАТЫ. Молоко топленое жир. 3,5% (930мл)","count":"279","unit":"шт","type":"Полуфабрикат"},{"product_id":"83","name":"БЕЗ ДАТЫ. Творог жир. 5% (300гр)","count":"87","unit":"шт","type":"Полуфабрикат"},{"product_id":"85","name":"БЕЗ ДАТЫ. Творог жир. 9% (300гр)","count":"100","unit":"шт","type":"Полуфабрикат"},{"product_id":"86","name":"БЕЗ ДАТЫ. Творог жир. 9% (500гр) / контейнер","count":"10","unit":"шт","type":"Полуфабрикат"},{"product_id":"87","name":"БЕЗ ДАТЫ. Творог жир. 9% (500гр) / пакет","count":"171","unit":"шт","type":"Полуфабрикат"},{"product_id":"65","name":"БЕЗ ДАТЫ. Масса творожная с изюмом (300гр)","count":"7","unit":"шт","type":"Полуфабрикат"},{"product_id":"79","name":"БЕЗ ДАТЫ. Сыр БРЫНЗА жир. 40% (300гр)","count":"19","unit":"шт","type":"Полуфабрикат"},{"product_id":"90","name":"БЕЗ ДАТЫ. Творог жир. 9% в ведре (3кг)","count":"1","unit":"шт","type":"Полуфабрикат"}],"rewrite":true}', true);
 
 //разбиваем на переменные для удобства
-//htmlspecialchars - базовая валидация
 $operation_type = 'prod';
 $doc_number = htmlspecialchars($data['docNum']);
 $operation_date = htmlspecialchars($data['operationDate']);
 //если передано
 $operation_id = intval(htmlspecialchars($data['operation_id']));
 
+//списки сырья и продукции
 $material_list = $data['materialList'];
-//normalize object values
-/*foreach ($material_list as $key => $value) {
-   $value[$key] = htmlspecialchars($value[$key]);
-}
-unset($value);*/
 $product_list = $data['productList'];
-//normalize object values
-/*foreach ($product_list as $key => $value) {
-   $value[$key] = htmlspecialchars($value[$key]);
-}
-unset($value);*/
-
 
 //=========================={проверка на количество}===========================
 //в рамках проверки у каждого документа уникальный номер, не зависящий от операции (плюс решаем проблему с исчерпанием автоинкремента)
@@ -63,7 +45,6 @@ if (!$data['rewrite']) {
    $last_id = $last_id['LAST_INSERT_ID()'];
 
    if ($mysqli->error) {
-      //printf("Errormessage: %s\n", $mysqli->error);
       header('Content-Type: application/json');
       echo json_encode(array('message' => 'history_error: insert', 'type' => 'error'));
       exit;
@@ -74,7 +55,6 @@ if (!$data['rewrite']) {
 //валидация на превышение количества
 $limited_error = false;
 foreach ($material_list as $key => $value) {
-   //$res = $mysqli->query("SELECT count FROM product_registry WHERE registry_id = $value[registry_id]");
    $res = $mysqli->query("SELECT count FROM product_registry WHERE product_id = '$value[product_id]' AND create_date = '$value[createDate]'");
    $res = $res->fetch_assoc();
 
@@ -91,7 +71,6 @@ unset($value);
 foreach ($material_list as $key => $value) {
    $res = $mysqli->query("UPDATE product_registry SET count = count - $value[count] WHERE product_id = '$value[product_id]' AND create_date = '$value[createDate]'");
    if ($mysqli->error) {
-      //printf("Errormessage: %s\n", $mysqli->error);
       header('Content-Type: application/json');
       echo json_encode(array('message' => 'update_error: registry decrease', 'type' => 'error'));
       exit;
@@ -105,7 +84,6 @@ if ($data['rewrite'] && $operation_id) $last_id = $operation_id; //если эт
 $values_str = '';
 foreach ($product_list as $key => $value) {
    //получить срок годности
-   //$res = $mysqli->query("SELECT expire_date FROM product_registry WHERE registry_id = $value[registry_id]");
    $res = $mysqli->query("SELECT DATE_ADD('$value[createDate]', INTERVAL (SELECT valid_days FROM product_list WHERE product_id = $value[product_id]) DAY) as expire_date;");
    $res = $res->fetch_assoc();
    $expire_date = $res["expire_date"];
@@ -118,7 +96,6 @@ unset($value);
 
 $res = $mysqli->query("INSERT INTO operation_prod_add(operation_id, product_id, product_name, count, create_date, expire_date) VALUES $values_str");
 if ($mysqli->error) {
-   //printf("Errormessage: %s\n", $mysqli->error);
    header('Content-Type: application/json');
    echo json_encode(array('message' => "add_error: operation_prod_add insert ($mysqli->error) <br> $values_str", 'type' => 'error'));
    exit;
@@ -130,7 +107,6 @@ foreach ($product_list as $key => $value) {
    //проверка - существует ли такая партия в реестре
    $is_exist = $mysqli->query("SELECT EXISTS(SELECT * FROM product_registry WHERE product_id = $value[product_id] AND create_date = '$operation_date' LIMIT 1) AS exist;");
    if ($mysqli->error) {
-      //printf("Errormessage: %s\n", $mysqli->error);
       header('Content-Type: application/json');
       echo json_encode(array('message' => "exist error - query ($mysqli->error)", 'type' => 'error'));
       exit;
@@ -143,7 +119,6 @@ foreach ($product_list as $key => $value) {
       //если есть такая запись в реестре - обновляем
       $res = $mysqli->query("UPDATE product_registry SET count = count + $value[count] WHERE product_id = $value[product_id] AND create_date = '$operation_date'");
       if ($mysqli->error) {
-         //printf("Errormessage: %s\n", $mysqli->error);
          header('Content-Type: application/json');
          echo json_encode(array('message' => "registry_error - update ($mysqli->error)", 'type' => 'error'));
          exit;
@@ -159,7 +134,6 @@ foreach ($product_list as $key => $value) {
          (SELECT DATE_ADD('$operation_date', INTERVAL (SELECT valid_days FROM product_list WHERE product_id = '$value[product_id]') DAY ))
       );");
       if ($mysqli->error) {
-         //printf("Errormessage: %s\n", $mysqli->error);
          header('Content-Type: application/json');
          echo json_encode(array('message' => "registry_error - insert ($mysqli->error)", 'type' => 'error'));
          exit;
@@ -171,7 +145,6 @@ foreach ($product_list as $key => $value) {
 $values_str = '';
 foreach ($material_list as $key => $value) {
    //получить срок годности
-   //$res = $mysqli->query("SELECT expire_date FROM product_registry WHERE registry_id = $value[registry_id]");
    $res = $mysqli->query("SELECT expire_date FROM product_registry WHERE product_id = $value[product_id] AND create_date = '$value[createDate]'");
    $res = $res->fetch_assoc();
    $expire_date = $res["expire_date"];
@@ -183,7 +156,6 @@ unset($value);
 
 $res = $mysqli->query("INSERT INTO operation_prod_consume(operation_id, product_id, product_name, count, create_date, expire_date) VALUES $values_str");
 if ($mysqli->error) {
-   //printf("Errormessage: %s\n", $mysqli->error);
    header('Content-Type: application/json');
    echo json_encode(array('message' => "add_error: operation_prod_consume insert ($mysqli->error) <br> $values_str", 'type' => 'error'));
    exit;

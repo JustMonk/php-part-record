@@ -2,8 +2,6 @@
 include 'session_config.php'; 
 include 'auth_redirect.php';
 
-//TODO: попробовать декодить json из $_POST
-
 //парсим полученный JSON в ассоциативный массив
 $data = json_decode(file_get_contents('php://input'), true);
 

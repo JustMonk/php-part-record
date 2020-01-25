@@ -1,16 +1,9 @@
 <?php
 include '../../include/inc_config.php';
 include '../../include/session_config.php';
-//include 'include/auth_redirect.php';
-
-
-//TODO: попробовать декодить json из $_POST
 
 //парсим полученный JSON в ассоциативный массив
 $data = json_decode(file_get_contents('php://input'), true);
-//$data = json_decode('{"docNum":"12312","operationDate":"2019-12-20","partner":"ИП Володянкин","productList":[{"name":"Йогурт Домодедовский КЛАССИЧЕСКИЙ жир. 2,7% (250гр)","count":"32","createDate":"2019-12-22","extFat":"","extSolidity":"","extAcidity":""},{"name":"Биокефир Домодедовский жир. 1% (930гр)","count":"3","createDate":"2019-12-22","extFat":"","extSolidity":"","extAcidity":""}]}', true);
-//$data = json_decode('{"operation_id":"119","operation_type":"prod","docNum":"пр/2","operationDate":"2020-01-13","materialList":[{"product_id":"67","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 2,5% (930мл)","count":"0","unit":"шт","type":"Полуфабрикат","createDate":"2020-01-03","expireDate":"2020-01-13"}],"productList":[{"product_id":"68","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 3,2% (2л)","count":"188","unit":"шт","type":"Полуфабрикат"},{"product_id":"66","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 1,5% (930мл)","count":"120","unit":"шт","type":"Полуфабрикат"},{"product_id":"67","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 2,5% (930мл)","count":"600","unit":"шт","type":"Полуфабрикат"},{"product_id":"69","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 3,2% (930мл)","count":"1240","unit":"шт","type":"Полуфабрикат"},{"product_id":"70","name":"БЕЗ ДАТЫ. Молоко пастеризованное жир. 4% (930мл)","count":"240","unit":"шт","type":"Полуфабрикат"},{"product_id":"82","name":"БЕЗ ДАТЫ. Творог жир. 5% (250гр)","count":"257","unit":"шт","type":"Полуфабрикат"},{"product_id":"84","name":"БЕЗ ДАТЫ. Творог жир. 9% (250гр)","count":"264","unit":"шт","type":"Полуфабрикат"},{"product_id":"72","name":"БЕЗ ДАТЫ. Молоко топленое жир. 3,5% (930мл)","count":"279","unit":"шт","type":"Полуфабрикат"},{"product_id":"83","name":"БЕЗ ДАТЫ. Творог жир. 5% (300гр)","count":"87","unit":"шт","type":"Полуфабрикат"},{"product_id":"85","name":"БЕЗ ДАТЫ. Творог жир. 9% (300гр)","count":"100","unit":"шт","type":"Полуфабрикат"},{"product_id":"86","name":"БЕЗ ДАТЫ. Творог жир. 9% (500гр) / контейнер","count":"10","unit":"шт","type":"Полуфабрикат"},{"product_id":"87","name":"БЕЗ ДАТЫ. Творог жир. 9% (500гр) / пакет","count":"171","unit":"шт","type":"Полуфабрикат"},{"product_id":"65","name":"БЕЗ ДАТЫ. Масса творожная с изюмом (300гр)","count":"7","unit":"шт","type":"Полуфабрикат"},{"product_id":"79","name":"БЕЗ ДАТЫ. Сыр БРЫНЗА жир. 40% (300гр)","count":"19","unit":"шт","type":"Полуфабрикат"},{"product_id":"90","name":"БЕЗ ДАТЫ. Творог жир. 9% в ведре (3кг)","count":"1","unit":"шт","type":"Полуфабрикат"}],"rewrite":true}', true);
-
 
 //разбиваем на переменные для удобства
 //htmlspecialchars - базовая валидация
@@ -22,10 +15,6 @@ $partner = htmlspecialchars($data['partner'], ENT_NOQUOTES);
 $rewrite = boolval(htmlspecialchars($data['rewrite']));
 //фикс доступа к сессии при обращении к скрипту
 $data['user'] = "$_SESSION[login]";
-
-//ситуативные параметры (зависят от операции) //ВОЗМОЖНО не требуются, т.к уже есть объект $data для передачи
-/*$product_list = $data['productList'];
-$material_list = $data['materialList']; //для производства*/
 
 //проверяем существует ли операция
 $res = $mysqli->query("SELECT * FROM operation_history WHERE operation_id = '$operation_id' LIMIT 1");
@@ -136,7 +125,7 @@ if ($operation_type == 'prod') {
          $mysqli->query("DELETE FROM product_registry WHERE product_id = '$row[product_id]' AND create_date = '$row[create_date]' LIMIT 1");
       }
    }
-   //удяляем из истории прихода
+   //удяляем из истории производимой продукции
    $res = $mysqli->query("DELETE FROM operation_prod_add WHERE operation_id = '$operation_id'");
 
    //затем возвращаем в реестр израсходованное
@@ -162,7 +151,7 @@ if ($operation_type == 'prod') {
          );");
       }
    }
-   //удяляем из истории продаж
+   //удяляем из истории сырья
    $res = $mysqli->query("DELETE FROM operation_prod_consume WHERE operation_id = '$operation_id'");
 
    //если изменяем - то запрос на добавление нового списка, иначе просто удаляем

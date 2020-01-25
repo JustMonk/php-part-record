@@ -24,4 +24,3 @@ foreach ($mysqli->query('SELECT * FROM product_list INNER JOIN units ON product_
 
 header('Content-Type: application/json');
 echo json_encode($response);
-//echo var_dump($response);

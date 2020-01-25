@@ -1,14 +1,9 @@
 <?php
 include '../../include/inc_config.php';
 include '../../include/session_config.php';
-//include 'include/auth_redirect.php';
-
-
-//TODO: попробовать декодить json из $_POST
 
 //парсим полученный JSON в ассоциативный массив
 $data = json_decode(file_get_contents('php://input'), true);
-//$data = json_decode('{"id":"10","title":"Снежок с мдж 2,1%","gtin":"33333333","capacity":"1.2","unit":"л","type":"Готовая продукция","validDays":"33","extendedMilkFields":true}', true);
 
 //разбиваем на переменные для удобства
 $product_id = $data['id'];
@@ -19,11 +14,8 @@ $product_unit = $data['unit'];
 $product_type = $data['type'];
 $product_valid_days = $data['validDays'];
 $product_extended_bool = $data['extendedMilkFields'];
-//валидации!!
-//хотя бы HTML special chars добавить надо
 
-
-//================================={проверка на наличие номенклатуры (уникальность)}====================================================
+//================================={проверка на наличие номенклатуры}====================================================
 $res = $mysqli->query("SELECT * FROM product_list WHERE product_id = '$product_id' LIMIT 1");
 if ($res->num_rows < 1) {
    //отправляем ответ клиенту
@@ -45,7 +37,6 @@ SET
 WHERE product_id = '$product_id'
 ");
 if ($mysqli->error) {
-   //printf("Errormessage: %s\n", $mysqli->error);
    header('Content-Type: application/json');
    echo json_encode(array('message' => "update error - last id ($mysqli->error)", 'type' => 'error'));
    exit;
