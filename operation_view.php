@@ -49,7 +49,7 @@ if ($res['operation_name'] == 'add') {
       if ($row) {
          $current = array(
             "product_id" => $row['product_id'],
-            "name" => $row['product_name'],
+            "name" => addslashes($row['product_name']),
             "count" => $row['count'],
             "createDate" => $row['create_date'],
             "expireDate" => $row['expire_date'],
@@ -70,7 +70,7 @@ if ($res['operation_name'] == 'sell') {
       if ($row) {
          $current = array(
             "product_id" => $row['product_id'],
-            "name" => $row['product_name'],
+            "name" => addslashes($row['product_name']),
             "count" => $row['count'],
             "createDate" => $row['create_date'],
             "expireDate" => $row['expire_date']
@@ -92,7 +92,7 @@ if ($res['operation_name'] == 'prod') {
       if ($row) {
          $current = array(
             "product_id" => $row['product_id'],
-            "name" => $row['product_name'],
+            "name" => addslashes($row['product_name']),
             "count" => $row['count'],
             "unit" => $row['unit'],
             "type" =>  $row['type'],
@@ -113,7 +113,7 @@ if ($res['operation_name'] == 'prod') {
       if ($row) {
          $current = array(
             "product_id" => $row['product_id'],
-            "name" => $row['product_name'],
+            "name" => addslashes($row['product_name']),
             "count" => $row['count'],
             "unit" => $row['unit'],
             "type" =>  $row['type']
@@ -135,7 +135,7 @@ if ($res['operation_name'] == 'inv') {
    foreach ($result as $row) {
       if ($row) {
          $current = array(
-            "title" => $row['title'],
+            "title" => addslashes($row['title']),
             "unit" => $row['unit'],
             "count" => $row['count_before'],
             "real_count" => $row['count_after'],

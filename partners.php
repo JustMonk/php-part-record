@@ -148,7 +148,7 @@ while ($partners_rows[] = mysqli_fetch_array($result));
             <div class="row">
                <div class="col s6 flex-col">
                   <div class="input-field">
-                     <input autocomplete="off" placeholder="Введите ИНН" id="inn-input" type="text" class="">
+                     <input autocomplete="off" placeholder="Введите ИНН" id="inn-input" type="number" class="">
                      <label for="goods-select">ИНН</label>
                   </div>
                   <i class="material-icons help-icon" data-tooltip="Начните вводить название для поиска">help_outline</i>
@@ -156,7 +156,7 @@ while ($partners_rows[] = mysqli_fetch_array($result));
 
                <div class="col s6 flex-col">
                   <div class="input-field">
-                     <input autocomplete="off" placeholder="Введите КПП" id="kpp-input" type="text" class="">
+                     <input autocomplete="off" placeholder="Введите КПП" id="kpp-input" type="number" class="">
                      <label for="goods-count">КПП (опционально)</label>
                   </div>
                   <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
@@ -304,7 +304,7 @@ while ($partners_rows[] = mysqli_fetch_array($result));
             ${response.message}
             <a class="close-message"><i class="material-icons">close</i></a>
             `;
-            let parentNode = document.querySelector('#main-wrapper .container');
+            let parentNode = document.querySelector('#main-wrapper .content-wrapper');
             parentNode.insertAdjacentElement('afterbegin', messageNode);
          }
 
