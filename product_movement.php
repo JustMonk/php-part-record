@@ -8,33 +8,33 @@ include './include/auth_redirect.php';
 // Переменная хранит число сообщений выводимых на станице
 $num = 20;
 
-//поиск
+//поиск $product / $start / $end / $partner
 $search_condition = array();
 $search_tags = array(); //форма с человекочитаемым текущим запросом и кнопкой отмены поиска
-if ($_GET['type']) {
-   $type = $_GET['type'];
-   if ($_GET['type'] == 'any') {
-      $type = '';
+if ($_GET['product']) {
+   $product = $_GET['product'];
+   if ($_GET['product'] == 'any') {
+      $product = '';
    }
-   array_push($search_tags, 'Операция: ' . (htmlspecialchars($type) ? htmlspecialchars($type) : 'любая'));
-   array_push($search_condition, 'operation_name LIKE "%' . htmlspecialchars($type) . '%"');
+   array_push($search_tags, 'Номенклатура: ' . (htmlspecialchars($product) ? htmlspecialchars($product) : 'любая'));
+   array_push($search_condition, 'title LIKE "%' . addslashes($product) . '%"');
 }
-if ($_GET['document']) {
-   array_push($search_tags, 'Документ: ' . htmlspecialchars($_GET['document']));
-   array_push($search_condition, 'document_number LIKE "%' . htmlspecialchars($_GET['document']) . '%"');
+if ($_GET['start']) {
+   array_push($search_tags, 'Дата с: ' . htmlspecialchars($_GET['start']));
+   array_push($search_condition, 'operation_date >= "' . htmlspecialchars($_GET['start']) . '"');
 }
-if ($_GET['date']) {
-   array_push($search_tags, 'Дата операции: ' . htmlspecialchars($_GET['date']));
-   array_push($search_condition, 'operation_date LIKE "%' . htmlspecialchars($_GET['date']) . '%"');
+if ($_GET['end']) {
+   array_push($search_tags, 'Дата до: ' . htmlspecialchars($_GET['end']));
+   array_push($search_condition, 'operation_date <= "' . htmlspecialchars($_GET['end']) . '"');
 }
 if ($_GET['partner']) {
    array_push($search_tags, 'Контрагент: ' . htmlspecialchars($_GET['partner']));
-   array_push($search_condition, 'partners.name LIKE "%' . htmlspecialchars($_GET['partner']) . '%"');
+   array_push($search_condition, 'partner LIKE "%' . htmlspecialchars($_GET['partner']) . '%"');
 }
 //если условий больше 0, то создаем WHERE
 if (count($search_condition) > 0) {
    $search_condition = 'WHERE ' . join(" AND ", $search_condition);
-   $cancel_search = '<a href="./operation_history.php">Отменить поиск</a>';
+   $cancel_search = '<a href="./product_movement.php">Отменить поиск</a>';
 } else {
    $search_condition = '';
    $search_tags = array();
@@ -45,11 +45,32 @@ if (count($search_condition) > 0) {
 // Извлекаем из URL текущую страницу
 $page = $_GET['page'];
 // Определяем общее число сообщений в базе данных
-$result = $mysqli->query("SELECT COUNT(*) 
-FROM operation_history
-LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL
-LEFT JOIN operation_types ON operation_history.operation_type = operation_types.operation_type_id
-LEFT JOIN users ON operation_history.user_code = users.user_id
+$result = $mysqli->query("SELECT COUNT(*) FROM
+((SELECT operation_add.operation_id, operation_date, 'Приход' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_add, product_list, operation_history 
+LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
+LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_add.product_id) = units.unit_id
+WHERE operation_add.product_id = product_list.product_id AND operation_add.operation_id = operation_history.operation_id)
+UNION
+(SELECT operation_sell.operation_id, operation_date, 'Продажа' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_sell, product_list, operation_history 
+LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
+LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_sell.product_id) = units.unit_id
+WHERE operation_sell.product_id = product_list.product_id AND operation_sell.operation_id = operation_history.operation_id)
+UNION
+(SELECT operation_prod_add.operation_id, operation_date, 'Производство (продукт)' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_prod_add, product_list, operation_history 
+LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
+LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_prod_add.product_id) = units.unit_id
+WHERE operation_prod_add.product_id = product_list.product_id AND operation_prod_add.operation_id = operation_history.operation_id)
+UNION
+(SELECT operation_prod_consume.operation_id, operation_date, 'Производство (сырье)' AS TYPE, product_list.title, -COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_prod_consume, product_list, operation_history 
+LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
+LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_prod_consume.product_id) = units.unit_id
+WHERE operation_prod_consume.product_id = product_list.product_id AND operation_prod_consume.operation_id = operation_history.operation_id)
+UNION
+(SELECT operation_inventory.operation_id, operation_date, 'Инвентаризация' AS TYPE, product_list.title, (count_after - count_before) AS COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_inventory, product_list, operation_history 
+LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
+LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_inventory.product_id) = units.unit_id
+WHERE operation_inventory.product_id = product_list.product_id AND operation_inventory.operation_id = operation_history.operation_id))
+AS t
 $search_condition");
 $operations = $result->fetch_row()[0];
 
@@ -66,11 +87,32 @@ if ($page > $total) $page = $total;
 // следует выводить сообщения
 $start = $page * $num - $num;
 // Выбираем $num сообщений начиная с номера $start
-$result = $mysqli->query("SELECT operation_history.operation_id, operation_types.operation_name, operation_history.document_number, operation_history.operation_date, partners.name AS partner, operation_history.timestamp, users.login AS user
-FROM operation_history
-LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL
-LEFT JOIN operation_types ON operation_history.operation_type = operation_types.operation_type_id
-LEFT JOIN users ON operation_history.user_code = users.user_id
+$result = $mysqli->query("SELECT * FROM
+((SELECT operation_add.operation_id, operation_date, 'Приход' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_add, product_list, operation_history 
+LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
+LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_add.product_id) = units.unit_id
+WHERE operation_add.product_id = product_list.product_id AND operation_add.operation_id = operation_history.operation_id)
+UNION
+(SELECT operation_sell.operation_id, operation_date, 'Продажа' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_sell, product_list, operation_history 
+LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
+LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_sell.product_id) = units.unit_id
+WHERE operation_sell.product_id = product_list.product_id AND operation_sell.operation_id = operation_history.operation_id)
+UNION
+(SELECT operation_prod_add.operation_id, operation_date, 'Производство (продукт)' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_prod_add, product_list, operation_history 
+LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
+LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_prod_add.product_id) = units.unit_id
+WHERE operation_prod_add.product_id = product_list.product_id AND operation_prod_add.operation_id = operation_history.operation_id)
+UNION
+(SELECT operation_prod_consume.operation_id, operation_date, 'Производство (сырье)' AS TYPE, product_list.title, -COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_prod_consume, product_list, operation_history 
+LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
+LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_prod_consume.product_id) = units.unit_id
+WHERE operation_prod_consume.product_id = product_list.product_id AND operation_prod_consume.operation_id = operation_history.operation_id)
+UNION
+(SELECT operation_inventory.operation_id, operation_date, 'Инвентаризация' AS TYPE, product_list.title, (count_after - count_before) AS COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_inventory, product_list, operation_history 
+LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
+LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_inventory.product_id) = units.unit_id
+WHERE operation_inventory.product_id = product_list.product_id AND operation_inventory.operation_id = operation_history.operation_id))
+AS t
 $search_condition
 ORDER BY operation_id DESC
 LIMIT $start, $num");
@@ -109,9 +151,9 @@ while ($operation_rows[] = mysqli_fetch_array($result));
 
 
                <div id="prihod" class="content-block">
-                  <h2 style="margin: 0">История операций</h2>
+                  <h2 style="margin: 0">Движения продукции</h2>
                   <hr>
-                  <p>Представление таблицы «<b>operation_history</b>». Содержит список всех операций (приход/продажа/производство). </p>
+                  <p>Все движения номенклатур. </p>
 
                   <div class="admin-edit-bar">
                      <a class="waves-effect waves-light btn blue lighten-2" id="search-operation-form">Поиск</a>
@@ -139,11 +181,13 @@ while ($operation_rows[] = mysqli_fetch_array($result));
                            <tr>
                               <th>ID операции</th>
                               <th>Тип операции</th>
-                              <th>Номер документа</th>
                               <th>Дата операции</th>
+                              <th>Номенклатура</th>
+                              <th>Количество</th>
+                              <th>Ед.изм.</th>
+                              <th>Дата изг.</th>
+                              <th>Номер документа</th>
                               <th>Контрагент</th>
-                              <th>Дата записи в базу</th>
-                              <th>Пользователь</th>
                            </tr>
                         </thead>
 
@@ -158,12 +202,14 @@ while ($operation_rows[] = mysqli_fetch_array($result));
                                  $link = './operation_view.php?' . $_SERVER['QUERY_STRING'] . $join_symbol . "id=$row[operation_id]";
                                  echo "<tr>
                               <td> <a href='$link'>$row[operation_id]</a> </td>
-                              <td> <a href='$link'>$row[operation_name]</a> </td>
-                              <td> <a href='$link'>$row[document_number]</a> </td>
                               <td> <a href='$link'>$row[operation_date]</a> </td>
+                              <td> <a href='$link'>$row[TYPE]</a> </td>
+                              <td> <a href='$link'>$row[title]</a> </td>
+                              <td> <a href='$link'>$row[COUNT]</a> </td>
+                              <td> <a href='$link'>$row[unit]</a> </td>
+                              <td style='min-width: 100px;'> <a href='$link'>$row[create_date]</a> </td>
+                              <td> <a href='$link'>$row[document_number]</a> </td>
                               <td> <a href='$link'>$row[partner]</a> </td>
-                              <td> <a href='$link'>$row[timestamp]</a> </td>
-                              <td> <a href='$link'>$row[user]</a> </td>
                               </tr>";
                               }
                            }
@@ -227,43 +273,34 @@ while ($operation_rows[] = mysqli_fetch_array($result));
          <h5>Основные поля</h5>
 
          <div id="main-fields">
-            <div class="row">
-               <div class="col s12 flex-col">
-                  <div class="input-field">
-                     <select id="operation-type">
-                        <option value="any" selected>Любая</option>
-                        <option value="add">Приход</option>
-                        <option value="sell">Продажа</option>
-                        <option value="prod">Производство</option>
-                        <option value="inv">Инвентаризация</option>
-                     </select>
-                     <label>Тип операции</label>
-                  </div>
-                  <i class="material-icons help-icon" data-tooltip="Начните вводить название для поиска">help_outline</i>
-               </div>
-            </div>
-
 
             <div class="row">
                <div class="col s12 flex-col">
                   <div class="input-field">
-                     <input autocomplete="off" placeholder="Введите номер документа" id="doc-number" type="text" class="">
-                     <label for="doc-number">Номер документа</label>
+                     <input autocomplete="off" placeholder="Введите название продукта" id="product-name" type="text" class="">
+                     <label for="product-name">Продукт</label>
                   </div>
                   <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
                </div>
             </div>
 
             <div class="row">
-               <div class="col s12 flex-col">
+               <div class="col s12 m6 flex-col">
                   <div class="input-field">
-                     <input id="operation-date" type="text" class="datepicker">
-                     <label for="operation-date">Дата операции</label>
+                     <input id="start-date" type="text" class="datepicker">
+                     <label for="start-date">Период с</label>
+                  </div>
+                  <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
+               </div>
+
+               <div class="col s12 m6 flex-col">
+                  <div class="input-field">
+                     <input id="end-date" type="text" class="datepicker">
+                     <label for="end-date">Период до</label>
                   </div>
                   <i class="material-icons help-icon" data-tooltip="Количество товара">help_outline</i>
                </div>
             </div>
-
 
             <div class="row">
                <div class="col s12 flex-col">
@@ -274,7 +311,6 @@ while ($operation_rows[] = mysqli_fetch_array($result));
                   <i class="material-icons help-icon" data-tooltip="Выберите контрагента из списка">help_outline</i>
                </div>
             </div>
-
 
          </div>
 
@@ -319,22 +355,22 @@ while ($operation_rows[] = mysqli_fetch_array($result));
 
          //search handler
          if (e.target.id == 'start-search') {
-            let url = './operation_history.php';
+            let url = './product_movement.php';
 
-            let type = document.getElementById('operation-type').value;
-            let documentNum = document.getElementById('doc-number').value;
-            let operationDate = document.getElementById('operation-date').value; //new Date(document.getElementById('operation-date').value + ' UTC').toISOString().split('T')[0];
+            let product = document.getElementById('product-name').value;
+            let dateStart = document.getElementById('start-date').value;
+            let dateEnd = document.getElementById('end-date').value; //new Date(document.getElementById('operation-date').value + ' UTC').toISOString().split('T')[0];
             let partner = document.getElementById('partner-select').value;
 
-            let query = `type=${type}` +
-               (documentNum ? '&document=' + encodeURI(documentNum) : '') +
-               (operationDate ? '&date=' + new Date(document.getElementById('operation-date').value + ' UTC').toISOString().split('T')[0] : '') +
+            let query = `product=${product ? product : "any"}` +
+               (dateStart ? '&start=' + new Date(document.getElementById('start-date').value + ' UTC').toISOString().split('T')[0] : '') +
+               (dateEnd ? '&end=' + new Date(document.getElementById('end-date').value + ' UTC').toISOString().split('T')[0] : '') +
                (partner ? '&partner=' + encodeURI(partner) : '') + 
-               '&from=history';
+               '&from=movement';
 
             console.log(query);
 
-            document.location.replace(`./operation_history.php?${query}`);
+            document.location.replace(`./product_movement.php?${query}`);
          }
       });
 

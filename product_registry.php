@@ -2,7 +2,6 @@
 include './include/inc_config.php';
 include './include/session_config.php';
 include './include/auth_redirect.php';
-include './include/check_admin_access.php';
 ?>
 
 <?php

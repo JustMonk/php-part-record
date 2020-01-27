@@ -9,7 +9,7 @@ $access = ($access_query->fetch_assoc())['title']; //admin or user
 <div id="mobile-nav">
    <a id="openSideMenu"><i class="fas fa-bars"></i></a>
    <div style='display: flex; align-items: center; justify-content: center; margin-left: 1.5rem; color: #fff;'>
-      <h4>Part Record</h4> <span style='font-size: 16px; background: #41b2f4; color: #fff; padding: 2px 5px; margin-left: 5px; border-radius: 3px; text-shadow: 1px 1px 1px black;'>2.1</span>
+      <h4>Part Record</h4> <span style='font-size: 16px; background: #41b2f4; color: #fff; padding: 2px 5px; margin-left: 5px; border-radius: 3px; text-shadow: 1px 1px 1px black;'>2.5</span>
    </div>
 </div>
 
@@ -20,7 +20,7 @@ $access = ($access_query->fetch_assoc())['title']; //admin or user
          <?php
          echo "
          <div style='display: flex; align-items: center; justify-content: center;'>
-            <h4>Part Record</h4> <span style='font-size: 16px; background: #41b2f4; color: #fff; padding: 2px 5px; margin-left: 5px; border-radius: 3px; text-shadow: 1px 1px 1px black;'>2.1</span>
+            <h4>Part Record</h4> <span style='font-size: 16px; background: #41b2f4; color: #fff; padding: 2px 5px; margin-left: 5px; border-radius: 3px; text-shadow: 1px 1px 1px black;'>2.5</span>
          </div>
 
          <p style='text-align: center'>$_SESSION[name] $_SESSION[lastname]</p>
@@ -43,23 +43,18 @@ $access = ($access_query->fetch_assoc())['title']; //admin or user
          <p style='padding: 0px 30px; margin-top: 20px; margin-bottom: 10px; font-weight: bold;'>Переучет:</p>
       </li>
       <li><a class='nav-button' href='$link_path/inventory.php''><i class=' fas fa-dolly-flatbed'></i>Инвентаризация</a></li>
+      <li>
+         <p style='padding: 0px 30px; margin-top: 20px; margin-bottom: 10px; font-weight: bold;'>Детализация:</p>
+      </li>
+      <li><a class='nav-button' href='$link_path/operation_history.php'><i class='fas fa-code'></i>История операций</a></li>
+      <li><a class='nav-button' href='$link_path/product_movement.php'><i class='fas fa-code'></i>Движения продукции</a></li>
+      <li><a class='nav-button' href='$link_path/product_registry.php'><i class='fas fa-code'></i>Реестр продукции</a></li>
       ";
          ?>
 
          <?php
          if ($access == 'admin') {
             echo "
-         <li>
-            <p style='padding: 0px 30px; margin-top: 20px; margin-bottom: 10px; font-weight: bold;'>Детализация:</p>
-         </li>
-         <li><a class='nav-button' href='$link_path/operation_history.php'><i class='fas fa-code'></i>История операций</a></li>
-         <li>
-            <p style='padding: 0px 30px; margin-top: 20px; margin-bottom: 10px; font-weight: bold;'>Движения продукции:</p>
-         </li>
-         <li><a class='nav-button' href='$link_path/add_history.php'><i class='fas fa-code'></i>Приходы</a></li>
-         <li><a class='nav-button' href='$link_path/sell_history.php'><i class='fas fa-code'></i>Продажи</a></li>
-         <li><a class='nav-button' href='$link_path/inv_history.php'><i class='fas fa-code'></i>Инвентаризации</a></li>
-         <li><a class='nav-button' href='$link_path/product_registry.php'><i class='fas fa-code'></i>Реестр продукции</a></li>
          <li>
             <p style='padding: 0px 30px; margin-top: 20px; margin-bottom: 10px; font-weight: bold;'>Справочники:</p>
          </li>
@@ -81,7 +76,7 @@ $access = ($access_query->fetch_assoc())['title']; //admin or user
    if (sidebarLinks) sidebarLinks.parentElement.classList.add('current-tab');
 
    document.addEventListener('click', e => {
-      if(e.target.id == 'openSideMenu' || e.target.parentElement.id == 'openSideMenu') {
+      if (e.target.id == 'openSideMenu' || e.target.parentElement.id == 'openSideMenu') {
          //выкатываем сайдменю
          let sidemenu = document.getElementById('side-navbar');
          sidemenu.classList.add('menu-open');

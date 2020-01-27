@@ -2,10 +2,16 @@
 include './include/inc_config.php';
 include './include/session_config.php';
 include './include/auth_redirect.php';
-include './include/check_admin_access.php';
 ?>
 
 <?php
+//check access
+$access_query = $mysqli->query("SELECT title FROM account_types
+WHERE ID = (SELECT access_id FROM users WHERE login = '$_SESSION[login]')
+LIMIT 1");
+$access = ($access_query->fetch_assoc())['title'];
+echo $access;
+
 $id = $_GET['id'];
 $id = htmlspecialchars($id);
 
@@ -185,6 +191,18 @@ if ($res['operation_name'] == 'inv') {
          display: none;
       }
    </style>
+
+   <?php 
+   //если не админ, то кнопок нет
+   if ($access != 'admin') {
+      echo "<style>
+      #add-new-product {display: none}
+      #add-new-material {display: none}
+      .select-wrapper {display: none}
+      </style>";
+   }
+   ?>
+
 </head>
 
 <body>
@@ -213,9 +231,15 @@ if ($res['operation_name'] == 'inv') {
                         unset($query_array[$key]);
                      }
                   }
+
+                  //определяем на какую страницу возвращать
+                  $target_page = 'operation_history.php';
+                  if ($_GET['from'] == 'history') $target_page = 'operation_history.php';
+                  if ($_GET['from'] == 'movement') $target_page = 'product_movement.php';
+
                   $return_link = join("&", $query_array);
-                  if (strlen($return_link) > 0) $return_link = './operation_history.php?' . $return_link;
-                  else $return_link = './operation_history.php';
+                  if (strlen($return_link) > 0) $return_link = "./$target_page?" . $return_link;
+                  else $return_link = "./$target_page";
 
                   echo "<p><a href='$return_link'>Вернуться к списку</a></p>";
                   //если операции не существует - показываем заглушку
@@ -247,7 +271,7 @@ if ($res['operation_name'] == 'inv') {
 
                   <?php
                   //инвентаризации не редактируются
-                  if ($res['operation_name'] != 'inv') {
+                  if ($res['operation_name'] != 'inv' && $access == 'admin') {
                      echo "<div class=\"divider\" style=\"margin: 10px 0px;\"></div>
                      <a id='operation-edit' class=\"waves-effect waves-light btn blue lighten-1\">Сохранить изменения</a>
                      <a id='operation-delete' class=\"waves-effect waves-light btn grey\">Удалить операцию</a>
@@ -266,17 +290,20 @@ if ($res['operation_name'] == 'inv') {
 
    <?php
    //echo $script;
-   if ($res['operation_name'] == 'add') {
-      include './include/modals/add_modal.php';
-   }
-   if ($res['operation_name'] == 'sell') {
-      include './include/modals/sell_modal.php';
-   }
-   if ($res['operation_name'] == 'prod') {
-      include './include/modals/make_modal.php';
-   }
-   if ($res['operation_name'] == 'inv') {
-      include './include/modals/inv_modal.php';
+   //модальные окна не нужны пользователям
+   if ($access == 'admin') {
+      if ($res['operation_name'] == 'add') {
+         include './include/modals/add_modal.php';
+      }
+      if ($res['operation_name'] == 'sell') {
+         include './include/modals/sell_modal.php';
+      }
+      if ($res['operation_name'] == 'prod') {
+         include './include/modals/make_modal.php';
+      }
+      if ($res['operation_name'] == 'inv') {
+         include './include/modals/inv_modal.php';
+      }
    }
    ?>
 
