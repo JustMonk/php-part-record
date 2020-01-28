@@ -220,9 +220,9 @@ while ($operation_rows[] = mysqli_fetch_array($result));
                      }
                   }
                   $return_link = join("&", $query_array);
-                  if (strlen($return_link) > 0) $return_link = './operation_history.php?' . $return_link;
+                  if (strlen($return_link) > 0) $return_link = './product_movement.php?' . $return_link;
                   else {
-                     $return_link = './operation_history.php?';
+                     $return_link = './product_movement.php?';
                      $join_symbol = '';
                   }
                   $page_link = $return_link . $join_symbol . "page=";
