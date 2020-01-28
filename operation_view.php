@@ -10,7 +10,6 @@ $access_query = $mysqli->query("SELECT title FROM account_types
 WHERE ID = (SELECT access_id FROM users WHERE login = '$_SESSION[login]')
 LIMIT 1");
 $access = ($access_query->fetch_assoc())['title'];
-echo $access;
 
 $id = $_GET['id'];
 $id = htmlspecialchars($id);
@@ -228,6 +227,9 @@ if ($res['operation_name'] == 'inv') {
                   $query_array = explode('&', $_SERVER['QUERY_STRING']);
                   foreach ($query_array as $key => $value) {
                      if (substr($value, 0, 3) == 'id=') {
+                        unset($query_array[$key]);
+                     }
+                     if (substr($value, 0, 5) == 'from=') {
                         unset($query_array[$key]);
                      }
                   }

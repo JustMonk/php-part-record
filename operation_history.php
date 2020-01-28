@@ -155,7 +155,7 @@ while ($operation_rows[] = mysqli_fetch_array($result));
 
                            foreach ($operation_rows as $row) {
                               if ($row) {
-                                 $link = './operation_view.php?' . $_SERVER['QUERY_STRING'] . $join_symbol . "id=$row[operation_id]";
+                                 $link = './operation_view.php?' . $_SERVER['QUERY_STRING'] . $join_symbol . "id=$row[operation_id]" . '&from=history';
                                  echo "<tr>
                               <td> <a href='$link'>$row[operation_id]</a> </td>
                               <td> <a href='$link'>$row[operation_name]</a> </td>
@@ -329,8 +329,7 @@ while ($operation_rows[] = mysqli_fetch_array($result));
             let query = `type=${type}` +
                (documentNum ? '&document=' + encodeURI(documentNum) : '') +
                (operationDate ? '&date=' + new Date(document.getElementById('operation-date').value + ' UTC').toISOString().split('T')[0] : '') +
-               (partner ? '&partner=' + encodeURI(partner) : '') + 
-               '&from=history';
+               (partner ? '&partner=' + encodeURI(partner) : '');
 
             console.log(query);
 
