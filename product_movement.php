@@ -46,30 +46,25 @@ if (count($search_condition) > 0) {
 $page = $_GET['page'];
 // Определяем общее число сообщений в базе данных
 $result = $mysqli->query("SELECT COUNT(*) FROM
-((SELECT operation_add.operation_id, operation_date, 'Приход' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_add, product_list, operation_history 
+((SELECT operation_add.operation_id, operation_date, 'Приход' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_add, product_list, units, operation_history
 LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
-LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_add.product_id) = units.unit_id
-WHERE operation_add.product_id = product_list.product_id AND operation_add.operation_id = operation_history.operation_id)
+WHERE operation_add.product_id = product_list.product_id AND operation_add.operation_id = operation_history.operation_id AND product_list.unit_code = units.unit_id)
 UNION
-(SELECT operation_sell.operation_id, operation_date, 'Продажа' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_sell, product_list, operation_history 
+(SELECT operation_sell.operation_id, operation_date, 'Продажа' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_sell, product_list, units, operation_history
 LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
-LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_sell.product_id) = units.unit_id
-WHERE operation_sell.product_id = product_list.product_id AND operation_sell.operation_id = operation_history.operation_id)
+WHERE operation_sell.product_id = product_list.product_id AND operation_sell.operation_id = operation_history.operation_id AND product_list.unit_code = units.unit_id)
 UNION
-(SELECT operation_prod_add.operation_id, operation_date, 'Производство (продукт)' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_prod_add, product_list, operation_history 
+(SELECT operation_prod_add.operation_id, operation_date, 'Производство (продукт)' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_prod_add, product_list, units, operation_history 
 LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
-LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_prod_add.product_id) = units.unit_id
-WHERE operation_prod_add.product_id = product_list.product_id AND operation_prod_add.operation_id = operation_history.operation_id)
+WHERE operation_prod_add.product_id = product_list.product_id AND operation_prod_add.operation_id = operation_history.operation_id AND product_list.unit_code = units.unit_id)
 UNION
-(SELECT operation_prod_consume.operation_id, operation_date, 'Производство (сырье)' AS TYPE, product_list.title, -COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_prod_consume, product_list, operation_history 
+(SELECT operation_prod_consume.operation_id, operation_date, 'Производство (сырье)' AS TYPE, product_list.title, -COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_prod_consume, product_list, units, operation_history
 LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
-LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_prod_consume.product_id) = units.unit_id
-WHERE operation_prod_consume.product_id = product_list.product_id AND operation_prod_consume.operation_id = operation_history.operation_id)
+WHERE operation_prod_consume.product_id = product_list.product_id AND operation_prod_consume.operation_id = operation_history.operation_id AND product_list.unit_code = units.unit_id)
 UNION
-(SELECT operation_inventory.operation_id, operation_date, 'Инвентаризация' AS TYPE, product_list.title, (count_after - count_before) AS COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_inventory, product_list, operation_history 
+(SELECT operation_inventory.operation_id, operation_date, 'Инвентаризация' AS TYPE, product_list.title, (count_after - count_before) AS COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_inventory, product_list, units, operation_history
 LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
-LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_inventory.product_id) = units.unit_id
-WHERE operation_inventory.product_id = product_list.product_id AND operation_inventory.operation_id = operation_history.operation_id))
+WHERE operation_inventory.product_id = product_list.product_id AND operation_inventory.operation_id = operation_history.operation_id AND product_list.unit_code = units.unit_id))
 AS t
 $search_condition");
 $operations = $result->fetch_row()[0];
@@ -88,30 +83,25 @@ if ($page > $total) $page = $total;
 $start = $page * $num - $num;
 // Выбираем $num сообщений начиная с номера $start
 $result = $mysqli->query("SELECT * FROM
-((SELECT operation_add.operation_id, operation_date, 'Приход' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_add, product_list, operation_history 
+((SELECT operation_add.operation_id, operation_date, 'Приход' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_add, product_list, units, operation_history
 LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
-LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_add.product_id) = units.unit_id
-WHERE operation_add.product_id = product_list.product_id AND operation_add.operation_id = operation_history.operation_id)
+WHERE operation_add.product_id = product_list.product_id AND operation_add.operation_id = operation_history.operation_id AND product_list.unit_code = units.unit_id)
 UNION
-(SELECT operation_sell.operation_id, operation_date, 'Продажа' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_sell, product_list, operation_history 
+(SELECT operation_sell.operation_id, operation_date, 'Продажа' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_sell, product_list, units, operation_history
 LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
-LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_sell.product_id) = units.unit_id
-WHERE operation_sell.product_id = product_list.product_id AND operation_sell.operation_id = operation_history.operation_id)
+WHERE operation_sell.product_id = product_list.product_id AND operation_sell.operation_id = operation_history.operation_id AND product_list.unit_code = units.unit_id)
 UNION
-(SELECT operation_prod_add.operation_id, operation_date, 'Производство (продукт)' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_prod_add, product_list, operation_history 
+(SELECT operation_prod_add.operation_id, operation_date, 'Производство (продукт)' AS TYPE, product_list.title, COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_prod_add, product_list, units, operation_history 
 LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
-LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_prod_add.product_id) = units.unit_id
-WHERE operation_prod_add.product_id = product_list.product_id AND operation_prod_add.operation_id = operation_history.operation_id)
+WHERE operation_prod_add.product_id = product_list.product_id AND operation_prod_add.operation_id = operation_history.operation_id AND product_list.unit_code = units.unit_id)
 UNION
-(SELECT operation_prod_consume.operation_id, operation_date, 'Производство (сырье)' AS TYPE, product_list.title, -COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_prod_consume, product_list, operation_history 
+(SELECT operation_prod_consume.operation_id, operation_date, 'Производство (сырье)' AS TYPE, product_list.title, -COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_prod_consume, product_list, units, operation_history
 LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
-LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_prod_consume.product_id) = units.unit_id
-WHERE operation_prod_consume.product_id = product_list.product_id AND operation_prod_consume.operation_id = operation_history.operation_id)
+WHERE operation_prod_consume.product_id = product_list.product_id AND operation_prod_consume.operation_id = operation_history.operation_id AND product_list.unit_code = units.unit_id)
 UNION
-(SELECT operation_inventory.operation_id, operation_date, 'Инвентаризация' AS TYPE, product_list.title, (count_after - count_before) AS COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_inventory, product_list, operation_history 
+(SELECT operation_inventory.operation_id, operation_date, 'Инвентаризация' AS TYPE, product_list.title, (count_after - count_before) AS COUNT, unit, create_date, operation_history.document_number, partners.name AS partner FROM operation_inventory, product_list, units, operation_history
 LEFT JOIN partners ON operation_history.partner_code = partners.partner_id OR partners.partner_id IS NULL 
-LEFT JOIN units ON (SELECT unit_code FROM product_list WHERE product_id = operation_inventory.product_id) = units.unit_id
-WHERE operation_inventory.product_id = product_list.product_id AND operation_inventory.operation_id = operation_history.operation_id))
+WHERE operation_inventory.product_id = product_list.product_id AND operation_inventory.operation_id = operation_history.operation_id AND product_list.unit_code = units.unit_id))
 AS t
 $search_condition
 ORDER BY operation_id DESC
