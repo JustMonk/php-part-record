@@ -192,8 +192,8 @@ while ($operation_rows[] = mysqli_fetch_array($result));
                                  $link = './operation_view.php?' . $_SERVER['QUERY_STRING'] . $join_symbol . "id=$row[operation_id]" . "&from=movement";
                                  echo "<tr>
                               <td> <a href='$link'>$row[operation_id]</a> </td>
-                              <td> <a href='$link'>$row[operation_date]</a> </td>
                               <td> <a href='$link'>$row[TYPE]</a> </td>
+                              <td> <a href='$link'>$row[operation_date]</a> </td>
                               <td> <a href='$link'>$row[title]</a> </td>
                               <td> <a href='$link'>$row[COUNT]</a> </td>
                               <td> <a href='$link'>$row[unit]</a> </td>
